@@ -52,7 +52,7 @@ class BokaInfoMod(loader.Module):
             ),
             loader.ConfigValue(
                 "banner_url",
-                os.path.join(main.BASE_DIR, "assets", "boka.png"),
+                "https://raw.githubusercontent.com/weuwoTG/Boka/main/assets/boka.png",
                 lambda: self.strings["_cfg_banner"],
                 validator=loader.validators.RandomLink(),
             ),

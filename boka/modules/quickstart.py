@@ -137,11 +137,6 @@ class Quickstart(loader.Module):
                 "You can try solving this by leaving some channels/groups"
             )
 
-        await self.request_join(
-            "boka_talks",
-            "Boka help is only available in this chat. By agreeing to join the chat, you agree to the Boka federation rules and if you violate them, you will be permanently banned.",
-        )
-
         self.mark = lambda: [
             [
                 {

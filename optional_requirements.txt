@@ -6,3 +6,5 @@ bs4
 uvloop
 google-genai
 openai
+markdown-it-py
+google-api-core
