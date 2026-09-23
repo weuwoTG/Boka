@@ -332,13 +332,7 @@ class TestMod(loader.Module):
 
     @loader.command()
     async def ping(self, message: Message):
-        """- Find out your userbot ping, pass a number to ping multiple times: .ping 1-10"""
-        arg = utils.get_args_raw(message).strip()
-        try:
-            count = int(arg) if arg else 1
-            count = min(max(count, 1), 10)
-        except (ValueError, TypeError):
-            count = 1
+        """- Find out your userbot ping"""
         banner = str(self.config["banner_url"])
 
         if self.config["banner_url"] and self.config["quote_media"] is True:
@@ -347,37 +341,29 @@ class TestMod(loader.Module):
         elif not self.config["banner_url"]:
             banner = None
 
-        for _ in range(count):
-            start = time.perf_counter_ns()
-            data = {
-                "ping": round((time.perf_counter_ns() - start) / 10**6, 3),
-                "uptime": utils.formatted_uptime(),
-                "ping_hint": (
-                    (self.config["hint"]) if random.choice([0, 0, 1]) == 1 else ""
-                ),
-                "hostname": lib_platform.node(),
-                "user": getpass.getuser(),
-                "platform": utils.get_platform_name(),
-            }
-            data = await utils.get_placeholders(data, self.config["custom_message"])
-            try:
-                placeholders_msg = self.config["custom_message"].format(**data)
-            except KeyError:
-                logger.exception("Missing placeholder in custom_message")
-                placeholders_msg = "<tg-emoji emoji-id=5210952531676504517>🚫</tg-emoji>"
-            if _ == 0:
-                await utils.answer(
-                    message,
-                    placeholders_msg,
-                    file=banner,
-                    invert_media=self.config["invert_media"],
-                )
-            else:
-                await message.respond(
-                    placeholders_msg,
-                    file=banner,
-                    invert_media=self.config["invert_media"],
-                )
+        start = time.perf_counter_ns()
+        data = {
+            "ping": round((time.perf_counter_ns() - start) / 10**6, 3),
+            "uptime": utils.formatted_uptime(),
+            "ping_hint": (
+                (self.config["hint"]) if random.choice([0, 0, 1]) == 1 else ""
+            ),
+            "hostname": lib_platform.node(),
+            "user": getpass.getuser(),
+            "platform": utils.get_platform_name(),
+        }
+        data = await utils.get_placeholders(data, self.config["custom_message"])
+        try:
+            placeholders_msg = self.config["custom_message"].format(**data)
+        except KeyError:
+            logger.exception("Missing placeholder in custom_message")
+            placeholders_msg = "<tg-emoji emoji-id=5210952531676504517>🚫</tg-emoji>"
+        await utils.answer(
+            message,
+            placeholders_msg,
+            file=banner,
+            invert_media=self.config["invert_media"],
+        )
 
     async def client_ready(self):
         self._content_channel_id = await utils.wait_for_content_channel(self._db)
