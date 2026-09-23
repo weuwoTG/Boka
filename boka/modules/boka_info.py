@@ -13,6 +13,7 @@
 import time
 import psutil
 import logging
+import os
 import boka_tl
 
 from boka_tl.errors import WebpageMediaEmptyError

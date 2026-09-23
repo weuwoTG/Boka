@@ -4,3 +4,5 @@ python-ffmpeg
 ffmpeg
 bs4
 uvloop
+google-genai
+openai

@@ -13,6 +13,7 @@ import typing
 
 import grapheme
 import boka_tl
+from boka_tl.errors.rpcerrorlist import MessageNotModifiedError
 from boka_tl.tl.types import (
     Channel,
     Chat,
@@ -28,6 +29,13 @@ from .entity import get_chat_id, FormattingEntity
 
 from ..inline.types import BotInlineCall, InlineCall, InlineMessage
 from ..types import BokaReplyMarkup, ListLike
+
+
+async def _edit_safe(message, *args, **kwargs):
+    try:
+        return await message.edit(*args, **kwargs)
+    except MessageNotModifiedError:
+        return message
 
 emoji_pattern = re.compile(
     "["
@@ -384,11 +392,14 @@ async def answer(
                 return result
 
         if edit:
-            result = await message.edit(
-                text,
-                parse_mode=lambda t: (t, entities),
-                **kwargs,
-            )
+            try:
+                result = await message.edit(
+                    text,
+                    parse_mode=lambda t: (t, entities),
+                    **kwargs,
+                )
+            except MessageNotModifiedError:
+                result = message
         else:
             file = kwargs.pop("file", None)
             invert_media = kwargs.pop("invert_media", False)
@@ -403,7 +414,8 @@ async def answer(
                     **kwargs,
                 )
 
-                result = await sent.edit(
+                result = await _edit_safe(
+                    sent,
                     text,
                     file=file,
                     parse_mode=lambda t: (t, entities),
@@ -439,7 +451,8 @@ async def answer(
                 (MessageMediaWebPage, MessageMediaPhoto, MessageMediaDocument),
             )
         ):
-            result = await message.edit(
+            result = await _edit_safe(
+                message,
                 response.message,
                 file=response.media,
                 parse_mode=lambda t: (t, response.entities or []),

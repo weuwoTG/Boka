@@ -366,7 +366,6 @@ class TestMod(loader.Module):
                 logger.exception("Missing placeholder in custom_message")
                 placeholders_msg = "<tg-emoji emoji-id=5210952531676504517>🚫</tg-emoji>"
             if _ == 0:
-                await utils.answer(message, self.config["ping_emoji"])
                 await utils.answer(
                     message,
                     placeholders_msg,
