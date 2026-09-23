@@ -1007,18 +1007,18 @@ class Boka:
                 upd = "Update required" if diff else "Up-to-date"
             pref = client.boka_db.get("boka.main", "command_prefix", None)
 
+            banner_text = ""
+            try:
+                with open(os.path.join(BASE_DIR, "assets", "banner.txt")) as f:
+                    banner_text = f.read()
+            except Exception:
+                pass
+
             logo = (
-                "                          _           \n"
-                r"  /\  /\ ___  _ __  ___  | | __ _   _ "
-                "\n"
-                r" / /_/ // _ \| '__|/ _ \ | |/ /| | | |"
-                "\n"
-                "/ __  /|  __/| |  | (_) ||   < | |_| |\n"
-                r"\/ /_/  \___||_|   \___/ |_|\_\ \__,_|"
-                "\n\n"
-                f"• Build: {build[:7]}\n"
-                f"• Version: {'.'.join(list(map(str, list(__version__))))}\n"
-                f"• {upd}\n"
+                banner_text
+                + f"• Build: {build[:7]}\n"
+                + f"• Version: {'.'.join(list(map(str, list(__version__))))}\n"
+                + f"• {upd}\n"
             )
             if not self.omit_log:
                 print(logo)
