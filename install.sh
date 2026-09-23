@@ -129,8 +129,8 @@ prepare_repo() {
 		return
 	fi
 
-	# Hardened build: the installer never downloads code from the network.
-	# Run install.sh from inside the already-present Boka directory.
+
+
 	fail "Run install.sh from inside the existing Boka copy (boka/ + requirements.txt required). No network cloning is performed." 3
 }
 

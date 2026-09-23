@@ -86,7 +86,7 @@ class UserMethods:
             raise RuntimeError(
                 "The asyncio event loop must not change after connection (see the FAQ for details)"
             )
-        # if the loop is None it will fail with a connection error later on
+                                                                           
 
         if flood_sleep_threshold is None:
             flood_sleep_threshold = self.flood_sleep_threshold
@@ -99,11 +99,11 @@ class UserMethods:
             await r.resolve(self, utils)
             r._assert_no_forbidden_constructors()
 
-            # Avoid making the request if it's already in a flood wait
+                                                                      
             if r.CONSTRUCTOR_ID in self._flood_waited_requests:
                 due = self._flood_waited_requests[r.CONSTRUCTOR_ID]
                 diff = round(due - time.time())
-                if diff <= 3:  # Flood waits below 3 seconds are "ignored"
+                if diff <= 3:                                             
                     self._flood_waited_requests.pop(r.CONSTRUCTOR_ID, None)
                 elif diff <= flood_sleep_threshold:
                     self._log[__name__].info(*_fmt_flood(diff, r, early=True))
@@ -116,7 +116,7 @@ class UserMethods:
                 if utils.is_list_like(request):
                     request[i] = functions.InvokeWithoutUpdatesRequest(r)
                 else:
-                    # This should only run once as requests should be a list of 1 item
+                                                                                      
                     request = functions.InvokeWithoutUpdatesRequest(r)
 
         request_index = 0
@@ -139,7 +139,7 @@ class UserMethods:
                         result = _sanitize_get_self_user_result(
                             requests[request_index], result
                         )
-                        self.session.process_entities(result)  # skip maybe_async
+                        self.session.process_entities(result)                    
                         exceptions.append(None)
                         results.append(result)
                         request_index += 1
@@ -152,7 +152,7 @@ class UserMethods:
                     result = _sanitize_get_self_user_result(
                         requests[request_index], result
                     )
-                    self.session.process_entities(result)  # skip maybe_async
+                    self.session.process_entities(result)                    
                     return result
             except (
                 errors.ServerError,
@@ -178,14 +178,14 @@ class UserMethods:
                 if utils.is_list_like(request):
                     request = request[request_index]
 
-                # SLOW_MODE_WAIT is chat-specific, not request-specific
+                                                                       
                 if not isinstance(e, errors.SlowModeWaitError):
                     self._flood_waited_requests[request.CONSTRUCTOR_ID] = (
                         time.time() + e.seconds
                     )
 
-                # In test servers, FLOOD_WAIT_0 has been observed, and sleeping for
-                # such a short amount will cause retries very fast leading to issues.
+                                                                                   
+                                                                                     
                 if e.seconds == 0:
                     e.seconds = 1
 
@@ -212,7 +212,7 @@ class UserMethods:
             raise last_error
         raise ValueError("Request was unsuccessful {} time(s)".format(attempt))
 
-    # region Public methods
+                           
 
     async def get_me(
         self: "TelegramClient", input_peer: bool = False
@@ -300,7 +300,7 @@ class UserMethods:
         """
         if self._authorized is None:
             try:
-                # Any request that requires authorization will work
+                                                                   
                 await self(functions.updates.GetStateRequest())
                 self._authorized = True
             except errors.RPCError:
@@ -368,10 +368,10 @@ class UserMethods:
         if single:
             entity = (entity,)
 
-        # Group input entities by string (resolve username),
-        # input users (get users), input chat (get chats) and
-        # input channels (get channels) to get the most entities
-        # in the less amount of calls possible.
+                                                            
+                                                             
+                                                                
+                                               
         inputs = []
         for x in entity:
             if isinstance(x, str):
@@ -394,13 +394,13 @@ class UserMethods:
         chats = lists[helpers._EntityType.CHAT]
         channels = lists[helpers._EntityType.CHANNEL]
         if users:
-            # GetUsersRequest has a limit of 200 per call
+                                                         
             tmp = []
             while users:
                 curr, users = users[:200], users[200:]
                 tmp.extend(await self(functions.users.GetUsersRequest(curr)))
             users = tmp
-        if chats:  # TODO Handle chats slice?
+        if chats:                            
             chats = (
                 await self(
                     functions.messages.GetChatsRequest([x.chat_id for x in chats])
@@ -411,18 +411,18 @@ class UserMethods:
                 await self(functions.channels.GetChannelsRequest(channels))
             ).chats
 
-        # Merge users, chats and channels into a single dictionary
+                                                                  
         id_entity = {
-            # `get_input_entity` might've guessed the type from a non-marked ID,
-            # so the only way to match that with the input is by not using marks here.
+                                                                                
+                                                                                      
             utils.get_peer_id(x, add_mark=False): x
             for x in itertools.chain(users, chats, channels)
         }
 
-        # We could check saved usernames and put them into the users,
-        # chats and channels list from before. While this would reduce
-        # the amount of ResolveUsername calls, it would fail to catch
-        # username changes.
+                                                                     
+                                                                      
+                                                                     
+                           
         result = []
         for x in inputs:
             if isinstance(x, str):
@@ -511,15 +511,15 @@ class UserMethods:
                 # The same applies to IDs, chats or channels.
                 chat = await client.get_input_entity(-123456789)
         """
-        # Short-circuit if the input parameter directly maps to an InputPeer
+                                                                            
         try:
             return utils.get_input_peer(peer)
         except TypeError:
             pass
 
-        # Next in priority is having a peer (or its ID) cached in-memory
+                                                                        
         try:
-            # 0x2d45687 == crc32(b'Peer')
+                                         
             if isinstance(peer, int) or peer.SUBCLASS_OF_ID == 0x2D45687:
                 return self._mb_entity_cache.get(
                     utils.get_peer_id(peer, add_mark=False)
@@ -527,24 +527,24 @@ class UserMethods:
         except AttributeError:
             pass
 
-        # Then come known strings that take precedence
+                                                      
         if peer in ("me", "self"):
             return types.InputPeerSelf()
 
-        # No InputPeer, cached peer, or known string. Fetch from disk cache
+                                                                           
         try:
-            return self.session.get_input_entity(peer)  # skip maybe_async
+            return self.session.get_input_entity(peer)                    
         except ValueError:
             pass
 
-        # Only network left to try
+                                  
         if isinstance(peer, str):
             return utils.get_input_peer(await self._get_entity_from_string(peer))
 
-        # If we're a bot and the user has messaged us privately users.getUsers
-        # will work with access_hash = 0. Similar for channels.getChannels.
-        # If we're not a bot but the user is in our contacts, it seems to work
-        # regardless. These are the only two special-cased requests.
+                                                                              
+                                                                           
+                                                                              
+                                                                    
         peer = utils.get_peer(peer)
         if isinstance(peer, types.PeerUser):
             users = await self(
@@ -553,13 +553,13 @@ class UserMethods:
                 )
             )
             if users and not isinstance(users[0], types.UserEmpty):
-                # If the user passed a valid ID they expect to work for
-                # channels but would be valid for users, we get UserEmpty.
-                # Avoid returning the invalid empty input peer for that.
-                #
-                # We *could* try to guess if it's a channel first, and if
-                # it's not, work as a chat and try to validate it through
-                # another request, but that becomes too much work.
+                                                                       
+                                                                          
+                                                                        
+                 
+                                                                         
+                                                                         
+                                                                  
                 return utils.get_input_peer(users[0])
         elif isinstance(peer, types.PeerChat):
             return types.InputPeerChat(peer.chat_id)
@@ -606,7 +606,7 @@ class UserMethods:
 
         try:
             if peer.SUBCLASS_OF_ID not in (0x2D45687, 0xC91C90B6):
-                # 0x2d45687, 0xc91c90b6 == crc32(b'Peer') and b'InputPeer'
+                                                                          
                 peer = await self.get_input_entity(peer)
         except AttributeError:
             peer = await self.get_input_entity(peer)
@@ -616,9 +616,9 @@ class UserMethods:
 
         return utils.get_peer_id(peer, add_mark=add_mark)
 
-    # endregion
+               
 
-    # region Private methods
+                            
 
     async def _get_entity_from_string(self: "TelegramClient", string):
         """
@@ -678,10 +678,10 @@ class UserMethods:
                 except StopIteration:
                     pass
             try:
-                # Nobody with this username, maybe it's an exact name/title
+                                                                           
                 return await self.get_entity(
                     self.session.get_input_entity(string)
-                )  # skip maybe_async
+                )                    
             except ValueError:
                 pass
 
@@ -694,10 +694,10 @@ class UserMethods:
         into an input entity.
         """
         try:
-            if dialog.SUBCLASS_OF_ID == 0xA21C9795:  # crc32(b'InputDialogPeer')
+            if dialog.SUBCLASS_OF_ID == 0xA21C9795:                             
                 dialog.peer = await self.get_input_entity(dialog.peer)
                 return dialog
-            elif dialog.SUBCLASS_OF_ID == 0xC91C90B6:  # crc32(b'InputPeer')
+            elif dialog.SUBCLASS_OF_ID == 0xC91C90B6:                       
                 return types.InputDialogPeer(dialog)
         except AttributeError:
             pass
@@ -720,4 +720,4 @@ class UserMethods:
 
         return types.InputNotifyPeer(await self.get_input_entity(notify))
 
-    # endregion
+               

@@ -35,8 +35,8 @@ class StopPropagation(Exception):
         ...     pass
     """
 
-    # For some reason Sphinx wants the silly >>> or
-    # it will show warnings and look bad when generated.
+                                                   
+                                                        
     pass
 
 

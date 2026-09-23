@@ -1,16 +1,16 @@
 """Processes incoming events and dispatches them to appropriate handlers"""
 
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import asyncio
 import collections
@@ -34,7 +34,7 @@ from .tl_cache import CustomTelegramClient
 
 logger = logging.getLogger(__name__)
 
-# Keys for layout switch
+                        
 _LAYOUT_TRANSLATION = str.maketrans(
     'ёйцукенгшщзхъфывапролджэячсмитьбю.Ё"№;%:?ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,'
     + "`qwertyuiop[]asdfghjkl;'zxcvbnm,./~@#$%^&QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?",
@@ -177,7 +177,7 @@ class CommandDispatcher:
         return ret
 
     def _handle_grep(self, message: Message) -> Message:
-        # Allow escaping grep with double stick
+                                               
         if "||grep" in message.text or "|| grep" in message.text:
             message.raw_text = re.sub(r"\|\| ?grep", "| grep", message.raw_text)
             message.text = re.sub(r"\|\| ?grep", "| grep", message.text)
@@ -341,7 +341,7 @@ class CommandDispatcher:
             return False
 
         if not message.message or len(message.message.strip()) == len(prefix):
-            return False  # Message is just the prefix
+            return False                              
 
         _cmd = message.message[len(prefix) :]
         command = _cmd.strip().split(maxsplit=1)[0]
@@ -668,8 +668,8 @@ class CommandDispatcher:
             ):
                 continue
 
-            # Avoid weird AttributeErrors in weird dochub modules by settings placeholder
-            # of attributes
+                                                                                         
+                           
             for placeholder in {"text", "raw_text", "out"}:
                 try:
                     if not hasattr(message, placeholder):
@@ -677,8 +677,8 @@ class CommandDispatcher:
                 except UnicodeDecodeError:
                     pass
 
-            # Run watcher via ensure_future so in case user has a lot
-            # of watchers with long actions, they can run simultaneously
+                                                                     
+                                                                        
             asyncio.ensure_future(
                 self.future_dispatcher(
                     func,
@@ -694,9 +694,9 @@ class CommandDispatcher:
         exception_handler: Callable,
         *args,
     ):
-        # Will be used to determine, which client caused logging messages
-        # parsed via inspect.stack()
-        _boka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+                                                                         
+                                    
+        _boka_client_id_logging_tag = copy.copy(self.client.tg_id)              
         try:
             await func(message)
         except Exception as e:

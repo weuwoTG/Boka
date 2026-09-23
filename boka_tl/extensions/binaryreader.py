@@ -22,12 +22,12 @@ class BinaryReader:
     def __init__(self, data):
         self.stream = data or b""
         self.position = 0
-        self._last = None  # Should come in handy to spot -404 errors
+        self._last = None                                            
 
-    # region Reading
+                    
 
-    # "All numbers are written as little endian."
-    # https://core.telegram.org/mtproto
+                                                 
+                                       
     def read_byte(self):
         """Reads a single byte value."""
         (value,) = struct.unpack_from("<B", self.stream, self.position)
@@ -86,9 +86,9 @@ class BinaryReader:
         """Gets the byte array representing the current buffer as a whole."""
         return self.stream
 
-    # endregion
+               
 
-    # region Telegram custom reading
+                                    
 
     def tgread_bytes(self):
         """
@@ -119,9 +119,9 @@ class BinaryReader:
     def tgread_bool(self):
         """Reads a Telegram boolean value."""
         value = self.read_int(signed=False)
-        if value == 0x997275B5:  # boolTrue
+        if value == 0x997275B5:            
             return True
-        elif value == 0xBC799737:  # boolFalse
+        elif value == 0xBC799737:             
             return False
         else:
             raise RuntimeError("Invalid boolean code {}".format(hex(value)))
@@ -138,20 +138,20 @@ class BinaryReader:
         constructor_id = self.read_int(signed=False)
         clazz = tlobjects.get(constructor_id, None)
         if clazz is None:
-            # The class was None, but there's still a
-            # chance of it being a manually parsed value like bool!
+                                                     
+                                                                   
             value = constructor_id
-            if value == 0x997275B5:  # boolTrue
+            if value == 0x997275B5:            
                 return True
-            elif value == 0xBC799737:  # boolFalse
+            elif value == 0xBC799737:             
                 return False
-            elif value == 0x1CB5C415:  # Vector
+            elif value == 0x1CB5C415:          
                 return [self.tgread_object() for _ in range(self.read_int())]
 
             clazz = core_objects.get(constructor_id, None)
             if clazz is None:
-                # If there was still no luck, give up
-                self.seek(-4)  # Go back
+                                                     
+                self.seek(-4)           
                 pos = self.tell_position()
                 error = TypeNotFoundError(constructor_id, self.read())
                 self.set_position(pos)
@@ -167,13 +167,13 @@ class BinaryReader:
         count = self.read_int()
         return [self.tgread_object() for _ in range(count)]
 
-    # endregion
+               
 
     def close(self):
         """Closes the reader, freeing the BytesIO stream."""
         self.stream = b""
 
-    # region Position related
+                             
 
     def tell_position(self):
         """Tells the current position on the stream."""
@@ -190,9 +190,9 @@ class BinaryReader:
         """
         self.position += offset
 
-    # endregion
+               
 
-    # region with block
+                       
 
     def __enter__(self):
         return self
@@ -200,4 +200,4 @@ class BinaryReader:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    # endregion
+               

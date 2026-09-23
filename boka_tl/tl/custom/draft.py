@@ -82,8 +82,8 @@ class Draft:
         """
         Returns `input_entity` but will make an API call if necessary.
         """
-        # We don't actually have an API call we can make yet
-        # to get more info, but keep this method for consistency.
+                                                            
+                                                                 
         return self.input_entity
 
     @property

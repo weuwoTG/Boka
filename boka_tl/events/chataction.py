@@ -33,9 +33,9 @@ class ChatAction(EventBuilder):
 
     @classmethod
     def build(cls, update, others=None, self_id=None):
-        # Rely on specific pin updates for unpins, but otherwise ignore them
-        # for new pins (we'd rather handle the new service message with pin,
-        # so that we can act on that message').
+                                                                            
+                                                                            
+                                               
         if isinstance(update, types.UpdatePinnedChannelMessages) and not update.pinned:
             return cls.Event(
                 types.PeerChannel(update.channel_id),
@@ -58,9 +58,9 @@ class ChatAction(EventBuilder):
                 types.PeerChat(update.chat_id), kicked_by=True, users=update.user_id
             )
 
-        # UpdateChannel is sent if we leave a channel, and the update._entities
-        # set by _process_update would let us make some guesses. However it's
-        # better not to rely on this. Rely only in MessageActionChatDeleteUser.
+                                                                               
+                                                                             
+                                                                               
 
         elif isinstance(
             update, (types.UpdateNewMessage, types.UpdateNewChannelMessage)
@@ -70,7 +70,7 @@ class ChatAction(EventBuilder):
             if isinstance(action, types.MessageActionChatJoinedByLink):
                 return cls.Event(msg, added_by=True, users=msg.from_id)
             elif isinstance(action, types.MessageActionChatAddUser):
-                # If a user adds itself, it means they joined via the public chat username
+                                                                                          
                 added_by = ([msg.sender_id] == action.users) or msg.from_id
                 return cls.Event(msg, added_by=added_by, users=action.users)
             elif isinstance(action, types.MessageActionChatDeleteUser):
@@ -101,10 +101,10 @@ class ChatAction(EventBuilder):
         elif isinstance(update, types.UpdateChannelParticipant) and bool(
             update.new_participant
         ) != bool(update.prev_participant):
-            # If members are hidden, bots will receive this update instead,
-            # as there won't be a service message. Promotions and demotions
-            # seem to have both new and prev participant, which are ignored
-            # by this event.
+                                                                           
+                                                                           
+                                                                           
+                            
             return cls.Event(
                 types.PeerChannel(update.channel_id),
                 users=update.user_id,
@@ -173,8 +173,8 @@ class ChatAction(EventBuilder):
             else:
                 self.action_message = None
 
-            # TODO needs some testing (can there be more than one id, and do they follow pin order?)
-            #      same in get_pinned_message
+                                                                                                    
+                                             
             super().__init__(chat_peer=where, msg_id=pin_ids[0] if pin_ids else None)
 
             self.new_pin = pin_ids is not None
@@ -196,8 +196,8 @@ class ChatAction(EventBuilder):
                 self.user_added = True
                 self._added_by = added_by
 
-            # If `from_id` was not present (it's `True`) or the affected
-            # user was "kicked by itself", then it left. Else it was kicked.
+                                                                        
+                                                                            
             if kicked_by is True or (users is not None and kicked_by == users):
                 self.user_left = True
             elif kicked_by:
@@ -286,7 +286,7 @@ class ChatAction(EventBuilder):
             <telethon.tl.custom.message.Message>` objects that were pinned.
             """
             if not self._pin_ids:
-                return self._pin_ids  # either None or empty list
+                return self._pin_ids                             
 
             chat = await self.get_input_chat()
             if chat:
@@ -406,7 +406,7 @@ class ChatAction(EventBuilder):
             if not self._user_ids:
                 return []
 
-            # Note: we access the property first so that it fills if needed
+                                                                           
             if (
                 self.users is None or len(self._users) != len(self._user_ids)
             ) and self.action_message:
@@ -427,7 +427,7 @@ class ChatAction(EventBuilder):
             if self._input_users is None and self._user_ids:
                 self._input_users = []
                 for user_id in self._user_ids:
-                    # First try to get it from our entities
+                                                           
                     try:
                         self._input_users.append(
                             utils.get_input_peer(self._entities[user_id])
@@ -436,7 +436,7 @@ class ChatAction(EventBuilder):
                     except (KeyError, TypeError):
                         pass
 
-                    # If missing, try from the entity cache
+                                                           
                     try:
                         self._input_users.append(
                             self._client._mb_entity_cache.get(
@@ -456,7 +456,7 @@ class ChatAction(EventBuilder):
             if not self._user_ids:
                 return []
 
-            # Note: we access the property first so that it fills if needed
+                                                                           
             if (
                 self.input_users is None
                 or len(self._input_users) != len(self._user_ids)

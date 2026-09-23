@@ -1,14 +1,14 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import asyncio
 import contextlib
@@ -571,7 +571,7 @@ class Utils(InlineUnit):
         """Params `self`, `unit_id` are for internal use only, do not try to pass them"""
         if getattr(
             getattr(getattr(call, "message", None), "chat", None), "id", None
-        ) and getattr(getattr(call, "message", None), "message_id", None): #67676767
+        ) and getattr(getattr(call, "message", None), "message_id", None):          
             try:
                 await self.bot.delete_message(
                     call.message.chat.id,
@@ -628,7 +628,7 @@ class Utils(InlineUnit):
         unit_id: str | None = None,
         current_page: int | None = None,
     ) -> list[list[dict[str, typing.Any]]]:
-        # Based on https://github.com/pystorage/pykeyboard/blob/master/pykeyboard/inline_pagination_keyboard.py#L4
+                                                                                                                  
         if current_page is None:
             current_page = self._units[unit_id]["current_index"] + 1
 

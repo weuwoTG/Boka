@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/hikariatama/assets/raw/master/1326-command-window-line-flat.webp" height="80">
+  <img src="assets/boka_logo.png" height="80">
   <h1>Boka Userbot</h1>
   <p>Advanced Telegram userbot with enhanced security and modern features</p>
   
@@ -49,9 +49,7 @@ Most of the feature documentation below is inherited from the official Heroku/Hi
 - **No auto-downloads** — modules are never fetched from the network at boot; `addrepo`, `download_and_install`, remote pip installs and remote language packs are disabled.
 - **No remote code execution via dependencies** — `import_lib` from URLs raises, the runtime never runs `pip install`, missing requirements surface as clear errors instead of silently installing from the internet.
 - **No session / telemetry exfiltration surface** — the boot-time `allowed_ids` fetch and the hosted-session proxy (`secure/patcher`) were removed; sessions are never uploaded anywhere.
-- **Module sandbox** (`boka/secure_local.py`) — third-party modules execute with locked-down imports (`os`, `subprocess`, `socket`, `requests`, `aiohttp`, `pyrogram`, …) and stubbed dangerous built-ins (`open`, `exec`, `eval`, `compile`).
 - **OS-level isolation** (`boka/secure_local.sh`) — dedicated unprivileged user, read-only installation, hardened systemd unit, per-process egress firewall allowing only Telegram networks.
-- **Own MTProto layer** — `herokutl` (Telethon fork) is forked and bundled in-repo as `boka_tl/`; there is no external `heroku-tl-new` dependency to pull or update.
 - **Renamed** package/namespace `heroku` → `boka` (`BOKA_*` env vars), obsolete `secure/` proxy package removed.
 
 Everything else (features, modules, inline elements) matches the official Heroku/Hikka documentation below.

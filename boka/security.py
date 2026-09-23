@@ -1,16 +1,16 @@
 """Checks the commands' security"""
 
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import logging
 import time
@@ -351,10 +351,10 @@ class SecurityManager:
         if isinstance(func, int):
             config = func
         else:
-            # Return masks there so user don't need to reboot
-            # every time he changes permissions. It doesn't
-            # decrease security at all, bc user anyway can
-            # access this attribute
+                                                             
+                                                           
+                                                          
+                                   
             config = self._db.get(__name__, "masks", {}).get(
                 f"{func.__module__}.{func.__name__}",
                 getattr(func, "security", self._default),
@@ -505,7 +505,7 @@ class SecurityManager:
         if user_id in self._db.get(main.__name__, "blacklist_users", []):
             return False
 
-        if message is None:  # In case of checking inline query security map
+        if message is None:                                                 
             return self._check_tsec_inline(user_id, inline_cmd) or bool(
                 config & EVERYONE
             )
@@ -682,4 +682,4 @@ class SecurityManager:
 
         return False
 
-    _check = check  # Legacy
+    _check = check          

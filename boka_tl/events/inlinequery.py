@@ -222,11 +222,11 @@ class InlineQuery(EventBuilder):
 
                 await asyncio.wait(futures)
 
-                # All futures will be in the `done` *set* that `wait` returns.
-                #
-                # Precisely because it's a `set` and not a `list`, it
-                # will not preserve the order, but since all futures
-                # completed we can use our original, ordered `list`.
+                                                                              
+                 
+                                                                     
+                                                                    
+                                                                    
                 results = [x.result() for x in futures]
             else:
                 results = []

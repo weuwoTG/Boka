@@ -1,8 +1,8 @@
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import contextlib
 import io
@@ -31,10 +31,10 @@ from ..types import BokaReplyMarkup, ListLike
 
 emoji_pattern = re.compile(
     "["
-    "\U0001f600-\U0001f64f"  # emoticons
-    "\U0001f300-\U0001f5ff"  # symbols & pictographs
-    "\U0001f680-\U0001f6ff"  # transport & map symbols
-    "\U0001f1e0-\U0001f1ff"  # flags (iOS)
+    "\U0001f600-\U0001f64f"             
+    "\U0001f300-\U0001f5ff"                         
+    "\U0001f680-\U0001f6ff"                           
+    "\U0001f1e0-\U0001f1ff"               
     "]+",
     flags=re.UNICODE,
 )
@@ -135,7 +135,7 @@ def smart_split(
         <<< ["<b>Hello, world!</b>"]
     """
 
-    # Authored by @bsolute
+                          
 
     encoded = text.encode("utf-16le")
     pending_entities = entities
@@ -296,7 +296,7 @@ async def answer(
             disable_security=True,
         )
     """
-    # Compatibility with FTG\GeekTG
+                                   
 
     if isinstance(message, list) and message:
         message = message[0]

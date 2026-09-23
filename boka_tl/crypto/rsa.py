@@ -15,21 +15,21 @@ except ImportError:
 
 from ..tl import TLObject
 
-# {fingerprint: (Crypto.PublicKey.RSA._RSAobj, old)} dictionary
+                                                               
 _server_keys = {}
 
 
 def get_byte_array(integer):
     """Return the variable length bytes corresponding to the given int"""
-    # Operate in big endian (unlike most of Telegram API) since:
-    # > "...pq is a representation of a natural number
-    #    (in binary *big endian* format)..."
-    # > "...current value of dh_prime equals
-    #    (in *big-endian* byte order)..."
-    # Reference: https://core.telegram.org/mtproto/auth_key
+                                                                
+                                                      
+                                            
+                                            
+                                         
+                                                           
     return int.to_bytes(
         integer,
-        (integer.bit_length() + 8 - 1) // 8,  # 8 bits per byte,
+        (integer.bit_length() + 8 - 1) // 8,                    
         byteorder="big",
         signed=False,
     )
@@ -44,7 +44,7 @@ def _compute_fingerprint(key):
     """
     n = TLObject.serialize_bytes(get_byte_array(key.n))
     e = TLObject.serialize_bytes(get_byte_array(key.e))
-    # Telegram uses the last 8 bytes as the fingerprint
+                                                       
     return struct.unpack("<q", sha1(n + e).digest()[-8:])[0]
 
 
@@ -71,20 +71,20 @@ def encrypt(fingerprint, data, *, use_old=False):
     if (not key) or (old and not use_old):
         return None
 
-    # len(sha1.digest) is always 20, so we're left with 255 - 20 - x padding
+                                                                            
     to_encrypt = sha1(data).digest() + data + os.urandom(235 - len(data))
 
-    # rsa module rsa.encrypt adds 11 bits for padding which we don't want
-    # rsa module uses rsa.transform.bytes2int(to_encrypt), easier way:
+                                                                         
+                                                                      
     payload = int.from_bytes(to_encrypt, "big")
     encrypted = rsa.core.encrypt_int(payload, key.e, key.n)
-    # rsa module uses transform.int2bytes(encrypted, keylength), easier:
+                                                                        
     block = encrypted.to_bytes(256, "big")
     return block
 
 
-# Add default keys
-# https://github.com/DrKLO/Telegram/blob/a724d96e9c008b609fe188d122aa2922e40de5fc/TMessagesProj/jni/tgnet/Handshake.cpp#L356-L436
+                  
+                                                                                                                                 
 for pub in (
     """-----BEGIN RSA PUBLIC KEY-----
 MIIBCgKCAQEAruw2yP/BCcsJliRoW5eBVBVle9dtjJw+OYED160Wybum9SXtBBLX

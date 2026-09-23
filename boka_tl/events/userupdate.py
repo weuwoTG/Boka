@@ -6,14 +6,14 @@ from .. import utils
 from ..tl import types
 from ..tl.custom.sendergetter import SenderGetter
 
-# TODO Either the properties are poorly named or they should be
-#      different events, but that would be a breaking change.
-#
-# TODO There are more "user updates", but bundling them all up
-#      in a single place will make it annoying to use (since
-#      the user needs to check for the existence of `None`).
-#
-# TODO Handle UpdateUserBlocked, UpdateUserName, UpdateUserPhone, UpdateUser
+                                                               
+                                                             
+ 
+                                                              
+                                                            
+                                                            
+ 
+                                                                            
 
 
 def _requires_action(function):

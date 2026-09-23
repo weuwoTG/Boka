@@ -46,7 +46,7 @@ class AuthKey:
             reader.read(4)
             self.key_id = reader.read_long(signed=False)
 
-    # TODO This doesn't really fit here, it's only used in authentication
+                                                                         
     def calc_new_nonce_hash(self, new_nonce, number):
         """
         Calculates the new nonce hash based on the current attributes.
@@ -58,7 +58,7 @@ class AuthKey:
         new_nonce = new_nonce.to_bytes(32, "little", signed=True)
         data = new_nonce + struct.pack("<BQ", number, self.aux_hash)
 
-        # Calculates the message key from the given data
+                                                        
         return int.from_bytes(sha1(data).digest()[4:20], "little", signed=True)
 
     def __bool__(self):

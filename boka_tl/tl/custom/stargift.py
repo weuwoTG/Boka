@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 class StarGift:
 
-    # region Initialization
+                           
 
     def __init__(
         self,
@@ -455,9 +455,9 @@ class StarGift:
             "was_refunded": self.was_refunded,
         }
 
-    # endregion Initialization
+                              
 
-    # region Public Methods
+                           
 
     async def upgrade(
         self,
@@ -470,4 +470,4 @@ class StarGift:
             star_count=star_count,
         )
 
-    # endregion Public Methods
+                              

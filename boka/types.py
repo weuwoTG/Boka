@@ -1,14 +1,14 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 
 import ast
@@ -280,7 +280,7 @@ class Module:
         from . import utils
 
         with contextlib.suppress(AttributeError):
-            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)              
 
         if interval < 0.1:
             logger.warning(
@@ -473,7 +473,7 @@ class Module:
         :raise: RuntimeError if library classname exists in :obj:`Modules`.libraries
         """
 
-        from . import utils  # Avoiding circular import
+        from . import utils                            
         from .loader import USER_INSTALL, VALID_PIP_PACKAGES
         from .translations import Strings
 
@@ -486,7 +486,7 @@ class Module:
         if not utils.check_url(url):
             _raise(ValueError("Invalid url for library"))
 
-        # Hardened: importing libraries over the network is disabled.
+                                                                     
         _raise(RuntimeError("Remote library imports are disabled (hardened build)"))
 
         if re.search(r"# ?scope: ?boka_min", code):
@@ -519,7 +519,7 @@ class Module:
             sys.modules[module] = instance
             spec.loader.exec_module(instance)
         except ImportError as e:
-            # Hardened: no automatic dependency (pip) installation.
+                                                                   
             logger.warning(
                 "Library dependency install blocked (hardened build): %s", e.name
             )
@@ -664,7 +664,7 @@ class Library:
 class LoadError(Exception):
     """Tells user, why your module can't be loaded, if raised in `client_ready`"""
 
-    def __init__(self, error_message: str):  # skipcq: PYL-W0231
+    def __init__(self, error_message: str):                     
         self._error = error_message
 
     def __str__(self) -> str:
@@ -740,7 +740,7 @@ class ModuleConfig(dict):
         self._categories: dict[str, "ConfigCategory"] = dict()
 
         if all(isinstance(entry, (ConfigValue, ConfigCategory)) for entry in entries):
-            # New config format processing
+                                          
             self._config = {}
             for entry in entries:
                 if isinstance(entry, ConfigCategory):
@@ -751,7 +751,7 @@ class ModuleConfig(dict):
                 else:
                     self._config[entry.option] = entry
         else:
-            # Legacy config processing
+                                      
             keys = []
             values = []
             defaults = []
@@ -780,8 +780,8 @@ class ModuleConfig(dict):
 
         if callable(ret):
             try:
-                # Compatibility tweak
-                # does nothing in Boka
+                                     
+                                      
                 ret = ret(message)
             except Exception:
                 ret = ret()
@@ -882,8 +882,8 @@ class ConfigValue:
             except Exception:
                 pass
 
-            # Convert value to list if it's tuple just not to mess up
-            # with json convertations
+                                                                     
+                                     
             if isinstance(value, (set, tuple)):
                 value = list(value)
 
@@ -931,7 +931,7 @@ class ConfigValue:
                         )
                         value = default_val
 
-            # This attribute will tell the `Loader` to save this value in db
+                                                                            
             self._save_marker = True
 
         object.__setattr__(self, key, value)
@@ -994,7 +994,7 @@ def _get_members(
 class CacheRecordEntity:
     def __init__(
         self,
-        hashable_entity: "Hashable",  # type: ignore  # noqa: F821
+        hashable_entity: "Hashable",                              
         resolved_entity: EntityLike,
         exp: int,
     ):
@@ -1026,8 +1026,8 @@ class CacheRecordEntity:
 class CacheRecordPerms:
     def __init__(
         self,
-        hashable_entity: "Hashable",  # type: ignore  # noqa: F821
-        hashable_user: "Hashable",  # type: ignore  # noqa: F821
+        hashable_entity: "Hashable",                              
+        hashable_user: "Hashable",                              
         resolved_perms: EntityLike,
         exp: int,
     ):

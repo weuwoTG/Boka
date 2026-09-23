@@ -1,14 +1,14 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import asyncio
 import difflib
@@ -299,7 +299,7 @@ class Help(loader.Module):
 
         if (
             self.config["banner_url"] and self.client.boka_me.premium is False
-        ):  # bcs non-premium users can add in caption only 1024 symbols
+        ):                                                              
             banner = InputMediaWebPage(str(self.config["banner_url"]))
 
         if not self.config["banner_url"]:

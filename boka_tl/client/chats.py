@@ -24,17 +24,17 @@ class _ChatAction:
         "location": types.SendMessageGeoLocationAction(),
         "sticker": types.SendMessageChooseStickerAction(),
         "record-audio": types.SendMessageRecordAudioAction(),
-        "record-voice": types.SendMessageRecordAudioAction(),  # alias
+        "record-voice": types.SendMessageRecordAudioAction(),         
         "record-round": types.SendMessageRecordRoundAction(),
         "record-video": types.SendMessageRecordVideoAction(),
         "audio": types.SendMessageUploadAudioAction(1),
-        "voice": types.SendMessageUploadAudioAction(1),  # alias
-        "song": types.SendMessageUploadAudioAction(1),  # alias
+        "voice": types.SendMessageUploadAudioAction(1),         
+        "song": types.SendMessageUploadAudioAction(1),         
         "round": types.SendMessageUploadRoundAction(1),
         "video": types.SendMessageUploadVideoAction(1),
         "photo": types.SendMessageUploadPhotoAction(1),
         "document": types.SendMessageUploadDocumentAction(1),
-        "file": types.SendMessageUploadDocumentAction(1),  # alias
+        "file": types.SendMessageUploadDocumentAction(1),         
         "cancel": types.SendMessageCancelAction(),
     }
 
@@ -51,9 +51,9 @@ class _ChatAction:
     async def __aenter__(self):
         self._chat = await self._client.get_input_entity(self._chat)
 
-        # Since `self._action` is passed by reference we can avoid
-        # recreating the request all the time and still modify
-        # `self._action.progress` directly in `progress`.
+                                                                  
+                                                              
+                                                         
         self._request = functions.messages.SetTypingRequest(self._chat, self._action)
 
         self._running = True
@@ -103,7 +103,7 @@ class _ParticipantsIter(RequestIter):
                 types.ChannelParticipantsSearch,
                 types.ChannelParticipantsContacts,
             ):
-                # These require a `q` parameter (support types for convenience)
+                                                                               
                 filter = filter("")
             else:
                 filter = filter()
@@ -111,7 +111,7 @@ class _ParticipantsIter(RequestIter):
         entity = await self.client.get_input_entity(entity)
         ty = helpers._entity_type(entity)
         if search and (filter or ty != helpers._EntityType.CHANNEL):
-            # We need to 'search' ourselves unless we have a PeerChannel
+                                                                        
             search = search.casefold()
 
             self.filter_entity = lambda ent: (
@@ -121,13 +121,13 @@ class _ParticipantsIter(RequestIter):
         else:
             self.filter_entity = lambda ent: True
 
-        # Only used for channels, but we should always set the attribute
-        # Called `requests` even though it's just one for legacy purposes.
+                                                                        
+                                                                          
         self.requests = None
 
         if ty == helpers._EntityType.CHANNEL:
             if self.limit <= 0:
-                # May not have access to the channel, but getFull can get the .total.
+                                                                                     
                 self.total = (
                     await self.client(functions.channels.GetFullChannelRequest(entity))
                 ).full_chat.participants_count
@@ -147,7 +147,7 @@ class _ParticipantsIter(RequestIter):
                 functions.messages.GetFullChatRequest(entity.chat_id)
             )
             if not isinstance(full.full_chat.participants, types.ChatParticipants):
-                # ChatParticipantsForbidden won't have ``.participants``
+                                                                        
                 self.total = 0
                 raise StopAsyncIteration
 
@@ -156,7 +156,7 @@ class _ParticipantsIter(RequestIter):
             users = {user.id: user for user in full.users}
             for participant in full.full_chat.participants.participants:
                 if isinstance(participant, types.ChannelParticipantLeft):
-                    # See issue #3231 to learn why this is ignored.
+                                                                   
                     continue
                 elif isinstance(participant, types.ChannelParticipantBanned):
                     user_id = participant.peer.user_id
@@ -197,9 +197,9 @@ class _ParticipantsIter(RequestIter):
             if not isinstance(f, types.ChannelParticipantsRecent) and (
                 not isinstance(f, types.ChannelParticipantsSearch) or f.q
             ):
-                # Only do an additional getParticipants here to get the total
-                # if there's a filter which would reduce the real total number.
-                # getParticipants is cheaper than getFull.
+                                                                             
+                                                                               
+                                                          
                 self.total = (
                     await self.client(
                         functions.channels.GetParticipantsRequest(
@@ -214,7 +214,7 @@ class _ParticipantsIter(RequestIter):
 
         participants = await self.client(self.requests)
         if self.total is None:
-            # Will only get here if there was one request with a filter that matched all users.
+                                                                                               
             self.total = participants.count
         if not participants.users:
             self.requests = None
@@ -224,11 +224,11 @@ class _ParticipantsIter(RequestIter):
         users = {user.id: user for user in participants.users}
         for participant in participants.participants:
             if isinstance(participant, types.ChannelParticipantLeft):
-                # See issue #3231 to learn why this is ignored.
+                                                               
                 continue
             elif isinstance(participant, types.ChannelParticipantBanned):
                 if not isinstance(participant.peer, types.PeerUser):
-                    # May have the entire channel banned. See #3105.
+                                                                    
                     continue
                 user_id = participant.peer.user_id
             else:
@@ -378,7 +378,7 @@ class _ProfilePhotoIter(RequestIter):
             elif isinstance(result, types.messages.Messages):
                 self.total = len(result.messages)
             else:
-                # Luckily both photosSlice and messages have a count for total
+                                                                              
                 self.total = getattr(result, "count", None)
 
     async def _load_next_chunk(self):
@@ -406,17 +406,17 @@ class _ProfilePhotoIter(RequestIter):
             else:
                 self.request.offset += len(result.photos)
         else:
-            # Some broadcast channels have a photo that this request doesn't
-            # retrieve for whatever random reason the Telegram server feels.
-            #
-            # This means the `total` count may be wrong but there's not much
-            # that can be done around it (perhaps there are too many photos
-            # and this is only a partial result so it's not possible to just
-            # use the len of the result).
+                                                                            
+                                                                            
+             
+                                                                            
+                                                                           
+                                                                            
+                                         
             self.total = getattr(result, "count", None)
 
-            # Unconditionally fetch the full channel to obtain this photo and
-            # yield it with the rest (unless it's a duplicate).
+                                                                             
+                                                               
             seen_id = None
             if isinstance(result, types.messages.ChannelMessages):
                 channel = await self.client(
@@ -443,7 +443,7 @@ class _ProfilePhotoIter(RequestIter):
 
 class ChatMethods:
 
-    # region Public methods
+                           
 
     def iter_participants(
         self: "TelegramClient",
@@ -851,14 +851,14 @@ class ChatMethods:
             not isinstance(action, types.TLObject)
             or action.SUBCLASS_OF_ID != 0x20b2cc21
         ):
-            # 0x20b2cc21 = crc32(b'SendMessageAction')
+                                                      
             if isinstance(action, type):
                 raise ValueError("You must pass an instance, not the class")
             else:
                 raise ValueError("Cannot use {} as action".format(action))
 
         if isinstance(action, types.SendMessageCancelAction):
-            # ``SetTypingRequest.resolve`` will get input peer of ``entity``.
+                                                                             
             return self(
                 functions.messages.SetTypingRequest(
                     entity, types.SendMessageCancelAction()
@@ -990,11 +990,11 @@ class ChatMethods:
 
         ty = helpers._entity_type(entity)
         if ty == helpers._EntityType.CHANNEL:
-            # If we try to set these permissions in a megagroup, we
-            # would get a RIGHT_FORBIDDEN. However, it makes sense
-            # that an admin can post messages, so we want to avoid the error
+                                                                   
+                                                                  
+                                                                            
             if post_messages or edit_messages:
-                # TODO get rid of this once sessions cache this information
+                                                                           
                 if entity.channel_id not in self._megagroup_cache:
                     full_entity = await self.get_entity(entity)
                     self._megagroup_cache[entity.channel_id] = getattr(full_entity, 'megagroup', False)
@@ -1010,8 +1010,8 @@ class ChatMethods:
                     user,
                     types.ChatAdminRights(
                         **{
-                            # A permission is its explicit (not-None) value or `is_admin`.
-                            # This essentially makes `is_admin` be the default value.
+                                                                                          
+                                                                                     
                             name: perms[name] if perms[name] is not None else is_admin
                             for name in perm_names
                         }
@@ -1021,8 +1021,8 @@ class ChatMethods:
             )
 
         elif ty == helpers._EntityType.CHAT:
-            # If the user passed any permission in a small
-            # group chat, they must be a full admin to have it.
+                                                          
+                                                               
             if is_admin is None:
                 is_admin = any(locals()[x] for x in perm_names)
 
@@ -1234,8 +1234,8 @@ class ChatMethods:
             )
         elif ty == helpers._EntityType.CHANNEL:
             if isinstance(user, types.InputPeerSelf):
-                # Despite no longer being in the channel, the account still
-                # seems to get the service message.
+                                                                           
+                                                   
                 resp = await self(functions.channels.LeaveChannelRequest(entity))
             else:
                 resp = await self(
@@ -1381,9 +1381,9 @@ class ChatMethods:
             except errors.StatsMigrateError as e:
                 dc = e.dc
         else:
-            # Don't bother fetching the Channel entity (costs a request), instead
-            # try to guess and if it fails we know it's the other one (best case
-            # no extra request, worst just one).
+                                                                                 
+                                                                                
+                                                
             try:
                 req = functions.stats.GetBroadcastStatsRequest(entity)
                 return await self(req)
@@ -1398,9 +1398,9 @@ class ChatMethods:
 
         sender = await self._borrow_exported_sender(dc)
         try:
-            # req will be resolved to use the right types inside by now
+                                                                       
             return await sender.send(req)
         finally:
             await self._return_exported_sender(sender)
 
-    # endregion
+               

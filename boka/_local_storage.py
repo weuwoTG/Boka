@@ -1,16 +1,16 @@
 """Saves modules to disk and fetches them if remote storage is not available."""
 
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import asyncio
 import contextlib
@@ -26,8 +26,8 @@ from .version import __version__
 
 logger = logging.getLogger(__name__)
 
-MAX_FILESIZE = 1024 * 1024 * 5  # 5 MB
-MAX_TOTALSIZE = 1024 * 1024 * 100  # 100 MB
+MAX_FILESIZE = 1024 * 1024 * 5        
+MAX_TOTALSIZE = 1024 * 1024 * 100          
 
 
 class LocalStorage:
@@ -116,7 +116,7 @@ class RemoteStorage:
 
     async def preload(self, urls: list[str]):
         """Preloads modules from remote storage."""
-        # Hardened: network preloading is disabled in this build.
+                                                                 
         logger.debug("Network module preloading is disabled (hardened build).")
         return
 
@@ -152,8 +152,8 @@ class RemoteStorage:
         :return: Module source code.
         """
         url, repo, module_name = self._parse_url(url)
-        # Hardened: remote fetching of modules is disabled. Only a locally
-        # cached copy of a module source may be returned.
+                                                                          
+                                                         
         if module := self._local_storage.fetch(repo, module_name):
             logger.debug("Module source loaded from local storage.")
             return module

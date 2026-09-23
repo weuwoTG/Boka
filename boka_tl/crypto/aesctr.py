@@ -8,7 +8,7 @@ import pyaes
 class AESModeCTR:
     """Wrapper around pyaes.AESModeOfOperationCTR mode with custom IV"""
 
-    # TODO Maybe make a pull request to pyaes to support iv on CTR
+                                                                  
 
     def __init__(self, key, iv):
         """
@@ -17,7 +17,7 @@ class AESModeCTR:
         :param key: the key to be used as bytes.
         :param iv: the bytes initialization vector. Must have a length of 16.
         """
-        # TODO Use libssl if available
+                                      
         assert isinstance(key, bytes)
         self._aes = pyaes.AESModeOfOperationCTR(key)
 

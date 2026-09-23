@@ -43,14 +43,14 @@ class MTProtoPlainSender:
 
             msg_id = reader.read_long()
             assert msg_id != 0, "Bad msg_id"
-            # ^ We should make sure that the read ``msg_id`` is greater
-            # than our own ``msg_id``. However, under some circumstances
-            # (bad system clock/working behind proxies) this seems to not
-            # be the case, which would cause endless assertion errors.
+                                                                       
+                                                                        
+                                                                         
+                                                                      
 
             length = reader.read_int()
             assert length > 0, "Bad length"
-            # We could read length bytes and use those in a new reader to read
-            # the next TLObject without including the padding, but since the
-            # reader isn't used for anything else after this, it's unnecessary.
+                                                                              
+                                                                            
+                                                                               
             return reader.tgread_object()

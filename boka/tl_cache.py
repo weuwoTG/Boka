@@ -1,14 +1,14 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import copy
 import inspect
@@ -140,7 +140,7 @@ class CustomTelegramClient(TelegramClient):
             connection.set_unix_socket(unix_socket_path)
 
         if not await self._sender.connect(connection):
-            # We don't want to init or modify anything if we were already connected
+                                                                                   
             return
 
         self.session.auth_key = self._sender.auth_key
@@ -152,7 +152,7 @@ class CustomTelegramClient(TelegramClient):
 
             for entity_id, state in self.session.get_update_states():
                 if entity_id == 0:
-                    # TODO current session doesn't store self-user info but adding that is breaking on downstream session impls
+                                                                                                                               
                     ss = SessionState(
                         0,
                         0,
@@ -195,7 +195,7 @@ class CustomTelegramClient(TelegramClient):
             if me:
                 await self._on_login(
                     me
-                )  # also calls GetState to initialize the MessageBox
+                )                                                    
 
         self._updates_handle = self.loop.create_task(self._update_loop())
         self._keepalive_handle = self.loop.create_task(self._keepalive_loop())
@@ -254,9 +254,9 @@ class CustomTelegramClient(TelegramClient):
         :return: :obj:`Entity`
         """
 
-        # Will be used to determine, which client caused logging messages
-        # parsed via inspect.stack()
-        _boka_client_id_logging_tag = copy.copy(self.tg_id)  # noqa: F841
+                                                                         
+                                    
+        _boka_client_id_logging_tag = copy.copy(self.tg_id)              
 
         if not hashable(entity):
             try:
@@ -331,9 +331,9 @@ class CustomTelegramClient(TelegramClient):
         :return: :obj:`ChatPermissions`
         """
 
-        # Will be used to determine, which client caused logging messages
-        # parsed via inspect.stack()
-        _boka_client_id_logging_tag = copy.copy(self.tg_id)  # noqa: F841
+                                                                         
+                                    
+        _boka_client_id_logging_tag = copy.copy(self.tg_id)              
 
         entity = await self.get_entity(entity)
         user = await self.get_entity(user) if user else None
@@ -649,13 +649,13 @@ class CustomTelegramClient(TelegramClient):
         :return: The result of the request
         """
 
-        # ⚠️⚠️  WARNING!  ⚠️⚠️
-        # If you are a module developer, and you'll try to bypass this protection to
-        # force user join your channel, you will be added to SCAM modules
-        # list and you will be banned from Boka federation.
-        # Let USER decide, which channel he will follow. Do not be so petty
-        # I hope, you understood me.
-        # Thank you
+                              
+                                                                                    
+                                                                         
+                                                           
+                                                                           
+                                    
+                   
 
         not_tuple = False
         if not is_list_like(request):

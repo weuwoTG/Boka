@@ -1,14 +1,14 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import asyncio
 import contextlib
@@ -42,12 +42,12 @@ async def read_stream(func: Callable, stream, delay: float):
         dat = await stream.read(1)
 
         if not dat:
-            # EOF
+                 
             if last_task:
-                # Send all pending data
+                                       
                 last_task.cancel()
                 await func(data.decode())
-                # If there is no last task there is inherently no data, so theres no point sending a blank string
+                                                                                                                 
             break
 
         data += dat
@@ -92,7 +92,7 @@ class MessageEditor:
         await self.redraw()
 
     async def redraw(self):
-        text = self.strings["running"].format(utils.escape_html(self.command))  # fmt: skip
+        text = self.strings["running"].format(utils.escape_html(self.command))             
 
         if self.rc is not None:
             text += self.strings["finished"].format(utils.escape_html(str(self.rc)))
@@ -113,7 +113,7 @@ class MessageEditor:
             except boka_tl.errors.rpcerrorlist.MessageTooLongError as e:
                 logger.error(e)
                 logger.error(text)
-        # The message is never empty due to the template header
+                                                               
 
     async def cmd_ended(self, rc):
         self.rc = rc
@@ -130,7 +130,7 @@ class SudoMessageEditor(MessageEditor):
         r"\[sudo\] password for (.*): Sorry, try again\.",
         r"\[sudo\] пароль для (.*): Попробуйте еще раз.\.",
     ]
-    TOO_MANY_TRIES = [r"\[sudo\] password for (.*): sudo: [0-9]+ incorrect password attempts", r"\[sudo\] пароль для (.*): sudo: [0-9]+ неверные попытки ввода пароля"]  # fmt: skip
+    TOO_MANY_TRIES = [r"\[sudo\] password for (.*): sudo: [0-9]+ incorrect password attempts", r"\[sudo\] пароль для (.*): sudo: [0-9]+ неверные попытки ввода пароля"]             
 
     def __init__(self, message, command, config, strings, request_message):
         super().__init__(message, command, config, strings, request_message)
@@ -217,7 +217,7 @@ class SudoMessageEditor(MessageEditor):
         self.stdout = stdout
 
         if self.state != 2:
-            self.state = 3  # Means that we got stdout only
+            self.state = 3                                 
 
         if self.authmsg is not None:
             await self.authmsg.delete()
@@ -226,18 +226,18 @@ class SudoMessageEditor(MessageEditor):
         await self.redraw()
 
     async def on_message_edited(self, message):
-        # Message contains sensitive information.
+                                                 
         if self.authmsg is None:
             return
 
         logger.debug("got message edit update in self %s", str(message.id))
 
         if hash_msg(message) == hash_msg(self.authmsg):
-            # The user has provided interactive authentication. Send password to stdin for sudo.
+                                                                                                
             try:
                 self.authmsg = await utils.answer(message, self.strings["auth_ongoing"])
             except boka_tl.errors.rpcerrorlist.MessageNotModifiedError:
-                # Try to clear personal info if the edit fails
+                                                              
                 await message.delete()
 
             self.state = 1
@@ -586,7 +586,7 @@ class TerminalMod(loader.Module):
         if raw.lower().startswith("exec"):
             raw = raw[4:].strip()
 
-        # Truncate command preview to 15 characters for display
+                                                               
         def short_cmd(cmd: str) -> str:
             return cmd[:15] + "..." if len(cmd) > 15 else cmd
 

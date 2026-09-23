@@ -30,14 +30,14 @@ class Connection(abc.ABC):
     the client is disconnected (includes remote disconnections).
     """
 
-    # this static attribute should be redefined by `Connection` subclasses and
-    # should be one of `PacketCodec` implementations
+                                                                              
+                                                    
     packet_codec = None
 
     def __init__(self, ip, port, dc_id, *, loggers, proxy=None, local_addr=None):
         self._ip = ip
         self._port = port
-        self._dc_id = dc_id  # only for MTProxy, it's an abstraction leak
+        self._dc_id = dc_id                                              
         self._log = loggers[__name__]
         self._proxy = proxy
         self._local_addr = local_addr
@@ -47,7 +47,7 @@ class Connection(abc.ABC):
         self._send_task = None
         self._recv_task = None
         self._codec = None
-        self._obfuscation = None  # TcpObfuscated and MTProxy
+        self._obfuscation = None                             
         self._send_queue = asyncio.Queue(1)
         self._recv_queue = asyncio.Queue(1)
 
@@ -71,13 +71,13 @@ class Connection(abc.ABC):
         if isinstance(proxy_type, str):
             proxy_type = proxy_type.lower()
 
-        # Always prefer `python_socks` when available
+                                                     
         if python_socks:
             from python_socks import ProxyType
 
-            # We do the check for numerical values here
-            # to be backwards compatible with PySocks proxy format,
-            # (since socks.SOCKS5 == 2, socks.SOCKS4 == 1, socks.HTTP == 3)
+                                                       
+                                                                   
+                                                                           
             if (
                 proxy_type == ProxyType.SOCKS5
                 or proxy_type == 2
@@ -97,7 +97,7 @@ class Connection(abc.ABC):
             else:
                 raise ValueError("Unknown proxy protocol type: {}".format(proxy_type))
 
-            # This tuple must be compatible with `python_socks`' `Proxy.create()` signature
+                                                                                           
             return protocol, addr, port, username, password, rdns
 
         else:
@@ -112,7 +112,7 @@ class Connection(abc.ABC):
             else:
                 raise ValueError("Unknown proxy protocol type: {}".format(proxy_type))
 
-            # This tuple must be compatible with `PySocks`' `socksocket.set_proxy()` signature
+                                                                                              
             return protocol, addr, port, rdns, username, password
 
     async def _proxy_connect(self, timeout=None, local_addr=None):
@@ -123,13 +123,13 @@ class Connection(abc.ABC):
         else:
             raise TypeError("Proxy of unknown format: {}".format(type(self._proxy)))
 
-        # Always prefer `python_socks` when available
+                                                     
         if python_socks:
-            # python_socks internal errors are not inherited from
-            # builtin IOError (just from Exception). Instead of adding those
-            # in exceptions clauses everywhere through the code, we
-            # rather monkey-patch them in place. Keep in mind that
-            # ProxyError takes error_code as keyword argument.
+                                                                 
+                                                                            
+                                                                   
+                                                                  
+                                                              
 
             class ConnectionErrorExtra(ConnectionError):
                 def __init__(self, message, error_code=None):
@@ -144,21 +144,21 @@ class Connection(abc.ABC):
 
             proxy = Proxy.create(*parsed)
 
-            # WARNING: If `local_addr` is set we use manual socket creation, because,
-            # unfortunately, `Proxy.connect()` does not expose `local_addr`
-            # argument, so if we want to bind socket locally, we need to manually
-            # create, bind and connect socket, and then pass to `Proxy.connect()` method.
+                                                                                     
+                                                                           
+                                                                                 
+                                                                                         
 
             if local_addr is None:
                 sock = await proxy.connect(
                     dest_host=self._ip, dest_port=self._port, timeout=timeout
                 )
             else:
-                # Here we start manual setup of the socket.
-                # The `address` represents the proxy ip and proxy port,
-                # not the destination one (!), because the socket
-                # connects to the proxy server, not destination server.
-                # IPv family is also checked on proxy address.
+                                                           
+                                                                       
+                                                                 
+                                                                       
+                                                              
                 if ":" in proxy.proxy_host:
                     mode, address = socket.AF_INET6, (
                         proxy.proxy_host,
@@ -169,20 +169,20 @@ class Connection(abc.ABC):
                 else:
                     mode, address = socket.AF_INET, (proxy.proxy_host, proxy.proxy_port)
 
-                # Create a non-blocking socket and bind it (if local address is specified).
+                                                                                           
                 sock = socket.socket(mode, socket.SOCK_STREAM)
                 sock.setblocking(False)
                 sock.bind(local_addr)
 
-                # Actual TCP connection is performed here.
+                                                          
                 await asyncio.wait_for(
                     helpers.get_running_loop().sock_connect(sock=sock, address=address),
                     timeout=timeout,
                 )
 
-                # As our socket is already created and connected,
-                # this call sets the destination host/port and
-                # starts protocol negotiations with the proxy server.
+                                                                 
+                                                              
+                                                                     
                 sock = await proxy.connect(
                     dest_host=self._ip,
                     dest_port=self._port,
@@ -193,15 +193,15 @@ class Connection(abc.ABC):
         else:
             import socks
 
-            # Here `address` represents destination address (not proxy), because of
-            # the `PySocks` implementation of the connection routine.
-            # IPv family is checked on proxy address, not destination address.
+                                                                                   
+                                                                     
+                                                                              
             if ":" in parsed[1]:
                 mode, address = socket.AF_INET6, (self._ip, self._port, 0, 0)
             else:
                 mode, address = socket.AF_INET, (self._ip, self._port)
 
-            # Setup socket, proxy, timeout and bind it (if necessary).
+                                                                      
             sock = socks.socksocket(mode, socket.SOCK_STREAM)
             sock.set_proxy(*parsed)
             sock.settimeout(timeout)
@@ -209,7 +209,7 @@ class Connection(abc.ABC):
             if local_addr is not None:
                 sock.bind(local_addr)
 
-            # Actual TCP connection and negotiation performed here.
+                                                                   
             await asyncio.wait_for(
                 helpers.get_running_loop().sock_connect(sock=sock, address=address),
                 timeout=timeout,
@@ -221,9 +221,9 @@ class Connection(abc.ABC):
 
     async def _connect(self, timeout=None, ssl=None):
         if self._local_addr is not None:
-            # NOTE: If port is not specified, we use 0 port
-            # to notify the OS that port should be chosen randomly
-            # from the available ones.
+                                                           
+                                                                  
+                                      
             if isinstance(self._local_addr, tuple) and len(self._local_addr) == 2:
                 local_addr = self._local_addr
             elif isinstance(self._local_addr, str):
@@ -243,10 +243,10 @@ class Connection(abc.ABC):
                 timeout=timeout,
             )
         else:
-            # Proxy setup, connection and negotiation is performed here.
+                                                                        
             sock = await self._proxy_connect(timeout=timeout, local_addr=local_addr)
 
-            # Wrap socket in SSL context (if provided)
+                                                      
             if ssl:
                 sock = self._wrap_socket_ssl(sock)
 
@@ -287,17 +287,17 @@ class Connection(abc.ABC):
                 try:
                     await asyncio.wait_for(self._writer.wait_closed(), timeout=10)
                 except asyncio.TimeoutError:
-                    # See issue #3917. For some users, this line was hanging indefinitely.
-                    # The hard timeout is not ideal (connection won't be properly closed),
-                    # but the code will at least be able to procceed.
+                                                                                          
+                                                                                          
+                                                                     
                     self._log.warning(
                         "Graceful disconnection timed out, forcibly ignoring cleanup"
                     )
                 except Exception as e:
-                    # Disconnecting should never raise. Seen:
-                    # * OSError: No route to host and
-                    # * OSError: [Errno 32] Broken pipe
-                    # * ConnectionResetError
+                                                             
+                                                     
+                                                       
+                                            
                     self._log.info("%s during disconnect: %s", type(e), e)
 
     def send(self, data):

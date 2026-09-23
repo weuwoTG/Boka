@@ -19,17 +19,17 @@ async def _into_id_set(client, chats):
     for chat in chats:
         if isinstance(chat, int):
             if chat < 0:
-                result.add(chat)  # Explicitly marked IDs are negative
+                result.add(chat)                                      
             else:
                 result.update(
-                    {  # Support all valid types of peers
+                    {                                    
                         utils.get_peer_id(types.PeerUser(chat)),
                         utils.get_peer_id(types.PeerChat(chat)),
                         utils.get_peer_id(types.PeerChannel(chat)),
                     }
                 )
         elif isinstance(chat, TLObject) and chat.SUBCLASS_OF_ID == 0x2D45687:
-            # 0x2d45687 == crc32(b'Peer')
+                                         
             result.add(utils.get_peer_id(chat))
         else:
             chat = await client.get_input_entity(chat)
@@ -87,7 +87,7 @@ class EventBuilder(abc.ABC):
         `self_id` should be the current user's ID, since it is required
         for some events which lack this information but still need it.
         """
-        # TODO So many parameters specific to only some update types seems dirty
+                                                                                
 
     async def resolve(self, client):
         """Helper method to allow event builders to be resolved before usage"""
@@ -116,17 +116,17 @@ class EventBuilder(abc.ABC):
             return
 
         if self.chats is not None:
-            # Note: the `event.chat_id` property checks if it's `None` for us
+                                                                             
             inside = event.chat_id in self.chats
             if inside == self.blacklist_chats:
-                # If this chat matches but it's a blacklist ignore.
-                # If it doesn't match but it's a whitelist ignore.
+                                                                   
+                                                                  
                 return
 
         if not self.func:
             return True
 
-        # Return the result of func directly as it may need to be awaited
+                                                                         
         return self.func(event)
 
 

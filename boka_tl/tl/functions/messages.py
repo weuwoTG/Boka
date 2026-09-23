@@ -7320,7 +7320,7 @@ class ReceivedQueueRequest(TLRequest):
 
     @staticmethod
     def read_result(reader):
-        reader.read_int()  # Vector ID
+        reader.read_int()             
         return [reader.read_long() for _ in range(reader.read_int())]
 
 

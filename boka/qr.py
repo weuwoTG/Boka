@@ -1,8 +1,8 @@
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import math
 import re
@@ -32,7 +32,7 @@ for i in range(255):
 
 
 def rs_blocks(version, error_correction):
-    if error_correction not in RS_BLOCK_OFFSET:  # pragma: no cover
+    if error_correction not in RS_BLOCK_OFFSET:                    
         raise Exception(
             "bad rs block @ version: %s / error_correction: %s"
             % (version, error_correction)
@@ -58,206 +58,206 @@ RS_BLOCK_OFFSET = {
 }
 
 RS_BLOCK_TABLE = (
-    # L
-    # M
-    # Q
-    # H
-    # 1
+       
+       
+       
+       
+       
     (1, 26, 19),
     (1, 26, 16),
     (1, 26, 13),
     (1, 26, 9),
-    # 2
+       
     (1, 44, 34),
     (1, 44, 28),
     (1, 44, 22),
     (1, 44, 16),
-    # 3
+       
     (1, 70, 55),
     (1, 70, 44),
     (2, 35, 17),
     (2, 35, 13),
-    # 4
+       
     (1, 100, 80),
     (2, 50, 32),
     (2, 50, 24),
     (4, 25, 9),
-    # 5
+       
     (1, 134, 108),
     (2, 67, 43),
     (2, 33, 15, 2, 34, 16),
     (2, 33, 11, 2, 34, 12),
-    # 6
+       
     (2, 86, 68),
     (4, 43, 27),
     (4, 43, 19),
     (4, 43, 15),
-    # 7
+       
     (2, 98, 78),
     (4, 49, 31),
     (2, 32, 14, 4, 33, 15),
     (4, 39, 13, 1, 40, 14),
-    # 8
+       
     (2, 121, 97),
     (2, 60, 38, 2, 61, 39),
     (4, 40, 18, 2, 41, 19),
     (4, 40, 14, 2, 41, 15),
-    # 9
+       
     (2, 146, 116),
     (3, 58, 36, 2, 59, 37),
     (4, 36, 16, 4, 37, 17),
     (4, 36, 12, 4, 37, 13),
-    # 10
+        
     (2, 86, 68, 2, 87, 69),
     (4, 69, 43, 1, 70, 44),
     (6, 43, 19, 2, 44, 20),
     (6, 43, 15, 2, 44, 16),
-    # 11
+        
     (4, 101, 81),
     (1, 80, 50, 4, 81, 51),
     (4, 50, 22, 4, 51, 23),
     (3, 36, 12, 8, 37, 13),
-    # 12
+        
     (2, 116, 92, 2, 117, 93),
     (6, 58, 36, 2, 59, 37),
     (4, 46, 20, 6, 47, 21),
     (7, 42, 14, 4, 43, 15),
-    # 13
+        
     (4, 133, 107),
     (8, 59, 37, 1, 60, 38),
     (8, 44, 20, 4, 45, 21),
     (12, 33, 11, 4, 34, 12),
-    # 14
+        
     (3, 145, 115, 1, 146, 116),
     (4, 64, 40, 5, 65, 41),
     (11, 36, 16, 5, 37, 17),
     (11, 36, 12, 5, 37, 13),
-    # 15
+        
     (5, 109, 87, 1, 110, 88),
     (5, 65, 41, 5, 66, 42),
     (5, 54, 24, 7, 55, 25),
     (11, 36, 12, 7, 37, 13),
-    # 16
+        
     (5, 122, 98, 1, 123, 99),
     (7, 73, 45, 3, 74, 46),
     (15, 43, 19, 2, 44, 20),
     (3, 45, 15, 13, 46, 16),
-    # 17
+        
     (1, 135, 107, 5, 136, 108),
     (10, 74, 46, 1, 75, 47),
     (1, 50, 22, 15, 51, 23),
     (2, 42, 14, 17, 43, 15),
-    # 18
+        
     (5, 150, 120, 1, 151, 121),
     (9, 69, 43, 4, 70, 44),
     (17, 50, 22, 1, 51, 23),
     (2, 42, 14, 19, 43, 15),
-    # 19
+        
     (3, 141, 113, 4, 142, 114),
     (3, 70, 44, 11, 71, 45),
     (17, 47, 21, 4, 48, 22),
     (9, 39, 13, 16, 40, 14),
-    # 20
+        
     (3, 135, 107, 5, 136, 108),
     (3, 67, 41, 13, 68, 42),
     (15, 54, 24, 5, 55, 25),
     (15, 43, 15, 10, 44, 16),
-    # 21
+        
     (4, 144, 116, 4, 145, 117),
     (17, 68, 42),
     (17, 50, 22, 6, 51, 23),
     (19, 46, 16, 6, 47, 17),
-    # 22
+        
     (2, 139, 111, 7, 140, 112),
     (17, 74, 46),
     (7, 54, 24, 16, 55, 25),
     (34, 37, 13),
-    # 23
+        
     (4, 151, 121, 5, 152, 122),
     (4, 75, 47, 14, 76, 48),
     (11, 54, 24, 14, 55, 25),
     (16, 45, 15, 14, 46, 16),
-    # 24
+        
     (6, 147, 117, 4, 148, 118),
     (6, 73, 45, 14, 74, 46),
     (11, 54, 24, 16, 55, 25),
     (30, 46, 16, 2, 47, 17),
-    # 25
+        
     (8, 132, 106, 4, 133, 107),
     (8, 75, 47, 13, 76, 48),
     (7, 54, 24, 22, 55, 25),
     (22, 45, 15, 13, 46, 16),
-    # 26
+        
     (10, 142, 114, 2, 143, 115),
     (19, 74, 46, 4, 75, 47),
     (28, 50, 22, 6, 51, 23),
     (33, 46, 16, 4, 47, 17),
-    # 27
+        
     (8, 152, 122, 4, 153, 123),
     (22, 73, 45, 3, 74, 46),
     (8, 53, 23, 26, 54, 24),
     (12, 45, 15, 28, 46, 16),
-    # 28
+        
     (3, 147, 117, 10, 148, 118),
     (3, 73, 45, 23, 74, 46),
     (4, 54, 24, 31, 55, 25),
     (11, 45, 15, 31, 46, 16),
-    # 29
+        
     (7, 146, 116, 7, 147, 117),
     (21, 73, 45, 7, 74, 46),
     (1, 53, 23, 37, 54, 24),
     (19, 45, 15, 26, 46, 16),
-    # 30
+        
     (5, 145, 115, 10, 146, 116),
     (19, 75, 47, 10, 76, 48),
     (15, 54, 24, 25, 55, 25),
     (23, 45, 15, 25, 46, 16),
-    # 31
+        
     (13, 145, 115, 3, 146, 116),
     (2, 74, 46, 29, 75, 47),
     (42, 54, 24, 1, 55, 25),
     (23, 45, 15, 28, 46, 16),
-    # 32
+        
     (17, 145, 115),
     (10, 74, 46, 23, 75, 47),
     (10, 54, 24, 35, 55, 25),
     (19, 45, 15, 35, 46, 16),
-    # 33
+        
     (17, 145, 115, 1, 146, 116),
     (14, 74, 46, 21, 75, 47),
     (29, 54, 24, 19, 55, 25),
     (11, 45, 15, 46, 46, 16),
-    # 34
+        
     (13, 145, 115, 6, 146, 116),
     (14, 74, 46, 23, 75, 47),
     (44, 54, 24, 7, 55, 25),
     (59, 46, 16, 1, 47, 17),
-    # 35
+        
     (12, 151, 121, 7, 152, 122),
     (12, 75, 47, 26, 76, 48),
     (39, 54, 24, 14, 55, 25),
     (22, 45, 15, 41, 46, 16),
-    # 36
+        
     (6, 151, 121, 14, 152, 122),
     (6, 75, 47, 34, 76, 48),
     (46, 54, 24, 10, 55, 25),
     (2, 45, 15, 64, 46, 16),
-    # 37
+        
     (17, 152, 122, 4, 153, 123),
     (29, 74, 46, 14, 75, 47),
     (49, 54, 24, 10, 55, 25),
     (24, 45, 15, 46, 46, 16),
-    # 38
+        
     (4, 152, 122, 18, 153, 123),
     (13, 74, 46, 32, 75, 47),
     (48, 54, 24, 14, 55, 25),
     (42, 45, 15, 32, 46, 16),
-    # 39
+        
     (20, 147, 117, 4, 148, 118),
     (40, 75, 47, 7, 76, 48),
     (43, 54, 24, 22, 55, 25),
     (10, 45, 15, 67, 46, 16),
-    # 40
+        
     (19, 148, 118, 6, 149, 119),
     (18, 75, 47, 31, 76, 48),
     (34, 54, 24, 34, 55, 25),
@@ -266,7 +266,7 @@ RS_BLOCK_TABLE = (
 
 
 def glog(n):
-    if n < 1:  # pragma: no cover
+    if n < 1:                    
         raise ValueError(f"glog({n})")
     return LOG_TABLE[n]
 
@@ -277,7 +277,7 @@ def gexp(n):
 
 class Polynomial:
     def __init__(self, num, shift):
-        if not num:  # pragma: no cover
+        if not num:                    
             raise Exception(f"{len(num)}/{shift}")
 
         offset = 0
@@ -319,7 +319,7 @@ class Polynomial:
         if difference:
             num.extend(self[-difference:])
 
-        # recursive call
+                        
         return Polynomial(num, 0) % other
 
 
@@ -527,13 +527,13 @@ rsPoly_LUT = {
 }
 
 
-# QR encoding modes.
+                    
 MODE_NUMBER = 1 << 0
 MODE_ALPHA_NUM = 1 << 1
 MODE_8BIT_BYTE = 1 << 2
 MODE_KANJI = 1 << 3
 
-# Encoding mode sizes.
+                      
 MODE_SIZE_SMALL = {
     MODE_NUMBER: 10,
     MODE_ALPHA_NUM: 9,
@@ -556,7 +556,7 @@ MODE_SIZE_LARGE = {
 ALPHA_NUM = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:"
 RE_ALPHA_NUM = re.compile(b"^[" + re.escape(ALPHA_NUM) + rb"]*\Z")
 
-# The number of bits for numeric delimited data lengths.
+                                                        
 NUMBER_LENGTH = {3: 10, 2: 7, 1: 4}
 
 PATTERN_POSITION_TABLE = [
@@ -619,7 +619,7 @@ PAD0 = 0xEC
 PAD1 = 0x11
 
 
-# Precompute bit count limits, indexed by error correction level and code size
+                                                                              
 def _data_count(block):
     return block.data_count
 
@@ -666,24 +666,24 @@ def mask_func(pattern):
     Return the mask function for the given mask pattern.
     """
     match pattern:
-        case 0:  # 000
+        case 0:       
             return lambda i, j: (i + j) % 2 == 0
-        case 1:  # 001
+        case 1:       
             return lambda i, j: i % 2 == 0
-        case 2:  # 010
+        case 2:       
             return lambda i, j: j % 3 == 0
-        case 3:  # 011
+        case 3:       
             return lambda i, j: (i + j) % 3 == 0
-        case 4:  # 100
+        case 4:       
             return lambda i, j: (math.floor(i / 2) + math.floor(j / 3)) % 2 == 0
-        case 5:  # 101
+        case 5:       
             return lambda i, j: (i * j) % 2 + (i * j) % 3 == 0
-        case 6:  # 110
+        case 6:       
             return lambda i, j: ((i * j) % 2 + (i * j) % 3) % 2 == 0
-        case 7:  # 111
+        case 7:       
             return lambda i, j: ((i * j) % 3 + (i + j) % 2) % 2 == 0
         case _:
-            raise TypeError("Bad mask pattern: " + pattern)  # pragma: no cover
+            raise TypeError("Bad mask pattern: " + pattern)                    
 
 
 def mode_sizes_for_version(version):
@@ -698,7 +698,7 @@ def mode_sizes_for_version(version):
 
 def length_in_bits(mode, version):
     if mode not in (MODE_NUMBER, MODE_ALPHA_NUM, MODE_8BIT_BYTE, MODE_KANJI):
-        raise TypeError(f"Invalid mode ({mode})")  # pragma: no cover
+        raise TypeError(f"Invalid mode ({mode})")                    
 
     check_version(version)
 
@@ -773,15 +773,15 @@ def _lost_point_level2(modules, modules_count):
     for row in modules_range:
         this_row = modules[row]
         next_row = modules[row + 1]
-        # use iter() and next() to skip next four-block. e.g.
-        # d a f   if top-right a != b bottom-right,
-        # c b e   then both abcd and abef won't lost any point.
+                                                             
+                                                   
+                                                               
         modules_range_iter = iter(modules_range)
         for col in modules_range_iter:
             top_right = this_row[col + 1]
             if top_right != next_row[col + 1]:
-                # reduce 33.3% of runtime via next().
-                # None: raise nothing if there is no next item.
+                                                     
+                                                               
                 next(modules_range_iter, None)
             elif top_right != this_row[col]:
                 continue
@@ -794,10 +794,10 @@ def _lost_point_level2(modules, modules_count):
 
 
 def _lost_point_level3(modules, modules_count):
-    # 1 : 1 : 3 : 1 : 1 ratio (dark:light:dark:light:dark) pattern in
-    # row/column, preceded or followed by light area 4 modules wide. From ISOIEC.
-    # pattern1:     10111010000
-    # pattern2: 00001011101
+                                                                     
+                                                                                 
+                               
+                           
     modules_range = range(modules_count)
     modules_range_short = range(modules_count - 10)
     lost_point = 0
@@ -829,11 +829,11 @@ def _lost_point_level3(modules, modules_count):
                 )
             ):
                 lost_point += 40
-            # horspool algorithm.
-            # if this_row[col + 10]:
-            #   pattern1 shift 4, pattern2 shift 2. So min=2.
-            # else:
-            #   pattern1 shift 1, pattern2 shift 1. So min=1.
+                                 
+                                    
+                                                             
+                   
+                                                             
             if this_row[col + 10]:
                 next(modules_range_short_iter, None)
 
@@ -872,7 +872,7 @@ def _lost_point_level3(modules, modules_count):
 def _lost_point_level4(modules, modules_count):
     dark_count = sum(map(sum, modules))
     percent = float(dark_count) / (modules_count**2)
-    # Every 5% departure from 50%, rating++
+                                           
     rating = int(abs(percent * 100 - 50) / 5)
     return rating * 10
 
@@ -958,8 +958,8 @@ class QRData:
         else:
             self.mode = mode
             if mode not in (MODE_NUMBER, MODE_ALPHA_NUM, MODE_8BIT_BYTE):
-                raise TypeError(f"Invalid mode ({mode})")  # pragma: no cover
-            if check_data and mode < optimal_mode(data):  # pragma: no cover
+                raise TypeError(f"Invalid mode ({mode})")                    
+            if check_data and mode < optimal_mode(data):                    
                 raise ValueError(f"Provided data can not be represented in mode {mode}")
 
         self.data = data
@@ -984,8 +984,8 @@ class QRData:
                     else:
                         buffer.put(ALPHA_NUM.find(chars), 6)
             case _:
-                # Iterating a bytestring in Python 3 returns an integer,
-                # no need to ord().
+                                                                        
+                                   
                 data = self.data
                 for c in data:
                     buffer.put(c, 8)
@@ -1041,7 +1041,7 @@ def create_bytes(buffer: BitBuffer, rs_blocks: list[RSBlock]):
         current_dc = [0xFF & buffer.buffer[i + offset] for i in range(dcCount)]
         offset += dcCount
 
-        # Get error correction polynomial.
+                                          
         if ecCount in rsPoly_LUT:
             rsPoly = Polynomial(rsPoly_LUT[ecCount], 0)
         else:
@@ -1081,7 +1081,7 @@ def create_data(version, error_correction, data_list):
         buffer.put(len(data), length_in_bits(data.mode, version))
         data.write(buffer)
 
-    # Calculate the maximum number of bits for the given version.
+                                                                 
     rs_blocks_ = rs_blocks(version, error_correction)
     bit_limit = sum(block.data_count * 8 for block in rs_blocks_)
     if len(buffer) > bit_limit:
@@ -1090,17 +1090,17 @@ def create_data(version, error_correction, data_list):
             % (len(buffer), bit_limit)
         )
 
-    # Terminate the bits (add up to four 0s).
+                                             
     for _ in range(min(bit_limit - len(buffer), 4)):
         buffer.put_bit(False)
 
-    # Delimit the string into 8-bit words, padding with 0s if necessary.
+                                                                        
     delimit = len(buffer) % 8
     if delimit:
         for _ in range(8 - delimit):
             buffer.put_bit(False)
 
-    # Add special alternating padding bitstrings until buffer is full.
+                                                                      
     bytes_to_fill = (bit_limit - len(buffer)) // 8
     for i in range(bytes_to_fill):
         if i % 2 == 0:
@@ -1116,7 +1116,7 @@ class DataOverflowError(Exception):
 
 
 ModulesType = list[list[Optional[bool]]]
-# Cache modules generated just based on the QR Code version
+                                                           
 precomputed_qr_blanks: dict[int, ModulesType] = {}
 
 
@@ -1178,8 +1178,8 @@ class QRCode:
         self.version = version
         self.error_correction = int(error_correction)
         self.box_size = int(box_size)
-        # Spec says border should be at least four boxes wide, but allow for
-        # any (e.g. for producing printable QR codes).
+                                                                            
+                                                      
         self.border = int(border)
         self.clear()
         self._mask_pattern = None
@@ -1299,8 +1299,8 @@ class QRCode:
             start = 1
         check_version(start)
 
-        # Corresponds to the code in create_data, except we don't yet know
-        # version, so optimistically assume start and check later
+                                                                          
+                                                                 
         mode_sizes = mode_sizes_for_version(start)
         buffer = BitBuffer()
         for data in self.data_list:
@@ -1315,8 +1315,8 @@ class QRCode:
         if self.version == 41:
             raise DataOverflowError()
 
-        # Now check whether we need more bits for the mode sizes, recursing if
-        # our guess was too low
+                                                                              
+                               
         if mode_sizes is not mode_sizes_for_version(self.version):
             self.best_fit(start=self.version)
         return self.version
@@ -1401,8 +1401,8 @@ class QRCode:
         for r in range(-self.border, modcount + self.border, 2):
             if tty:
                 if not invert or r < modcount + self.border - 1:
-                    out.write("\x1b[48;5;232m")  # Background black
-                out.write("\x1b[38;5;255m")  # Foreground white
+                    out.write("\x1b[48;5;232m")                    
+                out.write("\x1b[38;5;255m")                    
             for c in range(-self.border, modcount + self.border):
                 pos = get_module(r, c) + (get_module(r + 1, c) << 1)
                 out.write(codes[pos])
@@ -1411,7 +1411,7 @@ class QRCode:
             out.write("\n")
         out.flush()
 
-    # return true if and only if (row, col) is in the module
+                                                            
     def is_constrained(self, row: int, col: int) -> bool:
         return (
             row >= 0
@@ -1471,7 +1471,7 @@ class QRCode:
         data = (self.error_correction << 3) | mask_pattern
         bits = BCH_type_info(data)
 
-        # vertical
+                  
         for i in range(15):
             mod = not test and ((bits >> i) & 1) == 1
 
@@ -1482,7 +1482,7 @@ class QRCode:
             else:
                 self.modules[self.modules_count - 15 + i][8] = mod
 
-        # horizontal
+                    
         for i in range(15):
             mod = not test and ((bits >> i) & 1) == 1
 
@@ -1493,7 +1493,7 @@ class QRCode:
             else:
                 self.modules[8][15 - i - 1] = mod
 
-        # fixed module
+                      
         self.modules[self.modules_count - 8][8] = not test
 
     def map_data(self, data, mask_pattern):

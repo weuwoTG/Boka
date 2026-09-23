@@ -1,8 +1,8 @@
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import inspect
 import logging
@@ -44,7 +44,7 @@ def get_kwargs() -> dict[str, typing.Any]:
     Get kwargs of function, in which is called
     :return: kwargs
     """
-    # https://stackoverflow.com/a/65927265/19170642
+                                                   
     keys, _, _, values = inspect.getargvalues(inspect.currentframe().f_back)
     return {key: values[key] for key in keys if key != "self"}
 
@@ -66,7 +66,7 @@ def get_args(message: Message | str) -> list[str]:
     try:
         split = shlex.split(message)
     except ValueError:
-        return message  # Cannot split, let's assume that it's just one long message
+        return message                                                              
 
     return list(filter(lambda x: len(x) > 0, split))
 

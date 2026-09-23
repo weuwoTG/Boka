@@ -22,7 +22,7 @@ class _EntityType(enum.Enum):
 _log = logging.getLogger(__name__)
 
 
-# region Multiple utilities
+                           
 
 
 def generate_random_long(signed=True):
@@ -39,8 +39,8 @@ def ensure_parent_dir_exists(file_path):
 
 def add_surrogate(text):
     return "".join(
-        # SMP -> Surrogate Pairs (Telegram offsets are calculated with these).
-        # See https://en.wikipedia.org/wiki/Plane_(Unicode)#Overview for more.
+                                                                              
+                                                                              
         (
             "".join(chr(y) for y in struct.unpack("<HH", x.encode("utf-16le")))
             if (0x10000 <= ord(x) <= 0x10FFFF)
@@ -62,9 +62,9 @@ def within_surrogate(text, index, *, length=None):
         length = len(text)
 
     return (
-        1 < index < len(text)  # in bounds
-        and "\ud800" <= text[index - 1] <= "\udbff"  # previous is
-        and "\ud800" <= text[index] <= "\udfff"  # current is
+        1 < index < len(text)             
+        and "\ud800" <= text[index - 1] <= "\udbff"               
+        and "\ud800" <= text[index] <= "\udfff"              
     )
 
 
@@ -93,51 +93,51 @@ def strip_text(text, entities):
 
         if e.offset + e.length > left_offset:
             if e.offset >= left_offset:
-                #  0 1|2 3 4 5       |       0 1|2 3 4 5
-                #     ^     ^        |          ^
-                #   lo(2)  o(5)      |      o(2)/lo(2)
+                                                        
+                                                 
+                                                      
                 e.offset -= left_offset
-                #     |0 1 2 3       |          |0 1 2 3
-                #           ^        |          ^
-                #     o=o-lo(3=5-2)  |    o=o-lo(0=2-2)
+                                                        
+                                                 
+                                                       
             else:
-                # e.offset < left_offset and e.offset + e.length > left_offset
-                #  0 1 2 3|4 5 6 7 8 9 10
-                #   ^     ^           ^
-                #  o(1) lo(4)      o+l(1+9)
+                                                                              
+                                         
+                                       
+                                           
                 e.length = e.offset + e.length - left_offset
                 e.offset = 0
-                #         |0 1 2 3 4 5 6
-                #         ^           ^
-                #        o(0)  o+l=0+o+l-lo(6=0+6=0+1+9-4)
+                                        
+                                       
+                                                          
         else:
-            # e.offset + e.length <= left_offset
-            #   0 1 2 3|4 5
-            #  ^       ^
-            # o(0)   o+l(4)
-            #        lo(4)
+                                                
+                           
+                        
+                           
+                          
             del entities[i]
             continue
 
         if e.offset + e.length <= len_final:
-            # |0 1 2 3 4 5 6 7 8 9
-            #   ^                 ^
-            #  o(1)       o+l(1+9)/lf(10)
+                                  
+                                   
+                                         
             continue
         if e.offset >= len_final:
-            # |0 1 2 3 4
-            #           ^
-            #       o(5)/lf(5)
+                        
+                         
+                              
             del entities[i]
         else:
-            # e.offset < len_final and e.offset + e.length > len_final
-            # |0 1 2 3 4 5 (6) (7) (8) (9)
-            #   ^         ^           ^
-            #  o(1)     lf(6)      o+l(1+8)
+                                                                      
+                                          
+                                       
+                                           
             e.length = len_final - e.offset
-            # |0 1 2 3 4 5
-            #   ^         ^
-            #  o(1) o+l=o+lf-o=lf(6=1+5=1+6-1)
+                          
+                           
+                                              
 
     return text
 
@@ -149,8 +149,8 @@ def retry_range(retries, force_retry=True):
     infinite, otherwise it will end at `retries + 1`.
     """
 
-    # We need at least one iteration even if the retries are 0
-    # when force_retry is True.
+                                                              
+                               
     if force_retry and not (retries is None or retries < 0):
         retries += 1
 
@@ -181,21 +181,21 @@ async def _cancel(log, **tasks):
         except asyncio.CancelledError:
             pass
         except RuntimeError:
-            # Probably: RuntimeError: await wasn't used with future
-            #
-            # See: https://github.com/python/cpython/blob/12d3061c7819a73d891dcce44327410eaf0e1bc2/Lib/asyncio/futures.py#L265
-            #
-            # Happens with _asyncio.Task instances (in "Task cancelling" state)
-            # trying to SIGINT the program right during initial connection, on
-            # _recv_loop coroutine (but we're creating its task explicitly with
-            # a loop, so how can it bug out like this?).
-            #
-            # Since we're aware of this error there's no point in logging it.
-            # *May* be https://bugs.python.org/issue37172
+                                                                   
+             
+                                                                                                                              
+             
+                                                                               
+                                                                              
+                                                                               
+                                                        
+             
+                                                                             
+                                                         
             pass
         except AssertionError as e:
-            # In Python 3.6, the above RuntimeError is an AssertionError
-            # See https://github.com/python/cpython/blob/7df32f844efed33ca781a016017eab7050263b90/Lib/asyncio/futures.py#L328
+                                                                        
+                                                                                                                             
             if e.args != ("yield from wasn't used with future",):
                 log.exception(
                     "Unhandled exception from %s after cancelling " "%s (%s)",
@@ -241,22 +241,22 @@ def _sync_exit(self, *args):
 
 
 def _entity_type(entity):
-    # This could be a `utils` method that just ran a few `isinstance` on
-    # `utils.get_peer(...)`'s result. However, there are *a lot* of auto
-    # casts going on, plenty of calls and temporary short-lived objects.
-    #
-    # So we just check if a string is in the class name.
-    # Still, assert that it's the right type to not return false results.
+                                                                        
+                                                                        
+                                                                        
+     
+                                                        
+                                                                         
     try:
         if entity.SUBCLASS_OF_ID not in (
-            0x2D45687,  # crc32(b'Peer')
-            0xC91C90B6,  # crc32(b'InputPeer')
-            0xE669BF46,  # crc32(b'InputUser')
-            0x40F202FD,  # crc32(b'InputChannel')
-            0x2DA17977,  # crc32(b'User')
-            0xC5AF5D94,  # crc32(b'Chat')
-            0x1F4661B9,  # crc32(b'UserFull')
-            0xD49A2697,  # crc32(b'ChatFull')
+            0x2D45687,                  
+            0xC91C90B6,                       
+            0xE669BF46,                       
+            0x40F202FD,                          
+            0x2DA17977,                  
+            0xC5AF5D94,                  
+            0x1F4661B9,                      
+            0xD49A2697,                      
         ):
             raise TypeError("{} does not have any entity type".format(entity))
     except AttributeError:
@@ -274,13 +274,13 @@ def _entity_type(entity):
     elif "Self" in name:
         return _EntityType.USER
 
-    # 'Empty' in name or not found, we don't care, not a valid entity.
+                                                                      
     raise TypeError("{} does not have any entity type".format(entity))
 
 
-# endregion
+           
 
-# region Cryptographic related utils
+                                    
 
 
 def generate_key_data_from_nonce(server_nonce, new_nonce):
@@ -296,9 +296,9 @@ def generate_key_data_from_nonce(server_nonce, new_nonce):
     return key, iv
 
 
-# endregion
+           
 
-# region Custom Classes
+                       
 
 
 class TotalList(list):
@@ -414,7 +414,7 @@ class _FileStream(io.IOBase):
     def name(self):
         return self._name
 
-    # Proxy all the methods. Doesn't need to be readable (makes multiline edits easier)
+                                                                                       
     def read(self, *args, **kwargs):
         return self._stream.read(*args, **kwargs)
 
@@ -460,15 +460,15 @@ class _FileStream(io.IOBase):
     def writelines(self, *args, **kwargs):
         return self._stream.writelines(*args, **kwargs)
 
-    # close is special because it will be called by __del__ but we do NOT
-    # want to close the file unless we have to (we're just a wrapper).
-    # Instead, we do nothing (we should be used through the decorator which
-    # has its own mechanism to close the file correctly).
+                                                                         
+                                                                      
+                                                                           
+                                                         
     def close(self, *args, **kwargs):
         pass
 
 
-# endregion
+           
 
 
 def get_running_loop():

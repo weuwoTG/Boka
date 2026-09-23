@@ -104,20 +104,20 @@ class QRLogin:
         self._client.add_event_handler(handler, events.Raw(types.UpdateLoginToken))
 
         try:
-            # Will raise timeout error if it doesn't complete quick enough,
-            # which we want to let propagate
+                                                                           
+                                            
             await asyncio.wait_for(event.wait(), timeout=timeout)
         finally:
             self._client.remove_event_handler(handler)
 
-        # We got here without it raising timeout error, so we can proceed
+                                                                         
         resp = await self._client(self._request)
         if isinstance(resp, types.auth.LoginTokenMigrateTo):
             await self._client._switch_dc(resp.dc_id)
             resp = await self._client(
                 functions.auth.ImportLoginTokenRequest(resp.token)
             )
-            # resp should now be auth.loginTokenSuccess
+                                                       
 
         if isinstance(resp, types.auth.LoginTokenSuccess):
             user = resp.authorization.user

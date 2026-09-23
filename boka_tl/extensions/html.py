@@ -31,7 +31,7 @@ from ..tl.types import (
 )
 
 
-# Helpers from markdown.py
+                          
 def _add_surrogate(text):
     return "".join(
         (
@@ -79,12 +79,12 @@ class HTMLToTelegramParser(HTMLParser):
                 args["collapsed"] = True
         elif tag == "code":
             try:
-                # If we're in the middle of a <pre> tag, this <code> tag is
-                # probably intended for syntax highlighting.
-                #
-                # Syntax highlighting is set with
-                #     <code class='language-...'>codeblock</code>
-                # inside <pre> tags
+                                                                           
+                                                            
+                 
+                                                 
+                                                                 
+                                   
                 pre = self._building_entities["pre"]
                 try:
                     pre.language = attrs["class"][len("language-") :]
@@ -143,7 +143,7 @@ class HTMLToTelegramParser(HTMLParser):
         if EntityType and tag not in self._building_entities:
             self._building_entities[tag] = EntityType(
                 offset=len(self.text),
-                # The length will be determined when closing the tag.
+                                                                     
                 length=0,
                 **args,
             )
@@ -188,9 +188,9 @@ def parse(html: str) -> Tuple[str, List[TypeMessageEntity]]:
     return _del_surrogate(text), parser.entities
 
 
-CUSTOM_EMOJIS = True  # Can be disabled externally
+CUSTOM_EMOJIS = True                              
 
-# Based on https://github.com/aiogram/aiogram/blob/c43ff9b6f9dd62cd2d84272e5c460b904b4c3276/aiogram/utils/text_decorations.py
+                                                                                                                             
 
 
 class TextDecoration(ABC):
@@ -305,53 +305,53 @@ class TextDecoration(ABC):
         return text.decode("utf-16-le")
 
     @abstractmethod
-    def link(self, value: str, link: str) -> str:  # pragma: no cover
+    def link(self, value: str, link: str) -> str:                    
         pass
 
     @abstractmethod
-    def bold(self, value: str) -> str:  # pragma: no cover
+    def bold(self, value: str) -> str:                    
         pass
 
     @abstractmethod
-    def italic(self, value: str) -> str:  # pragma: no cover
+    def italic(self, value: str) -> str:                    
         pass
 
     @abstractmethod
-    def spoiler(self, value: str) -> str:  # pragma: no cover
+    def spoiler(self, value: str) -> str:                    
         pass
 
     @abstractmethod
-    def code(self, value: str) -> str:  # pragma: no cover
+    def code(self, value: str) -> str:                    
         pass
 
     @abstractmethod
-    def pre(self, value: str) -> str:  # pragma: no cover
+    def pre(self, value: str) -> str:                    
         pass
 
     @abstractmethod
-    def pre_language(self, value: str, language: str) -> str:  # pragma: no cover
+    def pre_language(self, value: str, language: str) -> str:                    
         pass
 
     @abstractmethod
-    def underline(self, value: str) -> str:  # pragma: no cover
+    def underline(self, value: str) -> str:                    
         pass
 
     @abstractmethod
-    def strikethrough(self, value: str) -> str:  # pragma: no cover
+    def strikethrough(self, value: str) -> str:                    
         pass
 
     @abstractmethod
-    def quote(self, value: str) -> str:  # pragma: no cover
+    def quote(self, value: str) -> str:                    
         pass
 
     @abstractmethod
-    def custom_emoji(self, value: str, document_id: str) -> str:  # pragma: no cover
+    def custom_emoji(self, value: str, document_id: str) -> str:                    
         pass
 
     @abstractmethod
     def blockquote(
         self, value: str, collapsed: bool = False
-    ) -> str:  # pragma: no cover
+    ) -> str:                    
         pass
 
     @abstractmethod

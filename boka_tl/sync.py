@@ -45,7 +45,7 @@ def _syncify_wrap(t, method_name):
         else:
             return loop.run_until_complete(coro)
 
-    # Save an accessible reference to the original method
+                                                         
     setattr(syncified, "__tl.sync", method)
     setattr(t, method_name, syncified)
 
@@ -56,9 +56,9 @@ def syncify(*types):
     into synchronous, which return either the coroutine or the result
     based on whether ``asyncio's`` event loop is running.
     """
-    # Our asynchronous generators all are `RequestIter`, which already
-    # provide a synchronous iterator variant, so we don't need to worry
-    # about asyncgenfunction's here.
+                                                                      
+                                                                       
+                                    
     for t in types:
         for name in dir(t):
             if not name.startswith("_") or name == "__call__":
@@ -81,8 +81,8 @@ syncify(
 )
 
 
-# Private special case, since a conversation's methods return
-# futures (but the public function themselves are synchronous).
+                                                             
+                                                               
 _syncify_wrap(Conversation, "_get_result")
 
 __all__ = [

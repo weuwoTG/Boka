@@ -1,14 +1,14 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import gc as _gc
 import inspect
@@ -38,36 +38,36 @@ def replace_all_refs(replace_from: typing.Any, replace_to: typing.Any) -> typing
     :param replace_to: The new objject you want in place of the old one.
     :returns: The replace_from
     """
-    # https://github.com/cart0113/pyjack/blob/dd1f9b70b71f48335d72f53ee0264cf70dbf4e28/pyjack.py
+                                                                                                
 
     _gc.collect()
 
     hit = False
     for referrer in _gc.get_referrers(replace_from):
-        # FRAMES -- PASS THEM UP
+                                
         if isinstance(referrer, _types.FrameType):
             continue
 
         match True:
-            # DICTS
+                   
             case _ if isinstance(referrer, dict):
                 cls = None
 
-                # THIS CODE HERE IS TO DEAL WITH DICTPROXY TYPES
+                                                                
                 if "__dict__" in referrer and "__weakref__" in referrer:
                     for cls in _gc.get_referrers(referrer):
                         if inspect.isclass(cls) and cls.__dict__ == referrer:
                             break
 
                 for key, value in referrer.items():
-                    # REMEMBER TO REPLACE VALUES ...
+                                                    
                     if value is replace_from:
                         hit = True
                         value = replace_to
                         referrer[key] = value
-                        if cls:  # AGAIN, CLEANUP DICTPROXY PROBLEM
+                        if cls:                                    
                             setattr(cls, key, replace_to)
-                    # AND KEYS.
+                               
                     if key is replace_from:
                         hit = True
                         del referrer[key]

@@ -18,7 +18,7 @@ import warnings
 from collections import namedtuple
 from mimetypes import guess_extension
 from types import GeneratorType
-import typing  # skip merge
+import typing              
 
 from .extensions import markdown, html
 from .helpers import add_surrogate, del_surrogate, strip_text
@@ -31,8 +31,8 @@ try:
 except ImportError:
     hachoir = None
 
-# Register some of the most common mime-types to avoid any issues.
-# See https://github.com/LonamiWebs/Telethon/issues/1096.
+                                                                  
+                                                         
 mimetypes.add_type("image/png", ".png")
 mimetypes.add_type("image/jpeg", ".jpeg")
 mimetypes.add_type("image/webp", ".webp")
@@ -111,21 +111,21 @@ def get_display_name(entity):
 def get_extension(media):
     """Gets the corresponding extension for any Telegram media."""
 
-    # Photos are always compressed as .jpg by Telegram
+                                                      
     try:
         get_input_photo(media)
         return ".jpg"
     except TypeError:
-        # These cases are not handled by input photo because it can't
+                                                                     
         if isinstance(media, (types.UserProfilePhoto, types.ChatPhoto)):
             return ".jpg"
 
-    # Documents will come with a mime type
+                                          
     if isinstance(media, types.MessageMediaDocument):
         media = media.document
     if isinstance(media, (types.Document, types.WebDocument, types.WebDocumentNoProxy)):
         if media.mime_type == "application/octet-stream":
-            # Octet stream are just bytes, which have no default extension
+                                                                          
             return ""
         else:
             return guess_extension(media.mime_type) or ""
@@ -153,30 +153,30 @@ def get_input_peer(entity, allow_self=True, check_hash=True):
     passed since in that case we assume the user knows what they're doing.
     This is key to getting entities by explicitly passing ``hash = 0``.
     """
-    # NOTE: It is important that this method validates the access hashes,
-    #       because it is used when we *require* a valid general-purpose
-    #       access hash. This includes caching, which relies on this method.
-    #       Further, when resolving raw methods, they do e.g.,
-    #           utils.get_input_channel(client.get_input_peer(...))
-    #
-    #       ...which means that the client's method verifies the hashes.
-    #
-    # Excerpt from a conversation with official developers (slightly edited):
-    #     > We send new access_hash for Channel with min flag since layer 102.
-    #     > Previously, we omitted it.
-    #     > That one works just to download the profile picture.
-    #
-    #     < So, min hashes only work for getting files,
-    #     < but the non-min hash is required for any other operation?
-    #
-    #     > Yes.
-    #
-    # More information: https://core.telegram.org/api/min
+                                                                         
+                                                                        
+                                                                            
+                                                              
+                                                                   
+     
+                                                                        
+     
+                                                                             
+                                                                              
+                                      
+                                                                
+     
+                                                       
+                                                                     
+     
+                
+     
+                                                         
     try:
-        if entity.SUBCLASS_OF_ID == 0xC91C90B6:  # crc32(b'InputPeer')
+        if entity.SUBCLASS_OF_ID == 0xC91C90B6:                       
             return entity
     except AttributeError:
-        # e.g. custom.Dialog (can't cyclic import).
+                                                   
         if allow_self and hasattr(entity, "input_entity"):
             return entity.input_entity
         elif hasattr(entity, "entity"):
@@ -201,13 +201,13 @@ def get_input_peer(entity, allow_self=True, check_hash=True):
         else:
             raise TypeError("Channel without access_hash or min info cannot be input")
     if isinstance(entity, types.ChannelForbidden):
-        # "channelForbidden are never min", and since their hash is
-        # also not optional, we assume that this truly is the case.
+                                                                   
+                                                                   
         return types.InputPeerChannel(entity.id, entity.access_hash)
 
     if isinstance(entity, types.Community):
-        # Communities are addressed via InputChannel/InputPeerChannel
-        # everywhere in the schema, same as a regular Channel.
+                                                                     
+                                                              
         if (entity.access_hash is not None and not entity.min) or not check_hash:
             return types.InputPeerChannel(entity.id, entity.access_hash)
         else:
@@ -260,7 +260,7 @@ def get_input_channel(entity):
         ``get_input_channel(get_input_peer(channel))``.
     """
     try:
-        if entity.SUBCLASS_OF_ID == 0x40F202FD:  # crc32(b'InputChannel')
+        if entity.SUBCLASS_OF_ID == 0x40F202FD:                          
             return entity
     except AttributeError:
         _raise_cast_fail(entity, "InputChannel")
@@ -301,7 +301,7 @@ def get_input_user(entity):
         ``get_input_channel(get_input_peer(channel))``.
     """
     try:
-        if entity.SUBCLASS_OF_ID == 0xE669BF46:  # crc32(b'InputUser'):
+        if entity.SUBCLASS_OF_ID == 0xE669BF46:                        
             return entity
     except AttributeError:
         _raise_cast_fail(entity, "InputUser")
@@ -333,9 +333,9 @@ def get_input_user(entity):
 def get_input_dialog(dialog):
     """Similar to :meth:`get_input_peer`, but for dialogs"""
     try:
-        if dialog.SUBCLASS_OF_ID == 0xA21C9795:  # crc32(b'InputDialogPeer')
+        if dialog.SUBCLASS_OF_ID == 0xA21C9795:                             
             return dialog
-        if dialog.SUBCLASS_OF_ID == 0xC91C90B6:  # crc32(b'InputPeer')
+        if dialog.SUBCLASS_OF_ID == 0xC91C90B6:                       
             return types.InputDialogPeer(dialog)
     except AttributeError:
         _raise_cast_fail(dialog, "InputDialogPeer")
@@ -351,7 +351,7 @@ def get_input_dialog(dialog):
 def get_input_document(document):
     """Similar to :meth:`get_input_peer`, but for documents"""
     try:
-        if document.SUBCLASS_OF_ID == 0xF33FDB68:  # crc32(b'InputDocument'):
+        if document.SUBCLASS_OF_ID == 0xF33FDB68:                            
             return document
     except AttributeError:
         _raise_cast_fail(document, "InputDocument")
@@ -378,7 +378,7 @@ def get_input_document(document):
 def get_input_photo(photo):
     """Similar to :meth:`get_input_peer`, but for photos"""
     try:
-        if photo.SUBCLASS_OF_ID == 0x846363E0:  # crc32(b'InputPhoto'):
+        if photo.SUBCLASS_OF_ID == 0x846363E0:                         
             return photo
     except AttributeError:
         _raise_cast_fail(photo, "InputPhoto")
@@ -427,9 +427,9 @@ def get_input_photo(photo):
 def get_input_chat_photo(photo):
     """Similar to :meth:`get_input_peer`, but for chat photos"""
     try:
-        if photo.SUBCLASS_OF_ID == 0xD4EB2D74:  # crc32(b'InputChatPhoto')
+        if photo.SUBCLASS_OF_ID == 0xD4EB2D74:                            
             return photo
-        elif photo.SUBCLASS_OF_ID == 0xE7655F1F:  # crc32(b'InputFile'):
+        elif photo.SUBCLASS_OF_ID == 0xE7655F1F:                        
             return types.InputChatUploadedPhoto(photo)
     except AttributeError:
         _raise_cast_fail(photo, "InputChatPhoto")
@@ -446,7 +446,7 @@ def get_input_chat_photo(photo):
 def get_input_geo(geo):
     """Similar to :meth:`get_input_peer`, but for geo points"""
     try:
-        if geo.SUBCLASS_OF_ID == 0x430D225:  # crc32(b'InputGeoPoint'):
+        if geo.SUBCLASS_OF_ID == 0x430D225:                            
             return geo
     except AttributeError:
         _raise_cast_fail(geo, "InputGeoPoint")
@@ -485,11 +485,11 @@ def get_input_media(
     of parameters will indicate how to treat it.
     """
     try:
-        if media.SUBCLASS_OF_ID == 0xFAF846F4:  # crc32(b'InputMedia')
+        if media.SUBCLASS_OF_ID == 0xFAF846F4:                        
             return media
-        elif media.SUBCLASS_OF_ID == 0x846363E0:  # crc32(b'InputPhoto')
+        elif media.SUBCLASS_OF_ID == 0x846363E0:                        
             return types.InputMediaPhoto(media, ttl_seconds=ttl)
-        elif media.SUBCLASS_OF_ID == 0xF33FDB68:  # crc32(b'InputDocument')
+        elif media.SUBCLASS_OF_ID == 0xF33FDB68:                           
             return types.InputMediaDocument(media, ttl_seconds=ttl)
     except AttributeError:
         _raise_cast_fail(media, "InputMedia")
@@ -590,8 +590,8 @@ def get_input_media(
     if isinstance(media, types.MessageMediaPoll):
         if media.poll.quiz:
             if not media.results.results:
-                # A quiz has correct answers, which we don't know until answered.
-                # If the quiz hasn't been answered we can't reconstruct it properly.
+                                                                                 
+                                                                                    
                 raise TypeError(
                     "Cannot cast unanswered quiz to any kind of InputMedia."
                 )
@@ -616,11 +616,11 @@ def get_input_media(
 def get_input_message(message):
     """Similar to :meth:`get_input_peer`, but for input messages."""
     try:
-        if isinstance(message, int):  # This case is really common too
+        if isinstance(message, int):                                  
             return types.InputMessageID(message)
-        elif message.SUBCLASS_OF_ID == 0x54B6BCC5:  # crc32(b'InputMessage'):
+        elif message.SUBCLASS_OF_ID == 0x54B6BCC5:                           
             return message
-        elif message.SUBCLASS_OF_ID == 0x790009E3:  # crc32(b'Message'):
+        elif message.SUBCLASS_OF_ID == 0x790009E3:                      
             return types.InputMessageID(message.id)
     except AttributeError:
         pass
@@ -631,9 +631,9 @@ def get_input_message(message):
 def get_input_group_call(call):
     """Similar to :meth:`get_input_peer`, but for input calls."""
     try:
-        if call.SUBCLASS_OF_ID == 0x58611AB1:  # crc32(b'InputGroupCall')
+        if call.SUBCLASS_OF_ID == 0x58611AB1:                            
             return call
-        elif call.SUBCLASS_OF_ID == 0x20B4F320:  # crc32(b'GroupCall')
+        elif call.SUBCLASS_OF_ID == 0x20B4F320:                       
             return types.InputGroupCall(id=call.id, access_hash=call.access_hash)
     except AttributeError:
         _raise_cast_fail(call, "InputGroupCall")
@@ -650,7 +650,7 @@ def _get_entity_pair(entity_id, entities, cache, get_input_peer=get_input_peer):
     try:
         input_entity = cache.get(resolve_id(entity_id)[0])._as_input_peer()
     except AttributeError:
-        # AttributeError is unlikely, so another TypeError won't hurt
+                                                                     
         try:
             input_entity = get_input_peer(entity)
         except TypeError:
@@ -672,7 +672,7 @@ def get_message_id(message):
 
     try:
         if message.SUBCLASS_OF_ID == 0x790009E3:
-            # hex(crc32(b'Message')) = 0x790009e3
+                                                 
             return message.id
     except AttributeError:
         pass
@@ -688,12 +688,12 @@ def _get_metadata(file):
     close_stream = True
     seekable = True
 
-    # The parser may fail and we don't want to crash if
-    # the extraction process fails.
+                                                       
+                                   
     try:
-        # Note: aiofiles are intentionally left out for simplicity.
-        # `helpers._FileStream` is async only for simplicity too, so can't
-        # reuse it here.
+                                                                   
+                                                                          
+                        
         if isinstance(file, str):
             stream = open(file, "rb")
         elif isinstance(file, bytes):
@@ -745,7 +745,7 @@ def get_attributes(
     Get a list of attributes for the given file and
     the mime type as a tuple ([attribute], mime_type).
     """
-    # Note: ``file.name`` works for :tl:`InputFile` and some `IOBase` streams
+                                                                             
     name = file if isinstance(file, str) else getattr(file, "name", "unnamed")
     if mime_type is None:
         mime_type = mimetypes.guess_type(name)[0]
@@ -814,16 +814,16 @@ def get_attributes(
                 0, voice=True
             )
 
-    # Now override the attributes if any. As we have a dict of
-    # {cls: instance}, we can override any class with the list
-    # of attributes provided by the user easily.
+                                                              
+                                                              
+                                                
     if attributes:
         for a in attributes:
             attr_dict[type(a)] = a
 
-    # Ensure we have a mime type, any; but it cannot be None
-    # 'The "octet-stream" subtype is used to indicate that a body
-    # contains arbitrary binary data.'
+                                                            
+                                                                 
+                                      
     if not mime_type:
         mime_type = "application/octet-stream"
 
@@ -876,7 +876,7 @@ def get_input_location(location):
 def _get_file_info(location):
     try:
         if location.SUBCLASS_OF_ID == 0x1523D462:
-            return _FileInfo(None, location, None)  # crc32(b'InputFileLocation'):
+            return _FileInfo(None, location, None)                                
     except AttributeError:
         _raise_cast_fail(location, "InputFileLocation")
 
@@ -895,7 +895,7 @@ def _get_file_info(location):
                 id=location.id,
                 access_hash=location.access_hash,
                 file_reference=location.file_reference,
-                thumb_size="",  # Presumably to download one of its thumbnails
+                thumb_size="",                                                
             ),
             location.size,
         )
@@ -924,10 +924,10 @@ def _get_extension(file):
     elif isinstance(file, pathlib.Path):
         return file.suffix
     elif getattr(file, "name", None):
-        # Note: ``file.name`` works for :tl:`InputFile` and some `IOBase`
+                                                                         
         return _get_extension(file.name)
     else:
-        # Maybe it's a Telegram media
+                                     
         return get_extension(file)
 
 
@@ -1068,7 +1068,7 @@ def get_peer(peer):
             return types.PeerChat(peer.id)
 
         if peer.SUBCLASS_OF_ID in (0x7D7C6F86, 0xD9C7FC18):
-            # ChatParticipant, ChannelParticipant
+                                                 
             return types.PeerUser(peer.user_id)
 
         peer = get_input_peer(peer, allow_self=False, check_hash=False)
@@ -1100,11 +1100,11 @@ def get_peer_id(peer, add_mark=True):
     The original ID and the peer type class can be returned with
     a call to :meth:`resolve_id(marked_id)`.
     """
-    # First we assert it's a Peer TLObject, or early return for integers
+                                                                        
     if isinstance(peer, int):
         return peer if add_mark else resolve_id(peer)[0]
 
-    # Tell the user to use their client to resolve InputPeerSelf if we got one
+                                                                              
     if isinstance(peer, types.InputPeerSelf):
         _raise_cast_fail(peer, "int (you might want to use client.get_peer_id)")
 
@@ -1116,20 +1116,20 @@ def get_peer_id(peer, add_mark=True):
     if isinstance(peer, types.PeerUser):
         return peer.user_id
     elif isinstance(peer, types.PeerChat):
-        # Check in case the user mixed things up to avoid blowing up
+                                                                    
         if not (0 < peer.chat_id <= 9999999999):
             peer.chat_id = resolve_id(peer.chat_id)[0]
 
         return -peer.chat_id if add_mark else peer.chat_id
-    else:  # if isinstance(peer, types.PeerChannel):
-        # Check in case the user mixed things up to avoid blowing up
+    else:                                           
+                                                                    
         if not (0 < peer.channel_id <= 9999999999):
             peer.channel_id = resolve_id(peer.channel_id)[0]
 
         if not add_mark:
             return peer.channel_id
 
-        # Growing backwards from -100_0000_000_000 indicates it's a channel
+                                                                           
         return -(1000000000000 + peer.channel_id)
 
 
@@ -1196,7 +1196,7 @@ def _decode_telegram_base64(string):
     try:
         return base64.urlsafe_b64decode(string + "=" * (len(string) % 4))
     except (binascii.Error, ValueError, TypeError):
-        return None  # not valid base64, not valid ascii, not a string
+        return None                                                   
 
 
 def _encode_telegram_base64(string):
@@ -1206,7 +1206,7 @@ def _encode_telegram_base64(string):
     try:
         return base64.urlsafe_b64encode(string).rstrip(b"=").decode("ascii")
     except (binascii.Error, ValueError, TypeError):
-        return None  # not valid base64, not valid ascii, not a string
+        return None                                                   
 
 
 def resolve_bot_file_id(file_id):
@@ -1224,8 +1224,8 @@ def resolve_bot_file_id(file_id):
     if not data:
         return None
 
-    # This isn't officially documented anywhere, but
-    # we assume the last byte is some kind of "version".
+                                                    
+                                                        
     data, version = data[:-1], data[-1]
     if version not in (2, 4):
         return None
@@ -1233,18 +1233,18 @@ def resolve_bot_file_id(file_id):
     if (version == 2 and len(data) == 24) or (version == 4 and len(data) == 25):
         if version == 2:
             file_type, dc_id, media_id, access_hash = struct.unpack("<iiqq", data)
-        # elif version == 4:
+                            
         else:
-            # TODO Figure out what the extra byte means
+                                                       
             file_type, dc_id, media_id, access_hash, _ = struct.unpack("<iiqqb", data)
 
         if not (1 <= dc_id <= 5):
-            # Valid `file_id`'s must have valid DC IDs. Since this method is
-            # called when sending a file and the user may have entered a path
-            # they believe is correct but the file doesn't exist, this method
-            # may detect a path as "valid" bot `file_id` even when it's not.
-            # By checking the `dc_id`, we greatly reduce the chances of this
-            # happening.
+                                                                            
+                                                                             
+                                                                             
+                                                                            
+                                                                            
+                        
             return None
 
         attributes = []
@@ -1258,7 +1258,7 @@ def resolve_bot_file_id(file_id):
                     duration=0, w=0, h=0, round_message=file_type == 13
                 )
             )
-        # elif file_type == 5:  # other, cannot know which
+                                                          
         elif file_type == 8:
             attributes.append(
                 types.DocumentAttributeSticker(
@@ -1284,9 +1284,9 @@ def resolve_bot_file_id(file_id):
             file_type, dc_id, media_id, access_hash, volume_id, secret, local_id = (
                 struct.unpack("<iiqqqqi", data)
             )
-        # else version == 4:
+                            
         elif len(data) == 49:
-            # TODO Figure out what the extra five bytes mean
+                                                            
             (
                 file_type,
                 dc_id,
@@ -1298,7 +1298,7 @@ def resolve_bot_file_id(file_id):
                 _,
             ) = struct.unpack("<iiqqqqi5s", data)
         elif len(data) == 77:
-            # See #1613.
+                        
             file_type, dc_id, _, media_id, access_hash, volume_id, _, local_id, _ = (
                 struct.unpack("<ii28sqqq12sib", data)
             )
@@ -1308,7 +1308,7 @@ def resolve_bot_file_id(file_id):
         if not (1 <= dc_id <= 5):
             return None
 
-        # Thumbnails (small) always have ID 0; otherwise size 'x'
+                                                                 
         photo_size = "s" if media_id or access_hash else "x"
         return types.Photo(
             id=media_id,
@@ -1383,7 +1383,7 @@ def pack_bot_file_id(file):
                     size.volume_id,
                     0,
                     size.local_id,
-                    2,  # 0 = old `secret`
+                    2,                    
                 )
             )
         )
@@ -1406,11 +1406,11 @@ def resolve_invite_link(link):
     """
     link_hash, is_link = parse_username(link)
     if not is_link:
-        # Perhaps the user passed the link hash directly
+                                                        
         link_hash = link
 
-    # Little known fact, but invite links with a
-    # hex-string of bytes instead of base64 also works.
+                                                
+                                                       
     if re.match(r"[a-fA-F\d]+", link_hash) and len(link_hash) in (24, 32):
         payload = bytes.fromhex(link_hash)
     else:
@@ -1455,9 +1455,9 @@ def get_appropriated_part_size(file_size):
     Gets the appropriated part size when uploading or downloading files,
     given an initial file size.
     """
-    if file_size <= 104857600:  # 100MB
+    if file_size <= 104857600:         
         return 128
-    if file_size <= 786432000:  # 750MB
+    if file_size <= 786432000:         
         return 256
     return 512
 
@@ -1576,8 +1576,8 @@ def split_text(
                 await client.send_message(chat, text, formatting_entities=entities)
     """
 
-    # TODO add test cases (multiple entities beyond cutoff, at cutoff, splitting at emoji)
-    # TODO try to optimize this a bit more? (avoid new_ent, smarter update method)
+                                                                                          
+                                                                                  
     def update(ent, **updates):
         kwargs = ent.to_dict()
         del kwargs["_"]
@@ -1626,7 +1626,7 @@ def split_text(
                 continue
             break
         else:
-            # Can't find where to split, just return the remaining text and entities
+                                                                                    
             break
 
     yield del_surrogate(text), entities
@@ -1655,7 +1655,7 @@ def stripped_photo_to_jpg(stripped):
 
     Ported from https://github.com/telegramdesktop/tdesktop/blob/bec39d89e19670eb436dc794a8f20b657cb87c71/Telegram/SourceFiles/ui/image/image.cpp#L225
     """
-    # NOTE: Changes here should update _photo_size_byte_count
+                                                             
     if len(stripped) < 3 or stripped[0] != 1:
         return stripped
 
@@ -1686,9 +1686,9 @@ def _photo_size_byte_count(size):
         return None
 
 
-def convert_reaction(  # skip merge
-    reaction: "typing.Optional[hints.Reaction]" = None,  # type: ignore
-) -> "typing.Optional[typing.Union[typing.List[types.ReactionEmoji], typing.List[types.ReactionCustomEmoji]]]":  # type: ignore
+def convert_reaction(              
+    reaction: "typing.Optional[hints.Reaction]" = None,                
+) -> "typing.Optional[typing.Union[typing.List[types.ReactionEmoji], typing.List[types.ReactionCustomEmoji]]]":                
     """
     Converts a reaction to a list of :tl:`ReactionEmoji` or :tl:`ReactionCustomEmoji`.
     """
@@ -1714,7 +1714,7 @@ def convert_reaction(  # skip merge
     return reaction
 
 
-def get_input_reply_to(  # skip merge
+def get_input_reply_to(              
     entity: typing.Optional[
         typing.Union[int, types.InputUser, types.InputChannel]
     ] = None,
@@ -1746,7 +1746,7 @@ def get_input_reply_to(  # skip merge
     return reply_to or None
 
 
-def get_input_story_id(  # skip merge
+def get_input_story_id(              
     story: "hints.StoryItemLike",
 ) -> int:
     """

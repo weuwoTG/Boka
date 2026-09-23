@@ -70,7 +70,7 @@ class NewMessage(EventBuilder):
         pattern=None
     ):
         if incoming and outgoing:
-            incoming = outgoing = None  # Same as no filter
+            incoming = outgoing = None                     
         elif incoming is not None and outgoing is None:
             outgoing = not incoming
         elif outgoing is not None and incoming is None:
@@ -95,7 +95,7 @@ class NewMessage(EventBuilder):
         else:
             raise TypeError("Invalid pattern type given")
 
-        # Should we short-circuit? E.g. perform no check at all
+                                                               
         self._no_check = all(
             x is None
             for x in (
@@ -118,7 +118,7 @@ class NewMessage(EventBuilder):
     def build(cls, update, others=None, self_id=None):
         if isinstance(update, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
             if not isinstance(update.message, types.Message):
-                return  # We don't care about MessageService's here
+                return                                             
             event = cls.Event(update.message)
         elif isinstance(update, types.UpdateShortMessage):
             event = cls.Event(
@@ -236,7 +236,7 @@ class NewMessage(EventBuilder):
             super()._set_client(client)
             m = self.message
             m._finish_init(client, self._entities, None)
-            self.__dict__["_init"] = True  # No new attributes can be set
+            self.__dict__["_init"] = True                                
 
         def __getattr__(self, item):
             if item in self.__dict__:

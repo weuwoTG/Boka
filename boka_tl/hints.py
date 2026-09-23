@@ -50,8 +50,8 @@ FileLike = typing.Union[
     types.TypeInputDocument,
 ]
 
-# Can't use `typing.Type` in Python 3.5.2
-# See https://github.com/python/typing/issues/266
+                                         
+                                                 
 try:
     OutFileLike = typing.Union[str, typing.Type[bytes], typing.BinaryIO]
 except TypeError:

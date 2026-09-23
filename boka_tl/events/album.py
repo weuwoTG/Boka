@@ -7,12 +7,12 @@ from .. import utils
 from ..tl import types
 from ..tl.custom.sendergetter import SenderGetter
 
-_IGNORE_MAX_SIZE = 100  # len()
-_IGNORE_MAX_AGE = 5  # seconds
+_IGNORE_MAX_SIZE = 100         
+_IGNORE_MAX_AGE = 5           
 
-# IDs to ignore, and when they were added. If it grows too large, we will
-# remove old entries. Although it should generally not be bigger than 10,
-# it may be possible some updates are not processed and thus not removed.
+                                                                         
+                                                                         
+                                                                         
 _IGNORE_DICT = {}
 
 
@@ -34,17 +34,17 @@ class AlbumHack:
     """
 
     def __init__(self, client, event):
-        # It's probably silly to use a weakref here because this object is
-        # very short-lived but might as well try to do "the right thing".
+                                                                          
+                                                                         
         self._client = weakref.ref(client)
-        self._event = event  # parent event
+        self._event = event                
         self._due = client.loop.time() + _HACK_DELAY
 
         client.loop.create_task(self.deliver_event())
 
     def extend(self, messages):
         client = self._client()
-        if client:  # weakref may be dead
+        if client:                       
             self._event.messages.extend(messages)
             self._due = client.loop.time() + _HACK_DELAY
 
@@ -52,16 +52,16 @@ class AlbumHack:
         while True:
             client = self._client()
             if client is None:
-                return  # weakref is dead, nothing to deliver
+                return                                       
 
             diff = self._due - client.loop.time()
             if diff <= 0:
-                # We've hit our due time, deliver event. It won't respect
-                # sequential updates but fixing that would just worsen this.
+                                                                         
+                                                                            
                 await client._dispatch_event(self._event)
                 return
 
-            del client  # Clear ref and sleep until our due time
+            del client                                          
             await asyncio.sleep(diff)
 
 
@@ -97,27 +97,27 @@ class Album(EventBuilder):
 
     @classmethod
     def build(cls, update, others=None, self_id=None):
-        # TODO normally we'd only check updates if they come with other updates
-        # but MessageBox is not designed for this so others will always be None.
-        # In essence we always rely on AlbumHack rather than returning early if not others.
+                                                                               
+                                                                                
+                                                                                           
         others = [update]
 
         if isinstance(update, (types.UpdateNewMessage, types.UpdateNewChannelMessage)):
             if not isinstance(update.message, types.Message):
-                return  # We don't care about MessageService's here
+                return                                             
 
             group = update.message.grouped_id
             if group is None:
-                return  # It must be grouped
+                return                      
 
-            # Check whether we are supposed to skip this update, and
-            # if we do also remove it from the ignore list since we
-            # won't need to check against it again.
+                                                                    
+                                                                   
+                                                   
             if _IGNORE_DICT.pop(id(update), None):
                 return
 
-            # Check if the ignore list is too big, and if it is clean it
-            # TODO time could technically go backwards; time is not monotonic
+                                                                        
+                                                                             
             now = time.time()
             if len(_IGNORE_DICT) > _IGNORE_MAX_SIZE:
                 for i in [
@@ -125,12 +125,12 @@ class Album(EventBuilder):
                 ]:
                     del _IGNORE_DICT[i]
 
-            # Add the other updates to the ignore list
+                                                      
             for u in others:
                 if u is not update:
                     _IGNORE_DICT[id(u)] = now
 
-            # Figure out which updates share the same group and use those
+                                                                         
             return cls.Event(
                 [
                     u.message
@@ -146,7 +146,7 @@ class Album(EventBuilder):
             )
 
     def filter(self, event):
-        # Albums with less than two messages require a few hacks to work.
+                                                                         
         if len(event.messages) > 1:
             return super().filter(event)
 
@@ -179,7 +179,7 @@ class Album(EventBuilder):
                 msg._finish_init(client, self._entities, None)
 
             if len(self.messages) == 1:
-                # This will require hacks to be a proper album event
+                                                                    
                 hack = client._albums.get(self.grouped_id)
                 if hack is None:
                     client._albums[self.grouped_id] = AlbumHack(client, self)
@@ -218,7 +218,7 @@ class Album(EventBuilder):
             this one is replying to through `reply_to_msg_id`,
             and the `Message` object with `get_reply_message()`.
             """
-            # Each individual message in an album all reply to the same message
+                                                                               
             return self.messages[0].is_reply
 
         @property
@@ -227,12 +227,12 @@ class Album(EventBuilder):
             The `Forward <telethon.tl.custom.forward.Forward>`
             information for the first message in the album if it was forwarded.
             """
-            # Each individual message in an album all reply to the same message
+                                                                               
             return self.messages[0].forward
 
-        # endregion Public Properties
+                                     
 
-        # region Public Methods
+                               
 
         async def get_reply_message(self):
             """

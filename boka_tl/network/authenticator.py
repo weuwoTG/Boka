@@ -36,7 +36,7 @@ async def do_authentication(sender):
     :param sender: a connected `MTProtoPlainSender`.
     :return: returns a (authorization key, time offset) tuple.
     """
-    # Step 1 sending: PQ Request, endianness doesn't matter since it's random
+                                                                             
     nonce = int.from_bytes(os.urandom(16), "big", signed=True)
     res_pq = await sender.send(ReqPqMultiRequest(nonce))
     assert isinstance(res_pq, ResPQ), "Step 1 answer was %s" % res_pq
@@ -46,7 +46,7 @@ async def do_authentication(sender):
 
     pq = get_int(res_pq.pq)
 
-    # Step 2 sending: DH Exchange
+                                 
     p, q = Factorization.factorize(pq)
     p, q = rsa.get_byte_array(p), rsa.get_byte_array(q)
     new_nonce = int.from_bytes(os.urandom(32), "little", signed=True)
@@ -62,7 +62,7 @@ async def do_authentication(sender):
         )
     )
 
-    # sha_digest + data + random_bytes
+                                      
     cipher_text, target_fingerprint = None, None
     for fingerprint in res_pq.server_public_key_fingerprints:
         cipher_text = rsa.encrypt(fingerprint, pq_inner_data)
@@ -71,7 +71,7 @@ async def do_authentication(sender):
             break
 
     if cipher_text is None:
-        # Second attempt, but now we're allowed to use old keys
+                                                               
         for fingerprint in res_pq.server_public_key_fingerprints:
             cipher_text = rsa.encrypt(fingerprint, pq_inner_data, use_old=True)
             if cipher_text is not None:
@@ -119,16 +119,16 @@ async def do_authentication(sender):
         "Step 2.2 answer was %s" % server_dh_params
     )
 
-    # Step 3 sending: Complete DH Exchange
+                                          
     key, iv = helpers.generate_key_data_from_nonce(res_pq.server_nonce, new_nonce)
     if len(server_dh_params.encrypted_answer) % 16 != 0:
-        # See PR#453
+                    
         raise SecurityError("Step 3 AES block size mismatch")
 
     plain_text_answer = AES.decrypt_ige(server_dh_params.encrypted_answer, key, iv)
 
     with BinaryReader(plain_text_answer) as reader:
-        reader.read(20)  # hash sum
+        reader.read(20)            
         server_dh_inner = reader.tgread_object()
         assert isinstance(server_dh_inner, ServerDHInnerData), (
             "Step 3 answer was %s" % server_dh_inner
@@ -149,12 +149,12 @@ async def do_authentication(sender):
     g_b = pow(g, b, dh_prime)
     gab = pow(g_a, b, dh_prime)
 
-    # IMPORTANT: Apart from the conditions on the Diffie-Hellman prime
-    # dh_prime and generator g, both sides are to check that g, g_a and
-    # g_b are greater than 1 and less than dh_prime - 1. We recommend
-    # checking that g_a and g_b are between 2^{2048-64} and
-    # dh_prime - 2^{2048-64} as well.
-    # (https://core.telegram.org/mtproto/auth_key#dh-key-exchange-complete)
+                                                                      
+                                                                       
+                                                                     
+                                                           
+                                     
+                                                                           
     if not (1 < g < (dh_prime - 1)):
         raise SecurityError("g_a is not within (1, dh_prime - 1)")
 
@@ -171,22 +171,22 @@ async def do_authentication(sender):
     if not (safety_range <= g_b <= (dh_prime - safety_range)):
         raise SecurityError("g_b is not within (2^{2048-64}, dh_prime - 2^{2048-64})")
 
-    # Prepare client DH Inner Data
+                                  
     client_dh_inner = bytes(
         ClientDHInnerData(
             nonce=res_pq.nonce,
             server_nonce=res_pq.server_nonce,
-            retry_id=0,  # TODO Actual retry ID
+            retry_id=0,                        
             g_b=rsa.get_byte_array(g_b),
         )
     )
 
     client_dh_inner_hashed = sha1(client_dh_inner).digest() + client_dh_inner
 
-    # Encryption
+                
     client_dh_encrypted = AES.encrypt_ige(client_dh_inner_hashed, key, iv)
 
-    # Prepare Set client DH params
+                                  
     dh_gen = await sender.send(
         SetClientDHParamsRequest(
             nonce=res_pq.nonce,

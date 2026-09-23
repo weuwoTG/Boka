@@ -1,16 +1,16 @@
 """Registers modules"""
 
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import asyncio
 import builtins
@@ -33,7 +33,7 @@ from uuid import uuid4
 
 from boka_tl.tl.tlobject import TLObject
 
-from . import main, security, secure_local, utils, validators
+from . import main, security, utils, validators
 from .database import Database
 from .inline.core import BotUpdateType, InlineManager
 from .translations import Strings, Translator
@@ -110,10 +110,10 @@ logger = logging.getLogger(__name__)
 
 owner = security.owner
 
-# deprecated
+            
 sudo = security.sudo
 support = security.support
-# /deprecated
+             
 
 group_owner = security.group_owner
 group_admin_add_admins = security.group_admin_add_admins
@@ -192,7 +192,7 @@ builtins.__import__ = patched_import
 class InfiniteLoop:
     _task = None
     status = False
-    module_instance = None  # Will be passed later
+    module_instance = None                        
 
     def __init__(
         self,
@@ -213,7 +213,7 @@ class InfiniteLoop:
 
     def stop(self, *args, **kwargs):
         with contextlib.suppress(AttributeError):
-            _boka_client_id_logging_tag = copy.copy(  # noqa: F841
+            _boka_client_id_logging_tag = copy.copy(              
                 self.module_instance.allmodules.client.tg_id
             )
 
@@ -230,7 +230,7 @@ class InfiniteLoop:
 
     def start(self, *args, **kwargs):
         with contextlib.suppress(AttributeError):
-            _boka_client_id_logging_tag = copy.copy(  # noqa: F841
+            _boka_client_id_logging_tag = copy.copy(              
                 self.module_instance.allmodules.client.tg_id
             )
 
@@ -241,7 +241,7 @@ class InfiniteLoop:
             logger.debug("Attempted to start already running loop")
 
     async def actual_loop(self, *args, **kwargs):
-        # Wait for loader to set attribute
+                                          
         while not self.module_instance:
             await asyncio.sleep(0.01)
 
@@ -392,7 +392,7 @@ def translatable_docstring(cls):
     return cls
 
 
-tds = translatable_docstring  # Shorter name for modules to use
+tds = translatable_docstring                                   
 
 
 def ratelimit(func: Command) -> Command:
@@ -563,7 +563,7 @@ class Modules:
 
     def __init__(
         self,
-        client: "CustomTelegramClient",  # type: ignore  # noqa: F821
+        client: "CustomTelegramClient",                              
         db: Database,
         allclients: list,
         translator: Translator,
@@ -573,7 +573,7 @@ class Modules:
         self.inline_handlers = {}
         self.callback_handlers = {}
         self.aliases = {}
-        self.modules: list["Module" | None] = []  # skipcq: PTC-W0052
+        self.modules: list["Module" | None] = []                     
         self.libraries = []
         self.watchers = []
         self._log_handlers = []
@@ -663,7 +663,7 @@ class Modules:
         origin: str = "<core>",
     ) -> list[Module]:
         with contextlib.suppress(AttributeError):
-            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)              
 
         loaded = []
 
@@ -702,18 +702,10 @@ class Modules:
     ) -> Module:
         """Register single module from importlib spec"""
         with contextlib.suppress(AttributeError):
-            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)              
 
         module = importlib.util.module_from_spec(spec)
         sys.modules[module_name] = module
-
-        # Local security: any module that is not part of the trusted core
-        # package (origin "<core>") executes inside the secure_local sandbox.
-        # eval / terminal / web backend stay at full power because they ship
-        # with the core, everything else runs locked down.
-        sandboxed = origin != "<core>"
-        if sandboxed:
-            secure_local.apply_sandbox(module)
 
         source_data = (
             spec.loader.data.decode()
@@ -723,8 +715,8 @@ class Modules:
 
         async def _exec_module():
             while True:
-                # Hardened: the runtime never auto-installs Python packages.
-                # Any ImportError surfaces as-is; no pip is invoked.
+                                                                            
+                                                                    
                 try:
                     spec.loader.exec_module(module)
                     break
@@ -732,9 +724,6 @@ class Modules:
                     raise
 
         await _exec_module()
-
-        if sandboxed:
-            secure_local.finalize(module)
 
         ret = None
 
@@ -843,7 +832,7 @@ class Modules:
     def register_commands(self, instance: Module):
         """Register commands from instance"""
         with contextlib.suppress(AttributeError):
-            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)              
 
         if instance.__origin__.startswith("<core"):
             self._core_commands += list(
@@ -851,7 +840,7 @@ class Modules:
             )
 
         for _command, cmd in instance.boka_commands.items():
-            # Restrict overwriting core modules' commands
+                                                         
             if (
                 not self._remove_core_protection
                 and _command.lower() in self._core_commands
@@ -945,7 +934,7 @@ class Modules:
     def register_watchers(self, instance: Module):
         """Register watcher from instance"""
         with contextlib.suppress(AttributeError):
-            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)              
 
         for _watcher in self.watchers:
             if _watcher.__self__.__class__.__name__ == instance.__class__.__name__:
@@ -1006,7 +995,7 @@ class Modules:
     async def complete_registration(self, instance: Module):
         """Complete registration of instance"""
         with contextlib.suppress(AttributeError):
-            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)              
 
         instance.allmodules = self
         instance.internal_init()
@@ -1122,7 +1111,7 @@ class Modules:
     def send_config_one(self, mod: Module, skip_hook: bool = False):
         """Send config to single instance"""
         with contextlib.suppress(AttributeError):
-            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)              
 
         if hasattr(mod, "config"):
             modcfg = self._db.get(
@@ -1187,7 +1176,7 @@ class Modules:
         from_dlmod: bool = False,
     ):
         with contextlib.suppress(AttributeError):
-            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)              
 
         if from_dlmod:
             try:
@@ -1228,7 +1217,7 @@ class Modules:
             self.modules.remove(mod)
             raise
 
-        # Check for pack_url and load translations
+                                                  
         if hasattr(mod, "__source__"):
             pack_url = next(
                 (
@@ -1281,7 +1270,7 @@ class Modules:
         worked = []
 
         with contextlib.suppress(AttributeError):
-            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)  # noqa: F841
+            _boka_client_id_logging_tag = copy.copy(self.client.tg_id)              
 
         for module in self.modules:
             if classname.lower() in (

@@ -1,14 +1,14 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import json
 import logging
@@ -146,8 +146,8 @@ class BaseTranslator:
         data = None
         content = None
 
-        # Hardened: translation packs are never downloaded from the network.
-        # Only a locally cached copy is used.
+                                                                            
+                                             
 
         if not isinstance(data, dict):
             if cache_path and cache_path.exists():
@@ -201,7 +201,7 @@ class Translator(BaseTranslator):
         if lang := self.db.get(__name__, "lang", False):
             for language in map(normalize_language_token, lang.split()):
                 if utils.check_url(language):
-                    # Hardened: custom translation pack downloads are disabled.
+                                                                               
                     logger.warning(
                         "Remote translation pack blocked (hardened build): %s",
                         language,
@@ -243,14 +243,14 @@ class ExternalTranslator(BaseTranslator):
 
 
 class Strings:
-    def __init__(self, mod: Module, translator: Translator):  # skipcq: PYL-W0621
+    def __init__(self, mod: Module, translator: Translator):                     
         self._mod = mod
         self._translator = translator
 
         if not translator:
             logger.debug("Module %s got empty translator %s", mod, translator)
 
-        self._base_strings = mod.strings  # Back 'em up, bc they will get replaced
+        self._base_strings = mod.strings                                          
         self.external_strings = {}
 
     def get(self, key: str, lang: str | None = None) -> str:
@@ -307,7 +307,7 @@ class Strings:
     def __call__(
         self,
         key: str,
-        _: typing.Any | None = None,  # Compatibility tweak for FTG\GeekTG
+        _: typing.Any | None = None,                                      
     ) -> str:
         return self.__getitem__(key)
 

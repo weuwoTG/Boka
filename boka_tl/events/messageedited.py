@@ -51,4 +51,4 @@ class MessageEdited(NewMessage):
             return cls.Event(update.message)
 
     class Event(NewMessage.Event):
-        pass  # Required if we want a different name for it
+        pass                                               

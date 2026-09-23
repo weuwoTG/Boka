@@ -14,7 +14,7 @@ def check_prime_and_good_check(prime: int, g: int):
             )
         )
 
-    # TODO This is awfully slow
+                               
     if factorization.Factorization.factorize(prime)[0] != 1:
         raise ValueError('given "prime" is not prime')
 
@@ -42,7 +42,7 @@ def check_prime_and_good_check(prime: int, g: int):
     if factorization.Factorization.factorize(prime_sub1_div2)[0] != 1:
         raise ValueError("(prime - 1) // 2 is not prime")
 
-    # Else it's good
+                    
 
 
 def check_prime_and_good(prime_bytes: bytes, g: int):
@@ -309,7 +309,7 @@ def check_prime_and_good(prime_bytes: bytes, g: int):
 
     if good_prime == prime_bytes:
         if g in (3, 4, 5, 7):
-            return  # It's good
+            return             
 
     check_prime_and_good_check(int.from_bytes(prime_bytes, "big"), g)
 
@@ -386,7 +386,7 @@ def compute_digest(
     return big_num_for_hash(value)
 
 
-# https://github.com/telegramdesktop/tdesktop/blob/18b74b90451a7db2379a9d753c9cbaf8734b4d5d/Telegram/SourceFiles/core/core_cloud_password.cpp
+                                                                                                                                             
 def compute_check(request: types.account.Password, password: str):
     algo = request.current_algo
     if not isinstance(

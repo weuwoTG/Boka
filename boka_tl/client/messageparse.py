@@ -11,7 +11,7 @@ if typing.TYPE_CHECKING:
 
 class MessageParseMethods:
 
-    # region Public properties
+                              
 
     @property
     def parse_mode(self: "TelegramClient"):
@@ -53,9 +53,9 @@ class MessageParseMethods:
     def parse_mode(self: "TelegramClient", mode: str):
         self._parse_mode = utils.sanitize_parse_mode(mode)
 
-    # endregion
+               
 
-    # region Private methods
+                            
 
     async def _replace_with_mention(self: "TelegramClient", entities, i, user):
         """
@@ -92,9 +92,9 @@ class MessageParseMethods:
         for i in reversed(range(len(msg_entities))):
             e = msg_entities[i]
             if not e.length:
-                # 0-length MessageEntity is no longer valid #3884.
-                # Because the user can provide their own parser (with reasonable 0-length
-                # entities), strip them here rather than fixing the built-in parsers.
+                                                                  
+                                                                                         
+                                                                                     
                 del msg_entities[i]
             elif isinstance(e, types.MessageEntityTextUrl):
                 m = re.match(r"^@|\+|tg://user\?id=(\d+)", e.url)
@@ -146,13 +146,13 @@ class MessageParseMethods:
             ):
                 update.message._finish_init(self, entities, input_chat)
 
-                # Pinning a message with `updatePinnedMessage` seems to
-                # always produce a service message we can't map so return
-                # it directly. The same happens for kicking users.
-                #
-                # It could also be a list (e.g. when sending albums).
-                #
-                # TODO this method is getting messier and messier as time goes on
+                                                                       
+                                                                         
+                                                                  
+                 
+                                                                     
+                 
+                                                                                 
                 if hasattr(request, "random_id") or utils.is_list_like(request):
                     id_to_message[update.message.id] = update.message
                 else:
@@ -164,8 +164,8 @@ class MessageParseMethods:
             ):
                 update.message._finish_init(self, entities, input_chat)
 
-                # Live locations use `sendMedia` but Telegram responds with
-                # `updateEditMessage`, which means we won't have `id` field.
+                                                                           
+                                                                            
                 if hasattr(request, "random_id"):
                     id_to_message[update.message.id] = update.message
                 elif request.id == update.message.id:
@@ -182,9 +182,9 @@ class MessageParseMethods:
 
             elif isinstance(update, types.UpdateNewScheduledMessage):
                 update.message._finish_init(self, entities, input_chat)
-                # Scheduled IDs may collide with normal IDs. However, for a
-                # single request there *shouldn't* be a mix between "some
-                # scheduled and some not".
+                                                                           
+                                                                         
+                                          
                 id_to_message[update.message.id] = update.message
 
             elif isinstance(update, types.UpdateMessagePoll):
@@ -208,7 +208,7 @@ class MessageParseMethods:
             else getattr(request, "random_id", None)
         )
         if random_id is None:
-            # Can happen when pinning a message does not actually produce a service message.
+                                                                                            
             self._log[__name__].warning(
                 "No random_id in %s to map to, returning None message for %s",
                 request,
@@ -229,14 +229,14 @@ class MessageParseMethods:
         try:
             return [id_to_message[random_to_id[rnd]] for rnd in random_id]
         except KeyError:
-            # Sometimes forwards fail (`MESSAGE_ID_INVALID` if a message gets
-            # deleted or `WORKER_BUSY_TOO_LONG_RETRY` if there are issues at
-            # Telegram), in which case we get some "missing" message mappings.
-            # Log them with the hope that we can better work around them.
-            #
-            # This also happens when trying to forward messages that can't
-            # be forwarded because they don't exist (0, service, deleted)
-            # among others which could be (like deleted or existing).
+                                                                             
+                                                                            
+                                                                              
+                                                                         
+             
+                                                                          
+                                                                         
+                                                                     
             self._log[__name__].warning(
                 "Request %s had missing message mappings %s", request, result
             )
@@ -246,4 +246,4 @@ class MessageParseMethods:
             for rnd in random_id
         ]
 
-    # endregion
+               

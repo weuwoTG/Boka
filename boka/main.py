@@ -1,16 +1,16 @@
 """Main script, where all the fun starts"""
 
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import argparse
 import asyncio
@@ -75,7 +75,7 @@ SESSIONS_DIR = os.path.join(BASE_DIR, "sessions")
 _CONFIG_CACHE: dict | None = None
 _CONFIG_MTIME_NS: int | None = None
 
-# fmt: off
+          
 LATIN_MOCK = [
     "Amor", "Arbor", "Astra", "Aurum", "Bellum", "Caelum",
     "Calor", "Candor", "Carpe", "Celer", "Certo", "Cibus",
@@ -107,7 +107,7 @@ LATIN_MOCK = [
     "Anyone", "Draher", "Hackimo", "Silvyr",
 
 ]
-# fmt: on
+         
 
 
 def generate_app_name() -> str:
@@ -335,17 +335,17 @@ def save_config_key(key: str, value: str) -> bool:
     global _CONFIG_CACHE, _CONFIG_MTIME_NS
 
     try:
-        # Try to open our newly created json config
+                                                   
         config = _read_config().copy()
     except FileNotFoundError:
-        # If it doesn't exist, just default config to none
-        # It won't cause problems, bc after new save
-        # we will create new one
+                                                          
+                                                    
+                                
         config = {}
 
-    # Assign config value
+                         
     config[key] = value
-    # And save config
+                     
     CONFIG_PATH.write_text(json.dumps(config, indent=4))
     _CONFIG_CACHE = config
     _CONFIG_MTIME_NS = CONFIG_PATH.stat().st_mtime_ns
@@ -593,9 +593,9 @@ class Boka:
         """Get API Token from disk or environment"""
         api_token_type = collections.namedtuple("api_token", ("ID", "HASH"))
 
-        # Try to retrieve credintials from config, or from env vars
+                                                                   
         try:
-            # Legacy migration
+                              
             if not get_config_key("api_id"):
                 api_id, api_hash = (
                     line.strip()
@@ -933,9 +933,9 @@ class Boka:
                     system_lang_code="en-US",
                 )
                 if session.server_address == "0.0.0.0":
-                    # Hardened: hosted-proxy sessions are refused. The userbot
-                    # always talks to Telegram directly, never through a local
-                    # proxy socket.
+                                                                              
+                                                                              
+                                   
                     logging.error(
                         "Refusing hosted/proxied session %s (server_address=0.0.0.0) "
                         "in hardened build",
@@ -959,7 +959,7 @@ class Boka:
                 Path(session.filename).unlink(missing_ok=True)
                 self.sessions.remove(session)
             except (ValueError, ApiIdInvalidError):
-                # Bad API hash/ID
+                                 
                 run_config()
                 return False
             except PhoneNumberInvalidError:
@@ -987,7 +987,7 @@ class Boka:
             client.hikka_me = me
             client.boka_me = me
 
-            #await version.check_branch(me.id, a_i, self)
+                                                         
 
             while await self.amain(first, client):
                 first = False
@@ -1154,8 +1154,8 @@ class Boka:
             )
         )
 
-        # Network remote-control list (allowed_ids.txt) removed for full autonomy.
-        # No external fetch happens at boot anymore.
+                                                                                  
+                                                    
         allowed_ids = []
 
         await asyncio.gather(

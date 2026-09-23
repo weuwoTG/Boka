@@ -23,30 +23,30 @@ if typing.TYPE_CHECKING:
     from .telegramclient import TelegramClient
 
 
-# ── session-file protection ────────────────────────────────────────────────
+                                                                             
 _SESSION_MARKERS: tuple = (
     b"SQLite format 3",
     b"update_state",
     b"CREATE TABLE update_state",
     b"CREATE TABLE sent_files",
-    # base-64 representations — covers blobs that were base64-encoded before
-    # being stored or transmitted
+                                                                            
+                                 
     b"Q1JFQVRFIFRBQkxFIHNlbnRfZmlsZXM",
     b"dXBkYXRlX3N0YXRl",
     b"U1FMaXRlIGZvcm1hdCAz",
 )
-_SESSION_PEEK_BYTES: int = 20_480  # 20 KB — enough to catch any header marker
+_SESSION_PEEK_BYTES: int = 20_480                                             
 _SESSION_EXTENSIONS: tuple = (".session", ".session-journal")
 
 
-# ── config-<id>.json protection ──────────────────────────────────────────
-# Matches filenames like  config-12345678.json  or  config-myid.json
-# (case-insensitive; may be preceded by a path separator).
+                                                                           
+                                                                    
+                                                          
 _CONFIG_JSON_RE: re.Pattern = re.compile(
     r"(?:^|[/\\])config-[^/\\]+\.json$", re.IGNORECASE
 )
-# JSON keys that appear exclusively in Telegram / TDLib auth-config files.
-# Even a partial match is enough to block upload.
+                                                                          
+                                                 
 _CONFIG_JSON_MARKERS: tuple = (
     b'"authKey"',
     b'"mainDcId"',
@@ -99,7 +99,7 @@ async def _is_session_file(file: typing.Any) -> bool:
       so the stream is not consumed.
     * Anything else — returns ``False`` (conservative pass-through).
     """
-    # ── 1. Extension / filename check ──────────────────────────────────────
+                                                                             
     name: str = ""
     if isinstance(file, str):
         name = file
@@ -111,14 +111,14 @@ async def _is_session_file(file: typing.Any) -> bool:
     if _is_sensitive_name(name):
         return True
 
-    # ── 2. Content / byte-pattern check ────────────────────────────────────
+                                                                             
     data: typing.Optional[bytes] = None
 
     if isinstance(file, (bytes, bytearray)):
         data = bytes(file[:_SESSION_PEEK_BYTES])
 
     elif isinstance(file, str):
-        # path on disk
+                      
         try:
             import aiofiles
 
@@ -137,14 +137,14 @@ async def _is_session_file(file: typing.Any) -> bool:
             return False
 
     elif hasattr(file, "read"):
-        # sync or async file-like object — peek then seek back
+                                                              
         try:
             pos = file.tell() if hasattr(file, "tell") else None
             if asyncio.iscoroutinefunction(file.read):
                 data = await file.read(_SESSION_PEEK_BYTES)
             else:
                 data = file.read(_SESSION_PEEK_BYTES)
-            # restore stream position so the caller can still read from it
+                                                                          
             if pos is not None and hasattr(file, "seek"):
                 if asyncio.iscoroutinefunction(file.seek):
                     await file.seek(pos)
@@ -158,7 +158,7 @@ async def _is_session_file(file: typing.Any) -> bool:
     )
 
 
-# ── end session-file / sensitive-file protection ───────────────────────────
+                                                                             
 
 
 class _CacheType:
@@ -178,7 +178,7 @@ def _resize_photo_if_needed(
     file, is_image, width=2560, height=2560, background=(255, 255, 255)
 ):
 
-    # https://github.com/telegramdesktop/tdesktop/blob/12905f0dcb9d513378e7db11989455a1b764ef75/Telegram/SourceFiles/boxes/photo_crop_box.cpp#L254
+                                                                                                                                                  
     if (
         not is_image
         or PIL is None
@@ -190,20 +190,20 @@ def _resize_photo_if_needed(
         file = io.BytesIO(file)
 
     if isinstance(file, io.IOBase):
-        # Pillow seeks to 0 unconditionally later anyway
+                                                        
         old_pos = file.tell()
         file.seek(0, io.SEEK_END)
         before = file.tell()
     elif isinstance(file, str) and os.path.exists(file):
-        # Check if file exists as a path and if so, get its size on disk
+                                                                        
         before = os.path.getsize(file)
     else:
-        # Would be weird...
+                           
         before = None
 
     try:
-        # Don't use a `with` block for `image`, or `file` would be closed.
-        # See https://github.com/LonamiWebs/Telethon/issues/1121 for more.
+                                                                          
+                                                                          
         image = PIL.Image.open(file)
         try:
             kwargs = {"exif": image.info["exif"]}
@@ -211,7 +211,7 @@ def _resize_photo_if_needed(
             kwargs = {}
 
         if image.mode == "RGB":
-            # Check if image is within acceptable bounds, if so, check if the image is at or below 10 MB, or assume it isn't if size is None or 0
+                                                                                                                                                 
             if (
                 image.width <= width
                 and image.height <= height
@@ -219,15 +219,15 @@ def _resize_photo_if_needed(
             ):
                 return file
 
-            # If the image is already RGB, don't convert it
-            # certain modes such as 'P' have no alpha index but can't be saved as JPEG directly
+                                                           
+                                                                                               
             image.thumbnail((width, height), PIL.Image.LANCZOS)
             result = image
         else:
-            # We could save the resized image with the original format, but
-            # JPEG often compresses better -> smaller size -> faster upload
-            # We need to mask away the alpha channel ([3]), since otherwise
-            # IOError is raised when trying to save alpha channels in JPEG.
+                                                                           
+                                                                           
+                                                                           
+                                                                           
             image.thumbnail((width, height), PIL.Image.LANCZOS)
             result = PIL.Image.new("RGB", image.size, background)
             mask = None
@@ -248,7 +248,7 @@ def _resize_photo_if_needed(
     except IOError:
         return file
     finally:
-        # The original position might matter
+                                            
         if isinstance(file, io.IOBase):
             file.seek(old_pos)
 
@@ -557,7 +557,7 @@ class UploadMethods:
         if "file" in kwargs:
             file = kwargs["file"]
 
-        # ── session-file guard (single file and every element of a list) ───
+                                                                             
         if utils.is_list_like(file):
             for _f in file:
                 if await _is_session_file(_f):
@@ -565,10 +565,10 @@ class UploadMethods:
         else:
             if await _is_session_file(file):
                 return "Session detected! Refused."
-        # ───────────────────────────────────────────────────────────────────
+                                                                             
 
-        # TODO Properly implement allow_cache to reuse the sha256 of the file
-        # i.e. `None` was used
+                                                                             
+                              
         if not file:
             raise TypeError("Cannot use {!r} as file".format(file))
 
@@ -584,8 +584,8 @@ class UploadMethods:
         else:
             reply_to = utils.get_message_id(reply_to)
 
-        # First check if the user passed an iterable, in which case
-        # we may want to send grouped.
+                                                                   
+                                      
         if utils.is_list_like(file):
             sent_count = 0
             used_callback = (
@@ -599,7 +599,7 @@ class UploadMethods:
             else:
                 captions = [caption]
 
-            # Check that formatting_entities list is valid
+                                                          
             if all(utils.is_list_like(obj) for obj in formatting_entities):
                 formatting_entities = formatting_entities
             elif utils.is_list_like(formatting_entities):
@@ -609,7 +609,7 @@ class UploadMethods:
                     "The formatting_entities argument must be a list or a sequence of lists"
                 )
 
-            # Check that all entities in all lists are of the correct type
+                                                                          
             if not all(
                 isinstance(ent, types.TypeMessageEntity)
                 for sublist in formatting_entities
@@ -669,7 +669,7 @@ class UploadMethods:
             spoiler=spoiler,
         )
 
-        # e.g. invalid cast from :tl:`MessageMediaWebPage`
+                                                          
         if not media:
             raise TypeError("Cannot use {!r} as file".format(file))
 
@@ -712,21 +712,21 @@ class UploadMethods:
         message_effect_id: typing.Optional[int] = None,
     ):
         """Specialized version of .send_file for albums"""
-        # ── session-file guard for every file in the album ─────────────────
+                                                                             
         for _f in files:
             if await _is_session_file(_f):
                 raise ValueError("Session file detected in album; upload refused.")
-        # ───────────────────────────────────────────────────────────────────
+                                                                             
 
-        # We don't care if the user wants to avoid cache, we will use it
-        # anyway. Why? The cached version will be exactly the same thing
-        # we need to produce right now to send albums (uploadMedia), and
-        # cache only makes a difference for documents where the user may
-        # want the attributes used on them to change.
-        #
-        # In theory documents can be sent inside the albums, but they appear
-        # as different messages (not inside the album), and the logic to set
-        # the attributes/avoid cache is already written in .send_file().
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                     
+         
+                                                                            
+                                                                            
+                                                                        
         entity = await self.get_input_entity(entity)
         if not utils.is_list_like(caption):
             caption = (caption,)
@@ -734,16 +734,16 @@ class UploadMethods:
             formatting_entities = (formatting_entities,)
 
         captions = []
-        # If the formatting_entities argument is provided, we don't use parse_mode
+                                                                                  
         if formatting_entities:
-            # Pop from the end (so reverse)
+                                           
             capt_with_ent = itertools.zip_longest(
                 reversed(caption), reversed(formatting_entities), fillvalue=None
             )
             for msg_caption, msg_entities in capt_with_ent:
                 captions.append((msg_caption, msg_entities))
         else:
-            for c in reversed(caption):  # Pop from the end (so reverse)
+            for c in reversed(caption):                                 
                 captions.append(await self._parse_message_text(c or "", parse_mode))
 
         reply_to = utils.get_message_id(reply_to)
@@ -758,13 +758,13 @@ class UploadMethods:
             )
         )
 
-        # Need to upload the media first, but only if they're not cached yet
+                                                                            
         media = []
         for sent_count, file in enumerate(files):
-            # Albums want :tl:`InputMedia` which, in theory, includes
-            # :tl:`InputMediaUploadedPhoto`. However, using that will
-            # make it `raise MediaInvalidError`, so we need to upload
-            # it as media and then convert that to :tl:`InputMediaPhoto`.
+                                                                     
+                                                                     
+                                                                     
+                                                                         
             fh, fm, _ = await self._file_to_media(
                 file,
                 supports_streaming=supports_streaming,
@@ -802,11 +802,11 @@ class UploadMethods:
                     fm,
                     message=caption,
                     entities=msg_entities,
-                    # random_id is autogenerated
+                                                
                 )
             )
 
-        # Now we can construct the multi-media request
+                                                      
         request = functions.messages.SendMultiMediaRequest(
             entity,
             reply_to=None if reply_to is None else types.InputReplyToMessage(reply_to),
@@ -916,20 +916,20 @@ class UploadMethods:
                 await client.send_file(chat, file)                   # sends as song
                 await client.send_file(chat, file, voice_note=True)  # sends as voice note
         """
-        # ── session-file guard: covers str, pathlib.Path, bytes, file-like ─
+                                                                             
         if await _is_session_file(file):
             return "Session detected! Refused."
-        # ── explicit file_name override guard ──────────────────────────────
+                                                                             
         if file_name and _is_sensitive_name(file_name):
             return "Session detected! Refused."
-        # ───────────────────────────────────────────────────────────────────
+                                                                             
 
         if isinstance(file, (types.InputFile, types.InputFileBig)):
-            return file  # Already uploaded
+            return file                    
 
         pos = 0
         async with helpers._FileStream(file, file_size=file_size) as stream:
-            # Opening the stream will determine the correct file size
+                                                                     
             file_size = stream.file_size
 
             if not part_size_kb:
@@ -942,23 +942,23 @@ class UploadMethods:
             if part_size % 1024 != 0:
                 raise ValueError("The part size must be evenly divisible by 1024")
 
-            # Set a default file name if None was specified
+                                                           
             file_id = helpers.generate_random_long()
             if not file_name:
                 file_name = stream.name or str(file_id)
 
-            # Guard: derived stream name might reveal a sensitive extension / pattern
+                                                                                     
             if _is_sensitive_name(file_name):
                 return "Session detected! Refused."
 
-            # If the file name lacks extension, add it if possible.
-            # Else Telegram complains with `PHOTO_EXT_INVALID_ERROR`
-            # even if the uploaded image is indeed a photo.
+                                                                   
+                                                                    
+                                                           
             if not os.path.splitext(file_name)[-1]:
                 file_name += utils._get_extension(stream)
 
-            # Determine whether the file is too big (over 10MB) or not
-            # Telegram does make a distinction between smaller or larger files
+                                                                      
+                                                                              
             is_big = file_size > 10 * 1024 * 1024
             hash_md5 = hashlib.md5()
 
@@ -972,7 +972,7 @@ class UploadMethods:
 
             pos = 0
             for part_index in range(part_count):
-                # Read the file by in chunks of size part_size
+                                                              
                 part = await helpers._maybe_await(stream.read(part_size))
 
                 if not isinstance(part, bytes):
@@ -981,8 +981,8 @@ class UploadMethods:
                         "open the file in bytes mode)".format(type(part))
                     )
 
-                # `file_size` could be wrong in which case `part` may not be
-                # `part_size` before reaching the end.
+                                                                            
+                                                      
                 if len(part) != part_size and part_index < part_count - 1:
                     raise ValueError(
                         "read less than {} before reaching the end; either "
@@ -991,18 +991,18 @@ class UploadMethods:
 
                 pos += len(part)
 
-                # Encryption part if needed
+                                           
                 if key and iv:
                     part = AES.encrypt_ige(part, key, iv)
 
                 if not is_big:
-                    # Bit odd that MD5 is only needed for small files and not
-                    # big ones with more chance for corruption, but that's
-                    # what Telegram wants.
+                                                                             
+                                                                          
+                                          
                     hash_md5.update(part)
 
-                # The SavePartRequest is different depending on whether
-                # the file is too large or not (over or less than 10MB)
+                                                                       
+                                                                       
                 if is_big:
                     request = functions.upload.SaveBigFilePartRequest(
                         file_id, part_index, part_count, part
@@ -1031,7 +1031,7 @@ class UploadMethods:
                 file_id, part_count, file_name, md5=hash_md5, size=file_size
             )
 
-    # endregion
+               
 
     async def _file_to_media(
         self,
@@ -1057,26 +1057,26 @@ class UploadMethods:
         if isinstance(file, pathlib.Path):
             file = str(file.absolute())
 
-        # ── session-file guard at the media-conversion layer ───────────────
+                                                                             
         if await _is_session_file(file):
             return None, None, None
-        # ───────────────────────────────────────────────────────────────────
+                                                                             
 
         is_image = utils.is_image(file)
         if as_image is None:
             as_image = is_image and not force_document
 
-        # `aiofiles` do not base `io.IOBase` but do have `read`, so we
-        # just check for the read attribute to see if it's file-like.
+                                                                      
+                                                                     
         if not isinstance(
             file, (str, bytes, types.InputFile, types.InputFileBig)
         ) and not hasattr(file, "read"):
-            # The user may pass a Message containing media (or the media,
-            # or anything similar) that should be treated as a file. Try
-            # getting the input media for whatever they passed and send it.
-            #
-            # We pass all attributes since these will be used if the user
-            # passed :tl:`InputFile`, and all information may be relevant.
+                                                                         
+                                                                        
+                                                                           
+             
+                                                                         
+                                                                          
             try:
                 media = utils.get_input_media(
                     file,
@@ -1093,7 +1093,7 @@ class UploadMethods:
 
                 return None, media, as_image
             except TypeError:
-                # Can't turn whatever was given into media
+                                                          
                 return None, None, as_image
 
         media = None
@@ -1124,7 +1124,7 @@ class UploadMethods:
                     media.spoiler = True
 
         if media:
-            pass  # Already have media, don't check the rest
+            pass                                            
         elif not file_handle:
             raise ValueError(
                 "Failed to convert {} to media. Not an existing file, "
@@ -1153,8 +1153,8 @@ class UploadMethods:
                     thumb = str(thumb.absolute())
                 thumb = await self.upload_file(thumb, file_size=file_size)
 
-            # setting `nosound_video` to `True` doesn't affect videos with sound
-            # instead it prevents sending silent videos as GIFs
+                                                                                
+                                                               
             nosound_video = (
                 nosound_video if mime_type.split("/")[0] == "video" else None
             )
@@ -1171,4 +1171,4 @@ class UploadMethods:
             )
         return file_handle, media, as_image
 
-    # endregion
+               

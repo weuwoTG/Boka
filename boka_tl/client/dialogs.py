@@ -47,7 +47,7 @@ class _DialogsIter(RequestIter):
         )
 
         if self.limit <= 0:
-            # Special case, get a single dialog and determine count
+                                                                   
             dialogs = await self.client(self.request)
             self.total = getattr(dialogs, "count", len(dialogs.dialogs))
             raise StopAsyncIteration
@@ -76,7 +76,7 @@ class _DialogsIter(RequestIter):
             messages[_dialog_message_key(m.peer_id, m.id)] = m
 
         for d in r.dialogs:
-            # We check the offset date here because Telegram may ignore it
+                                                                          
             message = messages.get(_dialog_message_key(d.peer, d.top_message))
             if self.offset_date:
                 date = getattr(message, "date", None)
@@ -87,9 +87,9 @@ class _DialogsIter(RequestIter):
             if peer_id not in self.seen:
                 self.seen.add(peer_id)
                 if peer_id not in entities:
-                    # > In which case can a UserEmpty appear in the list of banned members?
-                    # > In a very rare cases. This is possible but isn't an expected behavior.
-                    # Real world example: https://t.me/TelethonChat/271471
+                                                                                           
+                                                                                              
+                                                                          
                     continue
 
                 cd = custom.Dialog(self.client, d, entities, message)
@@ -109,15 +109,15 @@ class _DialogsIter(RequestIter):
             or len(r.dialogs) < self.request.limit
             or not isinstance(r, types.messages.DialogsSlice)
         ):
-            # Buffer being empty means all returned dialogs were skipped (due to offsets).
-            # Less than we requested means we reached the end, or
-            # we didn't get a DialogsSlice which means we got all.
+                                                                                          
+                                                                 
+                                                                  
             return True
 
-        # We can't use `messages[-1]` as the offset ID / date.
-        # Why? Because pinned dialogs will mess with the order
-        # in this list. Instead, we find the last dialog which
-        # has a message, and use it as an offset.
+                                                              
+                                                              
+                                                              
+                                                 
         last_message = next(
             filter(
                 None,
@@ -150,7 +150,7 @@ class _DraftsIter(RequestIter):
             r = await self.client(functions.messages.GetPeerDialogsRequest(peers))
             items = r.dialogs
 
-        # TODO Maybe there should be a helper method for this?
+                                                              
         entities = {utils.get_peer_id(x): x for x in itertools.chain(r.users, r.chats)}
 
         self.buffer.extend(
@@ -164,7 +164,7 @@ class _DraftsIter(RequestIter):
 
 class DialogMethods:
 
-    # region Public methods
+                           
 
     def iter_dialogs(
         self: "TelegramClient",
@@ -313,7 +313,7 @@ class DialogMethods:
         if entity and not utils.is_list_like(entity):
             entity = (entity,)
 
-        # TODO Passing a limit here makes no sense
+                                                  
         return _DraftsIter(self, None, entities=entity)
 
     async def get_drafts(
@@ -463,8 +463,8 @@ class DialogMethods:
                 # Leaving a channel by username
                 await client.delete_dialog('username')
         """
-        # If we have enough information (`Dialog.delete` gives it to us),
-        # then we know we don't have to kick ourselves in deactivated chats.
+                                                                         
+                                                                            
         if isinstance(entity, types.Chat):
             deactivated = entity.deactivated
         else:
@@ -483,7 +483,7 @@ class DialogMethods:
                     )
                 )
             except errors.PeerIdInvalidError:
-                # Happens if we didn't have the deactivated information
+                                                                       
                 result = None
         else:
             result = None
@@ -629,4 +629,4 @@ class DialogMethods:
             replies_are_responses=replies_are_responses,
         )
 
-    # endregion
+               

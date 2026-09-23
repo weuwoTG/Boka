@@ -4,16 +4,16 @@ from .. import functions, types
 from ... import utils
 
 _TYPE_TO_MIMES = {
-    "gif": ["image/gif"],  # 'video/mp4' too, but that's used for video
+    "gif": ["image/gif"],                                              
     "article": ["text/html"],
     "audio": ["audio/mpeg"],
     "contact": [],
-    "file": ["application/pdf", "application/zip"],  # actually any
+    "file": ["application/pdf", "application/zip"],                
     "geo": [],
     "photo": ["image/jpeg"],
     "sticker": ["image/webp", "application/x-tgsticker"],
     "venue": [],
-    "video": ["video/mp4"],  # tdlib includes text/html for some reason
+    "video": ["video/mp4"],                                            
     "voice": ["audio/ogg"],
 }
 
@@ -71,7 +71,7 @@ class InlineBuilder:
     def __init__(self, client):
         self._client = client
 
-    # noinspection PyIncorrectDocstring
+                                       
     async def article(
         self,
         title,
@@ -136,9 +136,9 @@ class InlineBuilder:
                     ),
                 ]
         """
-        # TODO Does 'article' work always?
-        # article, photo, gif, mpeg4_gif, video, audio,
-        # voice, document, location, venue, contact, game
+                                          
+                                                       
+                                                         
         result = types.InputBotInlineResult(
             id=id or "",
             type="article",
@@ -163,7 +163,7 @@ class InlineBuilder:
 
         return result
 
-    # noinspection PyIncorrectDocstring
+                                       
     async def photo(
         self,
         file,
@@ -251,7 +251,7 @@ class InlineBuilder:
 
         return result
 
-    # noinspection PyIncorrectDocstring
+                                       
     async def document(
         self,
         file,
@@ -373,9 +373,9 @@ class InlineBuilder:
             type=type,
             document=fh,
             send_message=await self._message(
-                # Empty string for text if there's media but text is None.
-                # We may want to display a document but send text; however
-                # default to sending the media (without text, i.e. stickers).
+                                                                          
+                                                                          
+                                                                             
                 text=text or "",
                 parse_mode=parse_mode,
                 link_preview=link_preview,
@@ -394,7 +394,7 @@ class InlineBuilder:
 
         return result
 
-    # noinspection PyIncorrectDocstring
+                                       
     async def game(
         self,
         short_name,
@@ -448,7 +448,7 @@ class InlineBuilder:
         game=False,
         buttons=None
     ):
-        # Empty strings are valid but false-y; if they're empty use dummy '\0'
+                                                                              
         args = ("\0" if text == "" else text, geo, contact, game)
         if sum(1 for x in args if x is not None and x is not False) != 1:
             raise ValueError(
@@ -466,9 +466,9 @@ class InlineBuilder:
                 text, parse_mode
             )
             if media:
-                # "MediaAuto" means it will use whatever media the inline
-                # result itself has (stickers, photos, or documents), while
-                # respecting the user's text (caption) and formatting.
+                                                                         
+                                                                           
+                                                                      
                 return types.InputBotInlineMessageMediaAuto(
                     message=text, entities=msg_entities, reply_markup=markup
                 )

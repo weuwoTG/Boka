@@ -1,16 +1,16 @@
 """Inline buttons, galleries and other Telethon bot stuff"""
 
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import asyncio
 import contextlib
@@ -96,14 +96,14 @@ BotUpdateType = typing.Literal[
 ]
 
 _BOT_UPDATE_EVENTS: dict[BotUpdateType, typing.Callable[[], object]] = {
-    # Default updates
+                     
     "message": lambda: events.NewMessage(),
     "edited_message": lambda: events.MessageEdited(),
     "channel_post": lambda: events.NewMessage(),
     "edited_channel_post": lambda: events.MessageEdited(),
     "inline_query": lambda: events.InlineQuery(),
     "callback_query": lambda: events.CallbackQuery(),
-    # Raw-based
+               
     "chosen_inline_result": lambda: events.Raw(types=UpdateBotInlineSend),
     "shipping_query": lambda: events.Raw(types=UpdateBotShippingQuery),
     "pre_checkout_query": lambda: events.Raw(types=UpdateBotPrecheckoutQuery),
@@ -147,7 +147,7 @@ class InlineManager(
         self,
         client: CustomTelegramClient,
         db: Database,
-        allmodules: "Modules",  # type: ignore  # noqa: F821
+        allmodules: "Modules",                              
     ):
         """Initialize InlineManager to create forms"""
         self._client = client
@@ -469,7 +469,7 @@ class InlineManager(
         event = asyncio.Event()
         self._error_events[unit_id] = event
 
-        q: "InlineResults" = None  # type: ignore  # noqa: F821
+        q: "InlineResults" = None                              
         exception: Exception = None
 
         async def result_getter():
@@ -497,7 +497,7 @@ class InlineManager(
         self._error_events.pop(unit_id, None)
 
         if exception:
-            raise exception  # skipcq: PYL-E0702
+            raise exception                     
 
         if not q:
             raise Exception("No query results")

@@ -43,7 +43,7 @@ class ChatGetter(abc.ABC):
         If you need to call a method which needs
         this chat, use `get_input_chat()` instead.
         """
-        # See `get_sender` for information about 'min'.
+                                                       
         if (
             self._chat is None or getattr(self._chat, "min", None)
         ) and await self.get_input_chat():
@@ -82,7 +82,7 @@ class ChatGetter(abc.ABC):
         """
         if self.input_chat is None and self.chat_id and self._client:
             try:
-                # The chat may be recent, look in dialogs
+                                                         
                 target = self.chat_id
                 async for d in self._client.iter_dialogs(100):
                     if d.id == target:
@@ -127,7 +127,7 @@ class ChatGetter(abc.ABC):
         Returns `None` if there isn't enough information
         (e.g. on `events.MessageDeleted <telethon.events.messagedeleted.MessageDeleted>`).
         """
-        # TODO Cache could tell us more in the future
+                                                     
         if self._broadcast is None and hasattr(self.chat, "broadcast"):
             self._broadcast = bool(self.chat.broadcast)
 
@@ -142,8 +142,8 @@ class ChatGetter(abc.ABC):
     @property
     def is_channel(self):
         """`True` if the message was sent on a megagroup or channel."""
-        # The only case where chat peer could be none is in MessageDeleted,
-        # however those always have the peer in channels.
+                                                                           
+                                                         
         return isinstance(self._chat_peer, types.PeerChannel)
 
     async def _refetch_chat(self):

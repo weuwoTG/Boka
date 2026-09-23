@@ -79,7 +79,7 @@ class Dialog:
     """
 
     def __init__(self, client, dialog, entities, message):
-        # Both entities and messages being dicts {ID: item}
+                                                           
         self._client = client
         self.dialog = dialog
         self.pinned = bool(dialog.pinned)
@@ -90,7 +90,7 @@ class Dialog:
 
         self.entity = entities[utils.get_peer_id(dialog.peer)]
         self.input_entity = utils.get_input_peer(self.entity)
-        self.id = utils.get_peer_id(self.entity)  # ^ May be InputPeerSelf()
+        self.id = utils.get_peer_id(self.entity)                            
         self.name = self.title = utils.get_display_name(self.entity)
 
         self.unread_count = dialog.unread_count
@@ -122,9 +122,9 @@ class Dialog:
         Shorthand for `telethon.client.dialogs.DialogMethods.delete_dialog`
         with ``entity`` already set.
         """
-        # Pass the entire entity so the method can determine whether
-        # the `Chat` is deactivated (in which case we don't kick ourselves,
-        # or it would raise `PEER_ID_INVALID`).
+                                                                    
+                                                                           
+                                               
         await self._client.delete_dialog(self.entity, revoke=revoke)
 
     async def archive(self, folder=1):

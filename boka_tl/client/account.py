@@ -10,8 +10,8 @@ if typing.TYPE_CHECKING:
     from .telegramclient import TelegramClient
 
 
-# TODO Make use of :tl:`InvokeWithMessagesRange` somehow
-#      For that, we need to use :tl:`GetSplitRanges` first.
+                                                        
+                                                           
 class _TakeoutClient:
     """
     Proxy object over the client.
@@ -20,9 +20,9 @@ class _TakeoutClient:
     __PROXY_INTERFACE = ("__enter__", "__exit__", "__aenter__", "__aexit__")
 
     def __init__(self, finalize, client, request):
-        # We use the name mangling for attributes to make them inaccessible
-        # from within the shadowed client object and to distinguish them from
-        # its own attributes where needed.
+                                                                           
+                                                                             
+                                          
         self.__finalize = finalize
         self.__client = client
         self.__request = request
@@ -37,7 +37,7 @@ class _TakeoutClient:
         self.__success = value
 
     async def __aenter__(self):
-        # Enter/Exit behaviour is "overrode", we don't want to call start.
+                                                                          
         client = self.__client
         if client.session.takeout_id is None:
             client.session.takeout_id = (await client(self.__request)).id
@@ -83,30 +83,30 @@ class _TakeoutClient:
         return await self.__client(wrapped[0] if single else wrapped, ordered=ordered)
 
     def __getattribute__(self, name):
-        # We access class via type() because __class__ will recurse infinitely.
-        # Also note that since we've name-mangled our own class attributes,
-        # they'll be passed to __getattribute__() as already decorated. For
-        # example, 'self.__client' will be passed as '_TakeoutClient__client'.
-        # https://docs.python.org/3/tutorial/classes.html#private-variables
+                                                                               
+                                                                           
+                                                                           
+                                                                              
+                                                                           
         if name.startswith("__") and name not in type(self).__PROXY_INTERFACE:
-            raise AttributeError  # force call of __getattr__
+            raise AttributeError                             
 
-        # Try to access attribute in the proxy object and check for the same
-        # attribute in the shadowed object (through our __getattr__) if failed.
+                                                                            
+                                                                               
         return super().__getattribute__(name)
 
     def __getattr__(self, name):
         value = getattr(self.__client, name)
         if inspect.ismethod(value):
-            # Emulate bound methods behavior by partially applying our proxy
-            # class as the self parameter instead of the client.
+                                                                            
+                                                                
             return functools.partial(getattr(self.__client.__class__, name), self)
 
         return value
 
     def __setattr__(self, name, value):
         if name.startswith("_{}__".format(type(self).__name__.lstrip("_"))):
-            # This is our own name-mangled attribute, keep calm.
+                                                                
             return super().__setattr__(name, value)
         return setattr(self.__client, name, value)
 

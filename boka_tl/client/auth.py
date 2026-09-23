@@ -15,13 +15,13 @@ if typing.TYPE_CHECKING:
 
 class AuthMethods:
 
-    # region Public methods
+                           
 
     def start(
         self: "TelegramClient",
         phone: typing.Union[typing.Callable[[], str], str] = lambda: input(
             "Please enter your phone number: "
-        ),  # skip merge
+        ),              
         password: typing.Union[typing.Callable[[], str], str] = lambda: getpass.getpass(
             "Please enter your password: "
         ),
@@ -148,16 +148,16 @@ class AuthMethods:
         if not self.is_connected():
             await self.connect()
 
-        # Rather than using `is_user_authorized`, use `get_me`. While this is
-        # more expensive and needs to retrieve more data from the server, it
-        # enables the library to warn users trying to login to a different
-        # account. See #1172.
+                                                                             
+                                                                            
+                                                                          
+                             
         me = await self.get_me()
         if me is not None:
-            # The warnings here are on a best-effort and may fail.
+                                                                  
             if bot_token:
-                # bot_token's first part has the bot ID, but it may be invalid
-                # so don't try to parse as int (instead cast our ID to string).
+                                                                              
+                                                                               
                 if bot_token[: bot_token.find(":")] != str(me.id):
                     warnings.warn(
                         "the session already had an authorized user so it did "
@@ -176,14 +176,14 @@ class AuthMethods:
             return self
 
         if not bot_token:
-            # Turn the callable into a valid phone number (or bot token)
+                                                                        
             while callable(phone):
                 value = phone()
                 if inspect.isawaitable(value):
                     value = await value
 
                 if ":" in value:
-                    # Bot tokens have 'user_id:access_hash' format
+                                                                  
                     bot_token = value
                     break
 
@@ -204,13 +204,13 @@ class AuthMethods:
                 if inspect.isawaitable(value):
                     value = await value
 
-                # Since sign-in with no code works (it sends the code)
-                # we must double-check that here. Else we'll assume we
-                # logged in, and it will return None as the User.
+                                                                      
+                                                                      
+                                                                 
                 if not value:
                     raise errors.PhoneCodeEmptyError(request=None)
 
-                # Raises SessionPasswordNeededError if 2FA enabled
+                                                                  
                 me = await self.sign_in(phone, code=value)
                 break
             except errors.SessionPasswordNeededError:
@@ -253,13 +253,13 @@ class AuthMethods:
             else:
                 me = await self.sign_in(phone=phone, password=password)
 
-        # We won't reach here if any step failed (exit by exception)
+                                                                    
         signed, name = "Signed in successfully as ", utils.get_display_name(me)
         tos = "; remember to not break the ToS or you will risk an account ban!"
         try:
             print(signed, name, tos, sep="")
         except UnicodeEncodeError:
-            # Some terminals don't support certain characters
+                                                             
             print(
                 signed,
                 name.encode("utf-8", errors="ignore").decode("ascii", errors="ignore"),
@@ -350,8 +350,8 @@ class AuthMethods:
         elif code:
             phone, phone_code_hash = self._parse_phone_and_hash(phone, phone_code_hash)
 
-            # May raise PhoneCodeEmptyError, PhoneCodeExpiredError,
-            # PhoneCodeHashEmptyError or PhoneCodeInvalidError.
+                                                                   
+                                                               
             request = functions.auth.SignInRequest(phone, phone_code_hash, str(code))
         elif password:
             pwd = await self(functions.account.GetPasswordRequest())
@@ -378,7 +378,7 @@ class AuthMethods:
             raise
 
         if isinstance(result, types.auth.AuthorizationSignUpRequired):
-            # Emulate pre-layer 104 behaviour
+                                             
             self._tos = result.terms_of_service
             raise errors.PhoneNumberUnoccupiedError(request=request)
 
@@ -411,7 +411,7 @@ class AuthMethods:
         self._authorized = True
 
         state = await self(functions.updates.GetStateRequest())
-        # the server may send an old qts in getState
+                                                    
         difference = await self(
             functions.updates.GetDifferenceRequest(
                 pts=state.pts, date=state.date, qts=state.qts
@@ -484,15 +484,15 @@ class AuthMethods:
                     phone, force_sms=force_sms, _retry_count=_retry_count + 1
                 )
 
-            # TODO figure out when/if/how this can happen
+                                                         
             if isinstance(result, types.auth.SentCodeSuccess):
                 raise RuntimeError("logged in right after sending the code")
 
-            # If we already sent a SMS, do not resend the code (hash may be empty)
+                                                                                  
             if isinstance(result.type, types.auth.SentCodeTypeSms):
                 force_sms = False
 
-            # phone_code_hash may be empty, if it is, do not save it (#1283)
+                                                                            
             if result.phone_code_hash:
                 self._phone_code_hash[phone] = phone_hash = result.phone_code_hash
         else:
@@ -587,7 +587,7 @@ class AuthMethods:
         self._authorized = False
 
         await self.disconnect()
-        self.session.delete()  # skip maybe_async
+        self.session.delete()                    
         self.session = None
         return True
 
@@ -698,9 +698,9 @@ class AuthMethods:
 
         return True
 
-    # endregion
+               
 
-    # region with blocks
+                        
 
     async def __aenter__(self):
         return await self.start()
@@ -711,4 +711,4 @@ class AuthMethods:
     __enter__ = helpers._sync_enter
     __exit__ = helpers._sync_exit
 
-    # endregion
+               

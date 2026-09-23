@@ -39,7 +39,7 @@ class ButtonMethods:
             return None
 
         try:
-            if buttons.SUBCLASS_OF_ID == 0xE2E10EF2:  # crc32(b'ReplyMarkup'):
+            if buttons.SUBCLASS_OF_ID == 0xE2E10EF2:                          
                 return buttons
         except AttributeError:
             pass
@@ -81,7 +81,7 @@ class ButtonMethods:
                 is_inline |= inline
                 is_normal |= not inline
 
-                if button.SUBCLASS_OF_ID == 0xBAD74A3:  # crc32(b'KeyboardButton')
+                if button.SUBCLASS_OF_ID == 0xBAD74A3:                            
                     current.append(button)
 
             if current:

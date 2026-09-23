@@ -9,8 +9,8 @@ from .. import TLObject, types, functions, alltlobjects
 from ... import utils, errors
 
 
-# TODO Figure out a way to have the code generator error on missing fields
-# Maybe parsing the init function alone if that's possible.
+                                                                          
+                                                           
 class Message(ChatGetter, SenderGetter, TLObject):
     """
     This custom class aggregates both :tl:`Message` and
@@ -170,7 +170,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
         saved_peer_id (:tl:`Peer`)
     """
 
-    # region Initialization
+                           
 
     def __init__(
         self,
@@ -178,7 +178,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
         peer_id: types.TypePeer,
         date: Optional[datetime] = None,
         message: Optional[str] = None,
-        # Copied from Message.__init__ signature
+                                                
         out: Optional[bool] = None,
         mentioned: Optional[bool] = None,
         media_unread: Optional[bool] = None,
@@ -224,11 +224,11 @@ class Message(ChatGetter, SenderGetter, TLObject):
         schedule_repeat_period: Optional[int] = None,
         summary_from_language: Optional[str] = None,
         rich_message: Optional[types.RichMessage] = None,
-        # Copied from MessageService.__init__ signature
+                                                       
         action: Optional[types.TypeMessageAction] = None,
         reactions_are_possible: Optional[bool] = None,
     ):
-        # Copied from Message.__init__ body
+                                           
         self.id = id
         self.peer_id = peer_id
         self.date = date
@@ -278,12 +278,12 @@ class Message(ChatGetter, SenderGetter, TLObject):
         self.schedule_repeat_period = schedule_repeat_period
         self.summary_from_language = summary_from_language
         self.rich_message = rich_message
-        # Copied from MessageService.__init__ body
+                                                  
         self.action = action
         self.reactions_are_possible = reactions_are_possible
 
-        # Convenient storage for custom functions
-        # TODO This is becoming a bit of bloat
+                                                 
+                                              
         self._client = None
         self._text = None
         self._file = None
@@ -300,14 +300,14 @@ class Message(ChatGetter, SenderGetter, TLObject):
         if from_id is not None:
             sender_id = utils.get_peer_id(from_id)
         elif peer_id:
-            # If the message comes from a Channel, let the sender be it
-            # ...or...
-            # incoming messages in private conversations no longer have from_id
-            # (layer 119+), but the sender can only be the chat we're in.
+                                                                       
+                      
+                                                                               
+                                                                         
             if post or (not out and isinstance(peer_id, types.PeerUser)):
                 sender_id = utils.get_peer_id(peer_id)
 
-        # Note that these calls would reset the client
+                                                      
         ChatGetter.__init__(self, peer_id, broadcast=post)
         SenderGetter.__init__(self, sender_id)
 
@@ -325,8 +325,8 @@ class Message(ChatGetter, SenderGetter, TLObject):
         """
         self._client = client
 
-        # Make messages sent to ourselves outgoing unless they're forwarded.
-        # This makes it consistent with official client's appearance.
+                                                                            
+                                                                     
         if self.peer_id == types.PeerUser(client._self_id) and not self.fwd_from:
             self.out = True
 
@@ -340,7 +340,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
             self.chat_id, entities, cache
         )
 
-        if input_chat:  # This has priority
+        if input_chat:                     
             self._input_chat = input_chat
 
         if self.via_bot_id:
@@ -388,9 +388,9 @@ class Message(ChatGetter, SenderGetter, TLObject):
                         utils.get_peer_id(self.reply_to.reply_from.from_id)
                     )
 
-    # endregion Initialization
+                              
 
-    # region Public Properties
+                              
 
     @property
     def client(self):
@@ -513,7 +513,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
                 bot = self._needed_markup_bot()
             except ValueError:
                 await self._reload_message()
-                bot = self._needed_markup_bot()  # TODO use via_input_bot
+                bot = self._needed_markup_bot()                          
 
             self._set_buttons(chat, bot)
 
@@ -758,16 +758,16 @@ class Message(ChatGetter, SenderGetter, TLObject):
         Returns the peer to which this message was sent to. This used to exist
         to infer the ``.peer_id``.
         """
-        # If the client wasn't set we can't emulate the behaviour correctly,
-        # so as a best-effort simply return the chat peer.
+                                                                            
+                                                          
         if self._client and not self.out and self.is_private:
             return types.PeerUser(self._client._self_id)
 
         return self.peer_id
 
-    # endregion Public Properties
+                                 
 
-    # region Public Methods
+                           
 
     def get_entities_text(self, cls=None):
         """
@@ -819,17 +819,17 @@ class Message(ChatGetter, SenderGetter, TLObject):
             if not isinstance(self.reply_to, types.MessageReplyHeader):
                 return None
 
-            # Bots cannot access other bots' messages by their ID.
-            # However they can access them through replies...
+                                                                  
+                                                             
             self._reply_message = await self._client.get_messages(
                 await self.get_input_chat() if self.is_channel else None,
                 ids=types.InputMessageReplyTo(self.id),
             )
             if not self._reply_message:
-                # ...unless the current message got deleted.
-                #
-                # If that's the case, give it a second chance accessing
-                # directly by its ID.
+                                                            
+                 
+                                                                       
+                                     
                 self._reply_message = await self._client.get_messages(
                     self._input_chat if self.is_channel else None,
                     ids=self.reply_to.reply_to_msg_id,
@@ -946,8 +946,8 @@ class Message(ChatGetter, SenderGetter, TLObject):
         with the ``message`` already set.
         """
         if self._client:
-            # Passing the entire message is important, in case it has to be
-            # refetched for a fresh file reference.
+                                                                           
+                                                   
             return await self._client.download_media(self, *args, **kwargs)
 
     async def click(
@@ -1091,7 +1091,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
         if sum(int(x is not None) for x in (i, text, filter)) >= 2:
             raise ValueError("You can only set either of i, text or filter")
 
-        # Finding the desired poll options and sending them
+                                                           
         if self.poll is not None:
 
             def find_options():
@@ -1127,7 +1127,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
             )
 
         if not await self.get_buttons():
-            return  # Accessing the property sets self._buttons[_flat]
+            return                                                    
 
         def find_button():
             nonlocal i
@@ -1182,9 +1182,9 @@ class Message(ChatGetter, SenderGetter, TLObject):
         `telethon.client.messages.MessageMethods.pin_message`
         with both ``entity`` and ``message`` already set.
         """
-        # TODO Constantly checking if client is a bit annoying,
-        #      maybe just make it illegal to call messages from raw API?
-        #      That or figure out a way to always set it directly.
+                                                               
+                                                                        
+                                                                  
         if self._client:
             return await self._client.pin_message(
                 await self.get_input_chat(),
@@ -1204,9 +1204,9 @@ class Message(ChatGetter, SenderGetter, TLObject):
                 await self.get_input_chat(), self.id
             )
 
-    # endregion Public Methods
+                              
 
-    # region Private Methods
+                            
 
     async def _reload_message(self):
         """
@@ -1220,9 +1220,9 @@ class Message(ChatGetter, SenderGetter, TLObject):
             chat = await self.get_input_chat() if self.is_channel else None
             msg = await self._client.get_messages(chat, ids=self.id)
         except ValueError:
-            return  # We may not have the input chat/get message failed
+            return                                                     
         if not msg:
-            return  # The message may be deleted and it will be None
+            return                                                  
 
         self._sender = msg._sender
         self._input_sender = msg._input_sender
@@ -1268,7 +1268,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
         for row in self.reply_markup.rows:
             for button in row.buttons:
                 if isinstance(button, types.KeyboardButtonSwitchInline):
-                    # no via_bot_id means the bot sent the message itself (#1619)
+                                                                                 
                     if button.same_peer or not self.via_bot_id:
                         bot = self.input_sender
                         if not bot:
@@ -1295,10 +1295,10 @@ class Message(ChatGetter, SenderGetter, TLObject):
                         return doc
                     return None
 
-    # endregion Private Methods
-    async def react(  # skip merge
+                               
+    async def react(              
         self,
-        reaction: "typing.Optional[hints.Reaction]" = None,  # type: ignore
+        reaction: "typing.Optional[hints.Reaction]" = None,                
         big: bool = False,
         add_to_recent: bool = False,
         keep_existing: bool = False,
@@ -1318,7 +1318,7 @@ class Message(ChatGetter, SenderGetter, TLObject):
                 keep_existing=keep_existing,
             )
 
-    async def link(  # skip merge
+    async def link(              
         self,
         grouped: bool = False,
         thread: bool = False,
@@ -1342,17 +1342,17 @@ class Message(ChatGetter, SenderGetter, TLObject):
                     )
                 ).link
 
-            # it's not really necessary - these hyperlinks only work on Android clients, but we'll keep it anyway ¯\_(ツ)_/¯
+                                                                                                                           
             elif isinstance(channel, types.InputPeerUser):
                 return f"tg://openmessage?user_id={self.chat_id}&message_id={self.id}"
             elif isinstance(channel, types.InputPeerChat):
                 return f"tg://openmessage?chat_id={self.chat_id}&message_id={self.id}"
 
-    # endregion Public Methods
+                              
 
-    # region Private Methods
+                            
 
-    async def translate(self, to_lang: str):  # skip merge
+    async def translate(self, to_lang: str):              
         """
         Translates the message using Google Translate.
         Args:

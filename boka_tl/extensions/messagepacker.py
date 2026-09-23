@@ -51,8 +51,8 @@ class MessagePacker:
         batch = []
         size = 0
 
-        # Fill a new batch to return while the size is small enough,
-        # as long as we don't exceed the maximum length of messages.
+                                                                    
+                                                                    
         while self._deque and len(batch) <= MessageContainer.MAXIMUM_LENGTH:
             state = self._deque.popleft()
             size += len(state.data) + TLMessage.SIZE_OVERHEAD
@@ -74,19 +74,19 @@ class MessagePacker:
                 continue
 
             if batch:
-                # Put the item back since it can't be sent in this batch
+                                                                        
                 self._deque.appendleft(state)
                 break
 
-            # If a single message exceeds the maximum size, then the
-            # message payload cannot be sent. Telegram would forcibly
-            # close the connection; message would never be confirmed.
-            #
-            # We don't put the item back because it can never be sent.
-            # If we did, we would loop again and reach this same path.
-            # Setting the exception twice results in `InvalidStateError`
-            # and this method should never return with error, which we
-            # really want to avoid.
+                                                                    
+                                                                     
+                                                                     
+             
+                                                                      
+                                                                      
+                                                                        
+                                                                      
+                                   
             self._log.warning(
                 "Message payload for %s is too long (%d) and cannot be sent",
                 state.request.__class__.__name__,
@@ -101,7 +101,7 @@ class MessagePacker:
             return None, None
 
         if len(batch) > 1:
-            # Inlined code to pack several messages into a container
+                                                                    
             data = (
                 struct.pack("<Ii", MessageContainer.CONSTRUCTOR_ID, len(batch))
                 + buffer.getvalue()

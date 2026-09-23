@@ -19,7 +19,7 @@ class ObfuscatedIO:
 
     @staticmethod
     def init_header(packet_codec):
-        # Obfuscated messages secrets cannot start with any of these
+                                                                    
         keywords = (b"PVrG", b"GET ", b"POST", b"\xee\xee\xee\xee")
         while True:
             random = os.urandom(64)
@@ -31,9 +31,9 @@ class ObfuscatedIO:
                 break
 
         random = bytearray(random)
-        random_reversed = random[55:7:-1]  # Reversed (8, len=48)
+        random_reversed = random[55:7:-1]                        
 
-        # Encryption has "continuous buffer" enabled
+                                                    
         encrypt_key = bytes(random[8:40])
         encrypt_iv = bytes(random[40:56])
         decrypt_key = bytes(random_reversed[:32])

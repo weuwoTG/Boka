@@ -7,9 +7,9 @@ import time
 from .chatgetter import ChatGetter
 from ... import helpers, utils, errors
 
-# Sometimes the edits arrive very fast (within the same second).
-# In that case we add a small delta so that the age is older, for
-# comparision purposes. This value is enough for up to 1000 messages.
+                                                                
+                                                                 
+                                                                     
 _EDIT_COLLISION_DELTA = 0.001
 
 
@@ -51,7 +51,7 @@ class Conversation(ChatGetter):
         exclusive,
         replies_are_responses
     ):
-        # This call resets the client
+                                     
         ChatGetter.__init__(self, input_chat=input_chat)
 
         self._id = Conversation._id_counter
@@ -78,8 +78,8 @@ class Conversation(ChatGetter):
         self._exclusive = exclusive
         self._cancelled = False
 
-        # The user is able to expect two responses for the same message.
-        # {desired message ID: next incoming index}
+                                                                        
+                                                   
         self._response_indices = {}
         if replies_are_responses:
             self._reply_indices = self._response_indices
@@ -97,7 +97,7 @@ class Conversation(ChatGetter):
         """
         sent = await self._client.send_message(self._input_chat, *args, **kwargs)
 
-        # Albums will be lists, so handle that
+                                              
         ms = sent if isinstance(sent, list) else (sent,)
         self._outgoing.update(m.id for m in ms)
         self._last_outgoing = ms[-1].id
@@ -112,7 +112,7 @@ class Conversation(ChatGetter):
         """
         sent = await self._client.send_file(self._input_chat, *args, **kwargs)
 
-        # Albums will be lists, so handle that
+                                              
         ms = sent if isinstance(sent, list) else (sent,)
         self._outgoing.update(m.id for m in ms)
         self._last_outgoing = ms[-1].id
@@ -208,8 +208,8 @@ class Conversation(ChatGetter):
         start_time = time.time()
         target_id = self._get_message_id(target_message)
 
-        # If there is no last-chosen ID, make sure to pick one *after*
-        # the input message, since we don't want responses back in time
+                                                                      
+                                                                       
         if target_id not in indices:
             for i, incoming in enumerate(self._incoming):
                 if incoming.id > target_id:
@@ -218,13 +218,13 @@ class Conversation(ChatGetter):
             else:
                 indices[target_id] = len(self._incoming)
 
-        # We will always return a future from here, even if the result
-        # can be set immediately. Otherwise, needing to await only
-        # sometimes is an annoying edge case (i.e. we would return
-        # a `Message` but `get_response()` always `await`'s).
+                                                                      
+                                                                  
+                                                                  
+                                                             
         future = self._client.loop.create_future()
 
-        # If there are enough responses saved return the next one
+                                                                 
         last_idx = indices[target_id]
         if last_idx < len(self._incoming):
             incoming = self._incoming[last_idx]
@@ -233,11 +233,11 @@ class Conversation(ChatGetter):
                 future.set_result(incoming)
                 return future
 
-        # Otherwise the next incoming response will be the one to use
-        #
-        # Note how we fill "pending" before giving control back to the
-        # event loop through "await". We want to register it as soon as
-        # possible, since any other task switch may arrive with the result.
+                                                                     
+         
+                                                                      
+                                                                       
+                                                                           
         pending[target_id] = future
         return self._get_result(future, start_time, timeout, pending, target_id)
 
@@ -266,9 +266,9 @@ class Conversation(ChatGetter):
         if earliest_edit and earliest_edit.edit_date.timestamp() > target_date:
             self._edit_dates[target_id] = earliest_edit.edit_date.timestamp()
             future.set_result(earliest_edit)
-            return future  # we should always return something we can await
+            return future                                                  
 
-        # Otherwise the next incoming response will be the one to use
+                                                                     
         self._pending_edits[target_id] = future
         return self._get_result(
             future, start_time, timeout, self._pending_edits, target_id
@@ -359,8 +359,8 @@ class Conversation(ChatGetter):
                 future, start_time, timeout, self._custom, counter
             )
         finally:
-            # Need to remove it from the dict if it times out, else we may
-            # try and fail to set the result later (#1618).
+                                                                          
+                                                           
             self._custom.pop(counter, None)
 
     async def _check_custom(self, built):
@@ -388,11 +388,11 @@ class Conversation(ChatGetter):
 
         self._incoming.append(response)
 
-        # Most of the time, these dictionaries will contain just one item
-        # TODO In fact, why not make it be that way? Force one item only.
-        #      How often will people want to wait for two responses at
-        #      the same time? It's impossible, first one will arrive
-        #      and then another, so they can do that.
+                                                                         
+                                                                         
+                                                                      
+                                                                    
+                                                     
         for msg_id, future in list(self._pending_responses.items()):
             self._response_indices[msg_id] = len(self._incoming)
             future.set_result(response)
@@ -409,7 +409,7 @@ class Conversation(ChatGetter):
         if message.chat_id != self.chat_id or message.out:
             return
 
-        # We have to update our incoming messages with the new edit date
+                                                                        
         for i, m in enumerate(self._incoming):
             if m.id == message.id:
                 self._incoming[i] = message
@@ -419,9 +419,9 @@ class Conversation(ChatGetter):
             if msg_id < message.id:
                 edit_ts = message.edit_date.timestamp()
 
-                # We compare <= because edit_ts resolution is always to
-                # seconds, but we may have increased _edit_dates before.
-                # Since the dates are ever growing this is not a problem.
+                                                                       
+                                                                        
+                                                                         
                 if edit_ts <= self._edit_dates.get(msg_id, 0):
                     self._edit_dates[msg_id] += _EDIT_COLLISION_DELTA
                 else:
@@ -442,7 +442,7 @@ class Conversation(ChatGetter):
                 del self._pending_reads[msg_id]
 
     def _get_message_id(self, message):
-        if message is not None:  # 0 is valid but false-y, check for None
+        if message is not None:                                          
             return message if isinstance(message, int) else message.id
         elif self._last_outgoing:
             return self._last_outgoing
@@ -458,11 +458,11 @@ class Conversation(ChatGetter):
         if timeout is not None:
             due = min(due, start_time + timeout)
 
-        # NOTE: We can't try/finally to pop from pending here because
-        #       the event loop needs to get back to us, but it might
-        #       dispatch another update before, and in that case a
-        #       response could be set twice. So responses must be
-        #       cleared when their futures are set to a result.
+                                                                     
+                                                                    
+                                                                  
+                                                                 
+                                                               
         return asyncio.wait_for(
             future, timeout=None if due == float("inf") else due - time.time()
         )
@@ -490,7 +490,7 @@ class Conversation(ChatGetter):
 
         self._chat_peer = utils.get_peer(self._input_chat)
 
-        # Make sure we're the only conversation in this chat if it's exclusive
+                                                                              
         chat_id = utils.get_peer_id(self._chat_peer)
         conv_set = self._client._conversations[chat_id]
         if self._exclusive and conv_set:

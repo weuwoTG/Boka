@@ -1,14 +1,14 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import getpass
 import inspect
@@ -233,7 +233,7 @@ class TestMod(loader.Module):
         named_lvl = (
             lvl
             if lvl not in logging._levelToName
-            else logging._levelToName[lvl]  # skipcq: PYL-W0212
+            else logging._levelToName[lvl]                     
         )
 
         if lvl < logging.WARNING and not force:

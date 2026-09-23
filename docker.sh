@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Hardened build: no network cloning. Run docker.sh from inside the Boka dir.
+
 cd "$(dirname "$0")"
 
 touch boka-install.log
@@ -32,7 +32,7 @@ if ! [ -x "$(command -v docker-compose)" ]; then
         sudo yum install docker-ce docker-ce-cli containerd.io -y 1>boka-install.log 2>&1
     fi
     printf "\033[0;32m - success\e[0m\n"
-    # Boka uses docker-compose so we need to install that too
+
     printf "\033[0;34mInstalling docker-compose...\e[0m"
     pip install -U docker-compose 1>boka-install.log 2>&1
     chmod +x /usr/local/bin/docker-compose

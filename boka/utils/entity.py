@@ -1,8 +1,8 @@
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import asyncio
 import inspect
@@ -482,7 +482,7 @@ async def set_avatar(
     :return: True if avatar was set, False otherwise
     """
     if isinstance(avatar, str) and check_url(avatar):
-        # Hardened: avatars are never downloaded from the network.
+                                                                  
         return False
     elif isinstance(avatar, bytes):
         f = avatar
@@ -561,7 +561,7 @@ async def get_user(message: Message) -> User | None:
     """
     try:
         return await message.get_sender()
-    except ValueError:  # Not in database. Lets go looking for them.
+    except ValueError:                                              
         logger.debug("User not in session cache. Searching...")
 
     if isinstance(message.peer_id, PeerUser):
@@ -604,7 +604,7 @@ def get_entity_id(entity: hints.Entity) -> int:
     return boka_tl.utils.get_peer_id(entity)
 
 
-def escape_html(text: str, /) -> str:  # sourcery skip
+def escape_html(text: str, /) -> str:                 
     """
     Pass all untrusted/potentially corrupt input here
     :param text: Text to escape

@@ -13,16 +13,16 @@ _EPOCH = _EPOCH_NAIVE.replace(tzinfo=timezone.utc)
 
 
 FORBIDDEN_CONSTRUCTORS = {
-    0xA2C0CF74,  # account.DeleteAccount
-    0x449E0B51,  # account.GetTmpPassword
-    0x9308CE1B,  # account.ResetPassword
-    0xD36BF79,  # auth.CheckRecoveryPassword
-    0xA59B102F,  # account.UpdatePasswordSettings
-    0x9A5C33E5,  # account.PasswordSettings
-    0x9FAB0D1A,  # auth.ResetAuthorizations
-    0xA929597A,  # account.GetAuthorizationForm
-    0xE320C158,  # account.GetAuthorizations
-    0xF8654027,  # contacts.ExportContactToken
+    0xA2C0CF74,                         
+    0x449E0B51,                          
+    0x9308CE1B,                         
+    0xD36BF79,                              
+    0xA59B102F,                                  
+    0x9A5C33E5,                            
+    0x9FAB0D1A,                            
+    0xA929597A,                                
+    0xE320C158,                             
+    0xF8654027,                               
 }
 
 _VECTOR_CONSTRUCTOR_ID = 0x1CB5C415
@@ -85,12 +85,12 @@ def _serialized_get_users_targets_self(data, offset):
         if constructor_id == _INPUT_USER_SELF_CONSTRUCTOR_ID:
             return True
 
-        # inputUser#f21158c6 user_id:long access_hash:long
+                                                          
         if constructor_id == 0xF21158C6:
             offset += 20
-        # inputUserFromMessage#1da448e2 peer:InputPeer msg_id:int user_id:long.
-        # The peer is nested and variable-sized, so keep scanning the rest of the
-        # serialized request instead of trying to partially deserialize it here.
+                                                                               
+                                                                                 
+                                                                                
         else:
             return any(
                 _read_uint(data, i) == _INPUT_USER_SELF_CONSTRUCTOR_ID
@@ -198,15 +198,15 @@ def _sanitize_sensitive_result(request, result):
 
 
 def _datetime_to_timestamp(dt):
-    # If no timezone is specified, it is assumed to be in utc zone
+                                                                  
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
-    # We use .total_seconds() method instead of simply dt.timestamp(),
-    # because on Windows the latter raises OSError on datetimes ~< datetime(1970,1,1)
+                                                                      
+                                                                                     
     secs = int((dt - _EPOCH).total_seconds())
-    # Make sure it's a valid signed 32 bit integer, as used by Telegram.
-    # This does make very large dates wrap around, but it's the best we
-    # can do with Telegram's limitations.
+                                                                        
+                                                                       
+                                         
     return struct.unpack("i", struct.pack("I", secs & 0xFFFFFFFF))[0]
 
 
@@ -349,13 +349,13 @@ class TLObject:
                         result.append("\t" * indent)
                         result.append(k)
                         result.append("=")
-                        # Mask phone values when pretty-printing
+                                                                
                         if k == "phone":
                             result.append("phone?")
                         else:
                             result.append(TLObject.pretty_format(v, indent))
                         result.append(",\n")
-                    result.pop()  # last ',\n'
+                    result.pop()              
                     indent -= 1
                     result.append("\n")
                     result.append("\t" * indent)
@@ -440,7 +440,7 @@ class TLObject:
         elif isinstance(dt, float):
             dt = int(dt)
         elif isinstance(dt, timedelta):
-            # Timezones are tricky. datetime.utcnow() + ... timestamp() works
+                                                                             
             dt = _datetime_to_timestamp(datetime.utcnow() + dt)
 
         if isinstance(dt, int):
@@ -489,15 +489,15 @@ class TLObject:
             self._assert_no_forbidden_constructors()
             return self._bytes()
         except AttributeError:
-            # If a type is wrong (e.g. expected `TLObject` but `int` was
-            # provided) it will try to access `._bytes()`, which will fail
-            # with `AttributeError`. This occurs in fact because the type
-            # was wrong, so raise the correct error type.
+                                                                        
+                                                                          
+                                                                         
+                                                         
             raise TypeError("a TLObject was expected but found something else")
 
-    # Custom objects will call `(...)._bytes()` and not `bytes(...)` so that
-    # if the wrong type is used (e.g. `int`) we won't try allocating a huge
-    # amount of data, which would cause a `MemoryError`.
+                                                                            
+                                                                           
+                                                        
     def _bytes(self):
         raise NotImplementedError
 

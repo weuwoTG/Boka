@@ -14,7 +14,7 @@ class AuthorizationForm(TLObject):
     CONSTRUCTOR_ID = 0xad2e1cd8
     SUBCLASS_OF_ID = 0x78049a94
 
-    # noinspection PyShadowingBuiltins
+                                      
     def __init__(self, required_types: List['TypeSecureRequiredType'], values: List['TypeSecureValue'], errors: List['TypeSecureValueError'], users: List['TypeUser'], privacy_policy_url: Optional[str]=None):
         """
         Constructor for account.AuthorizationForm: Instance of AuthorizationForm.

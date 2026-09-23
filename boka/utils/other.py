@@ -1,8 +1,8 @@
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import asyncio
 import atexit as _atexit
@@ -38,7 +38,7 @@ def ensure_child_watcher():
         return
 
     with warnings.catch_warnings():
-        # get_child_watcher() is deprecated on 3.12/3.13; we use it knowingly.
+                                                                              
         warnings.simplefilter("ignore", DeprecationWarning)
         try:
             asyncio.get_event_loop_policy().get_child_watcher()
@@ -212,11 +212,11 @@ def is_url(string: str) -> bool:
     import re
 
     url_pattern = re.compile(
-        r"^https?://"  # http:// or https://
-        r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|"  # domain...
-        r"localhost|"  # localhost...
-        r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"  # ...or ip
-        r"(?::\d+)?"  # optional port
+        r"^https?://"                       
+        r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|"             
+        r"localhost|"                
+        r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"            
+        r"(?::\d+)?"                 
         r"(?:/?|[/?]\S+)$",
         re.IGNORECASE,
     )

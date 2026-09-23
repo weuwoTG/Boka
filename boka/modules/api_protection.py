@@ -1,14 +1,14 @@
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import asyncio
 import io
@@ -120,14 +120,14 @@ class APIRatelimiterMod(loader.Module):
         )
 
     async def _install_protection(self):
-        await asyncio.sleep(30)  # Restart lock
+        await asyncio.sleep(30)                
         if hasattr(self._client._call, "_old_call_rewritten"):
             raise loader.SelfUnload("Already installed")
 
         old_call = self._client._call
 
         async def new_call(
-            sender: "MTProtoSender",  # type: ignore  # noqa: F821
+            sender: "MTProtoSender",                              
             request: TLRequest,
             ordered: bool = False,
             flood_sleep_threshold: int = None,
@@ -180,7 +180,7 @@ class APIRatelimiterMod(loader.Module):
                             ),
                         )
 
-                        # It is intented to use time.sleep instead of asyncio.sleep
+                                                                                   
                         time.sleep(int(self.config["local_floodwait"]))
                         self._lock = False
 

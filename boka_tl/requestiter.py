@@ -59,11 +59,11 @@ class RequestIter(abc.ABC):
             if await self._init(**self.kwargs):
                 self.left = len(self.buffer)
 
-        if self.left <= 0:  # <= 0 because subclasses may change it
+        if self.left <= 0:                                         
             raise StopAsyncIteration
 
         if self.index == len(self.buffer):
-            # asyncio will handle times <= 0 to sleep 0 seconds
+                                                               
             if self.wait_time:
                 await asyncio.sleep(self.wait_time - (time.time() - self.last_load))
                 self.last_load = time.time()
@@ -130,4 +130,4 @@ class RequestIter(abc.ABC):
 
     def __reversed__(self):
         self.reverse = not self.reverse
-        return self  # __aiter__ will be called after, too
+        return self                                       

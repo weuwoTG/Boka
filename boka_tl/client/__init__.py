@@ -11,11 +11,11 @@ entities (users).
 """
 
 from .telegrambaseclient import TelegramBaseClient
-from .users import UserMethods  # Required for everything
-from .messageparse import MessageParseMethods  # Required for messages
-from .uploads import UploadMethods  # Required for messages to send files
-from .updates import UpdateMethods  # Required for buttons (register callbacks)
-from .buttons import ButtonMethods  # Required for messages to use buttons
+from .users import UserMethods                           
+from .messageparse import MessageParseMethods                         
+from .uploads import UploadMethods                                       
+from .updates import UpdateMethods                                             
+from .buttons import ButtonMethods                                        
 from .messages import MessageMethods
 from .chats import ChatMethods
 from .dialogs import DialogMethods
@@ -23,5 +23,5 @@ from .downloads import DownloadMethods
 from .account import AccountMethods
 from .auth import AuthMethods
 from .bots import BotMethods
-from .payments import GiftMethods  # skip merge
+from .payments import GiftMethods              
 from .telegramclient import TelegramClient

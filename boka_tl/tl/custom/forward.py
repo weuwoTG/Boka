@@ -25,9 +25,9 @@ class Forward(ChatGetter, SenderGetter):
     """
 
     def __init__(self, client, original, entities):
-        # Copy all the fields, not reference! It would cause memory cycles:
-        #   self.original_fwd.original_fwd.original_fwd.original_fwd
-        # ...would be valid if we referenced.
+                                                                           
+                                                                    
+                                             
         self.__dict__.update(original.__dict__)
         self.original_fwd = original
 
@@ -46,9 +46,9 @@ class Forward(ChatGetter, SenderGetter):
                     utils.get_peer_id(peer), entities, client._mb_entity_cache
                 )
 
-        # This call resets the client
+                                     
         ChatGetter.__init__(self, peer, chat=chat, input_chat=input_chat)
         SenderGetter.__init__(self, sender_id, sender=sender, input_sender=input_sender)
         self._client = client
 
-    # TODO We could reload the message
+                                      

@@ -43,12 +43,12 @@ class CdnDecrypter:
         """
         cdn_aes = AESModeCTR(
             key=cdn_redirect.encryption_key,
-            # 12 first bytes of the IV..4 bytes of the offset (0, big endian)
+                                                                             
             iv=cdn_redirect.encryption_iv[:12] + bytes(4),
         )
 
-        # We assume that cdn_redirect.cdn_file_hashes are ordered by offset,
-        # and that there will be enough of these to retrieve the whole file.
+                                                                            
+                                                                            
         decrypter = CdnDecrypter(
             cdn_client, cdn_redirect.file_token, cdn_aes, cdn_redirect.cdn_file_hashes
         )
@@ -61,7 +61,7 @@ class CdnDecrypter:
             )
         )
         if isinstance(cdn_file, CdnFileReuploadNeeded):
-            # We need to use the original client here
+                                                     
             await client(
                 ReuploadCdnFileRequest(
                     file_token=cdn_redirect.file_token,
@@ -69,7 +69,7 @@ class CdnDecrypter:
                 )
             )
 
-            # We want to always return a valid upload.CdnFile
+                                                             
             cdn_file = decrypter.get_file()
         else:
             cdn_file.bytes = decrypter.cdn_aes.encrypt(cdn_file.bytes)

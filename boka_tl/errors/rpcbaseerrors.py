@@ -122,7 +122,7 @@ class ServerError(RPCError):
     storage.
     """
 
-    code = 500  # Also witnessed as -500
+    code = 500                          
     message = "INTERNAL"
 
 
@@ -132,7 +132,7 @@ class TimedOutError(RPCError):
     call ``answerCallbackQuery`` will result in this "special" RPCError.
     """
 
-    code = 503  # Only witnessed as -503
+    code = 503                          
     message = "Timeout"
 
 

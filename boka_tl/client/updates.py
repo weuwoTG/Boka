@@ -18,7 +18,7 @@ except ImportError as e:
     sqlite3 = None
 
     class OperationalError(Exception):
-        pass  # won't be created and thus never caught
+        pass                                          
 
 
 from .. import events, utils, errors
@@ -37,11 +37,11 @@ Callback = typing.Callable[[typing.Any], typing.Any]
 
 class UpdateMethods:
 
-    # region Public methods
+                           
 
     async def _run_until_disconnected(self: "TelegramClient"):
         try:
-            # Make a high-level request to notify that we want updates
+                                                                      
             await self(functions.updates.GetStateRequest())
             result = await self.disconnected
             if self._updates_error is not None:
@@ -107,7 +107,7 @@ class UpdateMethods:
         except KeyboardInterrupt:
             pass
         finally:
-            # No loop.run_until_complete; it's already syncified
+                                                                
             self.disconnect()
 
     def on(self: "TelegramClient", event: EventBuilder):
@@ -261,14 +261,14 @@ class UpdateMethods:
         """
         await self._updates_queue.put(types.UpdatesTooLong())
 
-    # endregion
+               
 
-    # region Private methods
+                            
 
     async def _update_loop(self: "TelegramClient"):
-        # If the MessageBox is not empty, the account had to be logged-in to fill in its state.
-        # This flag is used to propagate the "you got logged-out" error up (but getting logged-out
-        # can only happen if it was once logged-in).
+                                                                                               
+                                                                                                  
+                                                    
         was_once_logged_in = (
             self._authorized is True or not self._message_box.is_empty()
         )
@@ -276,8 +276,8 @@ class UpdateMethods:
         self._updates_error = None
         try:
             if self._catch_up:
-                # User wants to catch up as soon as the client is up and running,
-                # so this is the best place to do it.
+                                                                                 
+                                                     
                 await self.catch_up()
 
             updates_to_dispatch = deque()
@@ -288,7 +288,7 @@ class UpdateMethods:
                         await self._dispatch_update(updates_to_dispatch.popleft())
                     else:
                         while updates_to_dispatch:
-                            # TODO if _dispatch_update fails for whatever reason, it's not logged! this should be fixed
+                                                                                                                       
                             task = self.loop.create_task(
                                 self._dispatch_update(updates_to_dispatch.popleft())
                             )
@@ -303,7 +303,7 @@ class UpdateMethods:
                         len(self._mb_entity_cache),
                         self._entity_cache_limit,
                     )
-                    self._save_states_and_entities()  # skip maybe_async
+                    self._save_states_and_entities()                    
                     self._mb_entity_cache.retain(
                         lambda id: id == self._mb_entity_cache.self_id
                         or id in self._message_box.map
@@ -330,7 +330,7 @@ class UpdateMethods:
                         errors.FloodWaitError,
                         ValueError,
                     ) as e:
-                        # Telegram is having issues
+                                                   
                         self._log[__name__].info(
                             "Cannot get difference since Telegram is having issues: %s",
                             type(e).__name__,
@@ -338,7 +338,7 @@ class UpdateMethods:
                         self._message_box.end_difference()
                         continue
                     except (errors.UnauthorizedError, errors.AuthKeyError) as e:
-                        # Not logged in or broken authorization key, can't get difference
+                                                                                         
                         self._log[__name__].info(
                             "Cannot get difference since the account is not logged in: %s",
                             type(e).__name__,
@@ -350,7 +350,7 @@ class UpdateMethods:
                             break
                         continue
                     except (errors.TypeNotFoundError, OperationalError) as e:
-                        # User is likely doing weird things with their account or session and Telegram gets confused as to what layer they use
+                                                                                                                                              
                         self._log[__name__].warning(
                             "Cannot get difference since the account is likely misusing the session: %s",
                             e,
@@ -360,7 +360,7 @@ class UpdateMethods:
                         await self.disconnect()
                         break
                     except errors.RPCError as e:
-                        # Fallback; treat as transient error (the amount of "fatal errors" reported seem to indicate this is most likely what we need to do)
+                                                                                                                                                            
                         self._log[__name__].warning(
                             "Cannot get difference due to unexpected error (this may be a bug "
                             f"in Telethon v{__version__} in that it could be handled better, but it's unlikely): %s",
@@ -369,9 +369,9 @@ class UpdateMethods:
                         self._message_box.end_difference()
                         continue
                     except OSError as e:
-                        # Network is likely down, but it's unclear for how long.
-                        # If disconnect is called this task will be cancelled along with the sleep.
-                        # If disconnect is not called, getting difference should be retried after a few seconds.
+                                                                                
+                                                                                                   
+                                                                                                                
                         self._log[__name__].info(
                             "Cannot get difference since the network is down: %s: %s",
                             type(e).__name__,
@@ -387,7 +387,7 @@ class UpdateMethods:
 
                     _preprocess_updates = self._preprocess_updates(
                         updates, users, chats
-                    )  # skip maybe_async
+                    )                    
                     updates_to_dispatch.extend(_preprocess_updates)
                     continue
 
@@ -402,7 +402,7 @@ class UpdateMethods:
                     try:
                         diff = await self(get_diff)
                     except (errors.UnauthorizedError, errors.AuthKeyError) as e:
-                        # Not logged in or broken authorization key, can't get difference
+                                                                                         
                         self._log[__name__].warning(
                             "Cannot get difference for channel %s since the account is not logged in: %s",
                             get_diff.channel.channel_id,
@@ -440,22 +440,22 @@ class UpdateMethods:
                         errors.FloodWaitError,
                         ValueError,
                     ) as e:
-                        # According to Telegram's docs:
-                        # "Channel internal replication issues, try again later (treat this like an RPC_CALL_FAIL)."
-                        # We can treat this as "empty difference" and not update the local pts.
-                        # Then this same call will be retried when another gap is detected or timeout expires.
-                        #
-                        # Another option would be to literally treat this like an RPC_CALL_FAIL and retry after a few
-                        # seconds, but if Telegram is having issues it's probably best to wait for it to send another
-                        # update (hinting it may be okay now) and retry then.
-                        #
-                        # This is a bit hacky because MessageBox doesn't really have a way to "not update" the pts.
-                        # Instead we manually extract the previously-known pts and use that.
-                        #
-                        # For PersistentTimestampInvalidError:
-                        # Somehow our pts is either too new or the server does not know about this.
-                        # We treat this as PersistentTimestampOutdatedError for now.
-                        # TODO investigate why/when this happens and if this is the proper solution
+                                                       
+                                                                                                                    
+                                                                                               
+                                                                                                              
+                         
+                                                                                                                     
+                                                                                                                     
+                                                                             
+                         
+                                                                                                                   
+                                                                                            
+                         
+                                                              
+                                                                                                   
+                                                                                    
+                                                                                                   
                         self._log[__name__].warning(
                             "Getting difference for channel updates %s caused %s;"
                             " ending getting difference prematurely until server issues are resolved",
@@ -469,9 +469,9 @@ class UpdateMethods:
                         )
                         continue
                     except (errors.ChannelPrivateError, errors.ChannelInvalidError):
-                        # Timeout triggered a get difference, but we have been banned in the channel since then.
-                        # Because we can no longer fetch updates from this channel, we should stop keeping track
-                        # of it entirely.
+                                                                                                                
+                                                                                                                
+                                         
                         self._log[__name__].info(
                             "Account is now banned in %d so we can no longer fetch updates from it",
                             get_diff.channel.channel_id,
@@ -481,7 +481,7 @@ class UpdateMethods:
                         )
                         continue
                     except errors.RPCError as e:
-                        # Fallback; treat as transient error (the amount of "fatal errors" reported seem to indicate this is most likely what we need to do)
+                                                                                                                                                            
                         self._log[__name__].warning(
                             "Cannot get difference for channel %d due to unexpected error (this may be a bug "
                             f"in Telethon v{__version__} in that it could be handled better, but it's unlikely): %s",
@@ -515,13 +515,13 @@ class UpdateMethods:
 
                     updates_to_dispatch.extend(
                         self._preprocess_updates(updates, users, chats)
-                    )  # skip maybe_async
+                    )                    
                     continue
 
                 deadline = self._message_box.check_deadlines()
                 deadline_delay = deadline - get_running_loop().time()
                 if deadline_delay > 0:
-                    # Don't bother sleeping and timing out if the delay is already 0 (pollutes the logs).
+                                                                                                         
                     try:
                         updates = await asyncio.wait_for(
                             self._updates_queue.get(), deadline_delay
@@ -538,11 +538,11 @@ class UpdateMethods:
                         updates, self._mb_entity_cache, processed
                     )
                 except GapError:
-                    continue  # get(_channel)_difference will start returning requests
+                    continue                                                          
 
                 updates_to_dispatch.extend(
                     self._preprocess_updates(processed, users, chats)
-                )  # skip maybe_async
+                )                    
         except asyncio.CancelledError:
             pass
         except Exception as e:
@@ -552,69 +552,69 @@ class UpdateMethods:
             self._updates_error = e
             await self.disconnect()
 
-    def _preprocess_updates(self, updates, users, chats):  # skip maybe_async
+    def _preprocess_updates(self, updates, users, chats):                    
         self._mb_entity_cache.extend(users, chats)
         self.session.process_entities(
             types.contacts.ResolvedPeer(None, users, chats)
-        )  # skip maybe_async
+        )                    
         entities = {utils.get_peer_id(x): x for x in itertools.chain(users, chats)}
         for u in updates:
             u._entities = entities
         return updates
 
     async def _keepalive_loop(self: "TelegramClient"):
-        # Pings' ID don't really need to be secure, just "random"
+                                                                 
         rnd = lambda: random.randrange(-(2**63), 2**63)
         while self.is_connected():
             try:
                 await asyncio.wait_for(self.disconnected, timeout=60)
-                continue  # We actually just want to act upon timeout
+                continue                                             
             except asyncio.TimeoutError:
                 pass
             except asyncio.CancelledError:
                 return
             except Exception:
-                continue  # Any disconnected exception should be ignored
+                continue                                                
 
-            # Check if we have any exported senders to clean-up periodically
+                                                                            
             await self._clean_exported_senders()
 
-            # Don't bother sending pings until the low-level connection is
-            # ready, otherwise a lot of pings will be batched to be sent upon
-            # reconnect, when we really don't care about that.
+                                                                          
+                                                                             
+                                                              
             if not self._sender._transport_connected():
                 continue
 
-            # We also don't really care about their result.
-            # Just send them periodically.
+                                                           
+                                          
             try:
                 self._sender._keepalive_ping(rnd())
             except (ConnectionError, asyncio.CancelledError):
                 return
 
-            # Entities and cached files are not saved when they are
-            # inserted because this is a rather expensive operation
-            # (default's sqlite3 takes ~0.1s to commit changes). Do
-            # it every minute instead. No-op if there's nothing new.
-            self._save_states_and_entities()  # skip maybe_async
+                                                                   
+                                                                   
+                                                                   
+                                                                    
+            self._save_states_and_entities()                    
 
-            self.session.save()  # skip maybe_async
+            self.session.save()                    
 
     async def _dispatch_update(self: "TelegramClient", update):
-        # TODO only used for AlbumHack, and MessageBox is not really designed for this
+                                                                                      
         others = None
 
         if not self._mb_entity_cache.self_id:
-            # Some updates require our own ID, so we must make sure
-            # that the event builder has offline access to it. Calling
-            # `get_me()` will cache it under `self._mb_entity_cache`.
-            #
-            # It will return `None` if we haven't logged in yet which is
-            # fine, we will just retry next time anyway.
+                                                                   
+                                                                      
+                                                                     
+             
+                                                                        
+                                                        
             try:
                 await self.get_me(input_peer=True)
             except OSError:
-                pass  # might not have connection
+                pass                             
 
         built = EventBuilderDict(self, update, others)
         for conv_set in self._conversations.values():
@@ -674,9 +674,9 @@ class UpdateMethods:
         """
         Dispatches a single, out-of-order event. Used by `AlbumHack`.
         """
-        # We're duplicating a most logic from `_dispatch_update`, but all in
-        # the name of speed; we don't want to make it worse for all updates
-        # just because albums may need it.
+                                                                            
+                                                                           
+                                          
         for builder, callback in self._event_builders:
             if isinstance(builder, events.Raw):
                 continue
@@ -715,9 +715,9 @@ class UpdateMethods:
                     self._log[__name__].exception("Unhandled exception on %s", name)
 
     async def _handle_auto_reconnect(self: "TelegramClient"):
-        # TODO Catch-up
-        # For now we make a high-level request to let Telegram
-        # know we are still interested in receiving more updates.
+                       
+                                                              
+                                                                 
         try:
             await self.get_me()
         except Exception as e:
@@ -731,24 +731,24 @@ class UpdateMethods:
         try:
             self._log[__name__].info("Asking for the current state after reconnect...")
 
-            # TODO consider:
-            # If there aren't many updates while the client is disconnected
-            # (I tried with up to 20), Telegram seems to send them without
-            # asking for them (via updates.getDifference).
-            #
-            # On disconnection, the library should probably set a "need
-            # difference" or "catching up" flag so that any new updates are
-            # ignored, and then the library should call updates.getDifference
-            # itself to fetch them.
-            #
-            # In any case (either there are too many updates and Telegram
-            # didn't send them, or there isn't a lot and Telegram sent them
-            # but we dropped them), we fetch the new difference to get all
-            # missed updates. I feel like this would be the best solution.
+                            
+                                                                           
+                                                                          
+                                                          
+             
+                                                                       
+                                                                           
+                                                                             
+                                   
+             
+                                                                         
+                                                                           
+                                                                          
+                                                                          
 
-            # If a disconnection occurs, the old known state will be
-            # the latest one we were aware of, so we can catch up since
-            # the most recent state we were aware of.
+                                                                    
+                                                                       
+                                                     
             await self.catch_up()
 
             self._log[__name__].info("Successfully fetched missed updates")
@@ -761,7 +761,7 @@ class UpdateMethods:
                 "Unhandled exception while getting update difference after reconnect"
             )
 
-    # endregion
+               
 
 
 class EventBuilderDict:

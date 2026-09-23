@@ -264,7 +264,7 @@ class MTProxyIO:
 
     @staticmethod
     def init_header(secret, dc_id, packet_codec):
-        # Validate
+                  
         is_dd = (len(secret) == 17) and (secret[0] == 0xDD)
         is_rand_codec = issubclass(packet_codec, RandomizedIntermediatePacketCodec)
         if is_dd and not is_rand_codec:
@@ -280,7 +280,7 @@ class MTProxyIO:
                 "MTProxy secret must be a hex-string representing 16 bytes"
             )
 
-        # Obfuscated messages secrets cannot start with any of these
+                                                                    
         keywords = (b"PVrG", b"GET ", b"POST", b"\xee\xee\xee\xee")
         while True:
             random = os.urandom(64)
@@ -292,9 +292,9 @@ class MTProxyIO:
                 break
 
         random = bytearray(random)
-        random_reversed = random[55:7:-1]  # Reversed (8, len=48)
+        random_reversed = random[55:7:-1]                        
 
-        # Encryption has "continuous buffer" enabled
+                                                    
         encrypt_key = hashlib.sha256(bytes(random[8:40]) + secret).digest()
         encrypt_iv = bytes(random[40:56])
         decrypt_key = hashlib.sha256(bytes(random_reversed[:32]) + secret).digest()
@@ -333,9 +333,9 @@ class TcpMTProxy(ObfuscatedConnection):
     packet_codec = None
     obfuscated_io = MTProxyIO
 
-    # noinspection PyUnusedLocal
+                                
     def __init__(self, ip, port, dc_id, *, loggers, proxy=None, local_addr=None):
-        # connect to proxy's host and port instead of telegram's ones
+                                                                     
         proxy_host, proxy_port = self.address_info(proxy)
         parsed_secret = self.normalize_secret(proxy[2])
         self._secret = parsed_secret.secret
@@ -354,13 +354,13 @@ class TcpMTProxy(ObfuscatedConnection):
         else:
             await super()._connect(timeout=timeout, ssl=ssl)
 
-        # Wait for EOF for 2 seconds (or if _wait_for_data's definition
-        # is missing or different, just sleep for 2 seconds). This way
-        # we give the proxy a chance to close the connection if the current
-        # codec (which the proxy detects with the data we sent) cannot
-        # be used for this proxy. This is a work around for #1134.
-        # TODO Sleeping for N seconds may not be the best solution
-        # TODO This fix could be welcome for HTTP proxies as well
+                                                                       
+                                                                      
+                                                                           
+                                                                      
+                                                                  
+                                                                  
+                                                                 
         try:
             await asyncio.wait_for(self._reader._wait_for_data("proxy"), 2)
         except asyncio.TimeoutError:

@@ -1,16 +1,16 @@
 """Loads and registers modules"""
 
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import ast
 import asyncio
@@ -117,7 +117,7 @@ class LoaderMod(loader.Module):
         )
 
     async def _async_init(self):
-        # Hardened: no network preloading of modules from external repos.
+                                                                         
         logger.debug("Network module preloading is disabled in this build.")
 
     async def client_ready(self):
@@ -338,7 +338,7 @@ class LoaderMod(loader.Module):
         return todo
 
     async def _get_repo(self, repo: str) -> str:
-        # Hardened: remote module repos are not fetched from the network.
+                                                                         
         repo = repo.strip("/")
         logger.debug("Remote repo fetch blocked (hardened build): %s", repo)
         return []
@@ -380,8 +380,8 @@ class LoaderMod(loader.Module):
         force_pm: bool = False,
     ) -> int:
         try:
-            # Hardened: installing modules from the network is disabled.
-            # Modules can only be loaded from local files / Telegram attachments.
+                                                                        
+                                                                                 
             if "://" in module_name or urlparse(module_name).netloc:
                 logger.warning("Network module install blocked: %s", module_name)
                 if message is not None:
@@ -492,7 +492,7 @@ class LoaderMod(loader.Module):
     async def approve_internal(
         self,
         call: InlineCall,
-        channel: "hints.EntityLike",  # type: ignore  # noqa
+        channel: "hints.EntityLike",                        
         event: asyncio.Event,
     ):
         """
@@ -511,12 +511,12 @@ class LoaderMod(loader.Module):
         )
 
     async def install_requirements(self, requirements: list):
-        # Hardened: automatic pip installs are disabled in this build.
+                                                                      
         logger.warning("Auto pip install blocked (hardened build): %s", requirements)
         return False
 
     async def install_packages(self, packages: list):
-        # Hardened: automatic system-package installs are disabled in this build.
+                                                                                 
         logger.warning("Auto package install blocked (hardened build): %s", packages)
         return False
 
@@ -627,7 +627,7 @@ class LoaderMod(loader.Module):
                 kwargs = utils.get_kwargs()
                 kwargs["did_requires"] = True
 
-                return await self.load_module(**kwargs)  # Try again
+                return await self.load_module(**kwargs)             
 
         if not did_packages:
             packages = []
@@ -789,7 +789,7 @@ class LoaderMod(loader.Module):
                 kwargs = utils.get_kwargs()
                 kwargs["did_requirements"] = True
 
-                return await self.load_module(**kwargs)  # Try again
+                return await self.load_module(**kwargs)             
             except CoreOverwriteError as e:
                 logger.error(
                     "Module %s tried to overwrite core %s %s",
@@ -1430,7 +1430,7 @@ class LoaderMod(loader.Module):
 
     @loader.command()
     async def addrepo(self, message: Message):
-        # Hardened: adding remote module repos is disabled.
+                                                           
         await utils.answer(message, "🛡 <b>Добавление репозиториев отключено.</b>")
 
     @loader.command()
@@ -1467,8 +1467,8 @@ class LoaderMod(loader.Module):
 
         self._secure_boot = False
 
-        # Hardened: modules are never re-downloaded / re-installed from the
-        # network at boot. Only locally cached module sources are used.
+                                                                           
+                                                                       
         if self._db.get(loader.__name__, "secure_boot", False):
             self._db.set(loader.__name__, "secure_boot", False)
             self._secure_boot = True

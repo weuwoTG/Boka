@@ -20,11 +20,11 @@ except ImportError:
 if typing.TYPE_CHECKING:
     from .telegramclient import TelegramClient
 
-# Chunk sizes for upload.getFile must be multiples of the smallest size
+                                                                       
 MIN_CHUNK_SIZE = 4096
 MAX_CHUNK_SIZE = 512 * 1024
 
-# 2021-01-15, users reported that `errors.TimeoutError` can occur while downloading files.
+                                                                                          
 TIMED_OUT_SLEEP = 1
 
 
@@ -66,23 +66,23 @@ class _DirectDownloadIter(RequestIter):
 
         self._exported = dc_id and self._client.session.dc_id != dc_id
         if not self._exported:
-            # The used sender will also change if ``FileMigrateError`` occurs
+                                                                             
             self._sender = self.client._sender
         else:
             try:
                 self._sender = await self.client._borrow_exported_sender(dc_id)
             except errors.DcIdInvalidError:
-                # Can't export a sender for the ID we are currently in
+                                                                      
                 config = await self.client(functions.help.GetConfigRequest())
                 for option in config.dc_options:
                     if option.ip_address == self.client.session.server_address:
                         self.client.session.set_dc(
                             option.id, option.ip_address, option.port
-                        )  # skip maybe_async
-                        self.client.session.save()  # skip maybe_async
+                        )                    
+                        self.client.session.save()                    
                         break
 
-                # TODO Figure out why the session may have the wrong DC ID
+                                                                          
                 self._sender = self.client._sender
                 self._exported = False
 
@@ -142,7 +142,7 @@ class _DirectDownloadIter(RequestIter):
             errors.FilerefUpgradeNeededError,
             errors.FileReferenceExpiredError,
         ) as e:
-            # Only implemented for documents which are the ones that may take that long to download
+                                                                                                   
             if (
                 not self._msg_data
                 or not isinstance(
@@ -163,7 +163,7 @@ class _DirectDownloadIter(RequestIter):
 
             document = msg.media.document
 
-            # Message media may have been edited for something else
+                                                                   
             if document.id != self.request.location.id:
                 raise
 
@@ -194,14 +194,14 @@ class _DirectDownloadIter(RequestIter):
 
 class _GenericDownloadIter(_DirectDownloadIter):
     async def _load_next_chunk(self):
-        # 1. Fetch enough for one chunk
+                                       
         data = b""
 
-        # 1.1. ``bad`` is how much into the data we have we need to offset
+                                                                          
         bad = self.request.offset % self.request.limit
         before = self.request.offset
 
-        # 1.2. We have to fetch from a valid offset, so remove that bad part
+                                                                            
         self.request.offset -= bad
 
         done = False
@@ -212,40 +212,40 @@ class _GenericDownloadIter(_DirectDownloadIter):
             data += cur
             done = len(cur) < self.request.limit
 
-        # 1.3 Restore our last desired offset
+                                             
         self.request.offset = before
 
-        # 2. Fill the buffer with the data we have
-        # 2.1. Slicing `bytes` is expensive, yield `memoryview` instead
+                                                  
+                                                                       
         mem = memoryview(data)
 
-        # 2.2. The current chunk starts at ``bad`` offset into the data,
-        #      and each new chunk is ``stride`` bytes apart of the other
+                                                                        
+                                                                        
         for i in range(bad, len(data), self._stride):
             self.buffer.append(mem[i : i + self._chunk_size])
 
-            # 2.3. We will yield this offset, so move to the next one
+                                                                     
             self.request.offset += self._stride
 
-        # 2.4. If we are in the last chunk, we will return the last partial data
+                                                                                
         if done:
             self.left = len(self.buffer)
             await self.close()
             return
 
-        # 2.5. If we are not done, we can't return incomplete chunks.
+                                                                     
         if len(self.buffer[-1]) != self._chunk_size:
             self._last_part = self.buffer.pop().tobytes()
 
-            # 3. Be careful with the offsets. Re-fetching a bit of data
-            #    is fine, since it greatly simplifies things.
-            # TODO Try to not re-fetch data
+                                                                       
+                                                             
+                                           
             self.request.offset -= self._stride
 
 
 class DownloadMethods:
 
-    # region Public methods
+                           
 
     async def download_profile_photo(
         self: "TelegramClient",
@@ -292,10 +292,10 @@ class DownloadMethods:
                 path = await client.download_profile_photo('me')
                 print(path)
         """
-        # hex(crc32(x.encode('ascii'))) for x in
-        # ('User', 'Chat', 'UserFull', 'ChatFull')
+                                                
+                                                  
         ENTITIES = (0x2DA17977, 0xC5AF5D94, 0x1F4661B9, 0xD49A2697)
-        # ('InputPeer', 'InputUser', 'InputChannel')
+                                                    
         INPUTS = (0xC91C90B6, 0xE669BF46, 0x40F202FD)
         if not isinstance(entity, TLObject) or entity.SUBCLASS_OF_ID in INPUTS:
             entity = await self.get_entity(entity)
@@ -307,8 +307,8 @@ class DownloadMethods:
             photo = entity
         else:
             if not hasattr(entity, "photo"):
-                # Special case: may be a ChatFull with photo:Photo
-                # This is different from a normal UserProfilePhoto and Chat
+                                                                  
+                                                                           
                 if not hasattr(entity, "chat_photo"):
                     return None
 
@@ -328,17 +328,17 @@ class DownloadMethods:
         if isinstance(photo, (types.UserProfilePhoto, types.ChatPhoto)):
             dc_id = photo.dc_id
             loc = types.InputPeerPhotoFileLocation(
-                # min users can be used to download profile photos
-                # self.get_input_entity would otherwise not accept those
+                                                                  
+                                                                        
                 peer=utils.get_input_peer(entity, check_hash=False),
                 photo_id=photo.photo_id,
                 big=download_big,
             )
         else:
-            # It doesn't make any sense to check if `photo` can be used
-            # as input location, because then this method would be able
-            # to "download the profile photo of a message", i.e. its
-            # media which should be done with `download_media` instead.
+                                                                       
+                                                                       
+                                                                    
+                                                                       
             return None
 
         file = self._get_proper_filename(
@@ -349,8 +349,8 @@ class DownloadMethods:
             result = await self.download_file(loc, file, dc_id=dc_id)
             return result if file is bytes else file
         except errors.LocationInvalidError:
-            # See issue #500, Android app fails as of v4.6.0 (1155).
-            # The fix seems to be using the full channel chat photo.
+                                                                    
+                                                                    
             ie = await self.get_input_entity(entity)
             ty = helpers._entity_type(ie)
             if ty == helpers._EntityType.CHANNEL:
@@ -363,7 +363,7 @@ class DownloadMethods:
                     thumb=thumb,
                 )
             else:
-                # Until there's a report for chats, no need to.
+                                                               
                 return None
 
     async def download_media(
@@ -445,12 +445,12 @@ class DownloadMethods:
 
                 await client.download_media(message, progress_callback=callback)
         """
-        # Downloading large documents may be slow enough to require a new file reference
-        # to be obtained mid-download. Store (input chat, message id) so that the message
-        # can be re-fetched.
+                                                                                        
+                                                                                         
+                            
         msg_data = None
 
-        # TODO This won't work for messageService
+                                                 
         if isinstance(message, types.Message):
             date = message.date
             media = message.media
@@ -577,7 +577,7 @@ class DownloadMethods:
     ) -> typing.Optional[bytes]:
         if not part_size_kb:
             if not file_size:
-                part_size_kb = 64  # Reasonable default
+                part_size_kb = 64                      
             else:
                 part_size_kb = utils.get_appropriated_part_size(file_size)
 
@@ -592,7 +592,7 @@ class DownloadMethods:
         if in_memory:
             f = io.BytesIO()
         elif isinstance(file, str):
-            # Ensure that we'll be able to download the media
+                                                             
             helpers.ensure_parent_dir_exists(file)
             f = open(file, "wb")
         else:
@@ -617,7 +617,7 @@ class DownloadMethods:
                     if inspect.isawaitable(r):
                         await r
 
-            # Not all IO objects have flush (see #1227)
+                                                       
             if callable(getattr(f, "flush", None)):
                 f.flush()
 
@@ -825,18 +825,18 @@ class DownloadMethods:
             cdn_redirect=cdn_redirect,
         )
 
-    # endregion
+               
 
-    # region Private methods
+                            
 
     @staticmethod
     def _get_thumb(thumbs, thumb):
         if not thumbs:
             return None
 
-        # Seems Telegram has changed the order and put `PhotoStrippedSize`
-        # last while this is the smallest (layer 116). Ensure we have the
-        # sizes sorted correctly with a custom function.
+                                                                          
+                                                                         
+                                                        
         def sort_thumbs(thumb):
             if isinstance(thumb, types.PhotoStrippedSize):
                 return 1, len(thumb.bytes)
@@ -849,15 +849,15 @@ class DownloadMethods:
             if isinstance(thumb, types.VideoSize):
                 return 2, thumb.size
 
-            # Empty size or invalid should go last
+                                                  
             return 0, 0
 
         thumbs = list(sorted(thumbs, key=sort_thumbs))
 
         for i in reversed(range(len(thumbs))):
-            # :tl:`PhotoPathSize` is used for animated stickers preview, and the thumb is actually
-            # a SVG path of the outline. Users expect thumbnails to be JPEG files, so pretend this
-            # thumb size doesn't actually exist (#1655).
+                                                                                                  
+                                                                                                  
+                                                        
             if isinstance(thumbs[i], types.PhotoPathSize):
                 thumbs.pop(i)
 
@@ -881,7 +881,7 @@ class DownloadMethods:
             return None
 
     def _download_cached_photo_size(self: "TelegramClient", size, file):
-        # No need to download anything, simply write the bytes
+                                                              
         if isinstance(size, types.PhotoStrippedSize):
             data = utils.stripped_photo_to_jpg(size.bytes)
         else:
@@ -906,13 +906,13 @@ class DownloadMethods:
         self: "TelegramClient", photo, file, date, thumb, progress_callback
     ):
         """Specialized version of .download_media() for photos"""
-        # Determine the photo and its largest size
+                                                  
         if isinstance(photo, types.MessageMediaPhoto):
             photo = photo.photo
         if not isinstance(photo, types.Photo):
             return
 
-        # Include video sizes here (but they may be None so provide an empty list)
+                                                                                  
         size = self._get_thumb(photo.sizes + (photo.video_sizes or []), thumb)
         if not size or isinstance(size, types.PhotoSizeEmpty):
             return
@@ -1018,7 +1018,7 @@ class DownloadMethods:
         last_name = mm_contact.last_name
         phone_number = mm_contact.phone_number
 
-        # Remove these pesky characters
+                                       
         first_name = first_name.replace(";", "")
         last_name = (last_name or "").replace(";", "")
         result = (
@@ -1047,7 +1047,7 @@ class DownloadMethods:
         try:
             f.write(result)
         finally:
-            # Only close the stream if we opened it
+                                                   
             if f != file:
                 f.close()
 
@@ -1064,7 +1064,7 @@ class DownloadMethods:
                 "dependency install it (pip install aiohttp)"
             )
 
-        # TODO Better way to get opened handles of files and auto-close
+                                                                       
         kind, possible_names = cls._get_kind_and_names(web.attributes)
         file = cls._get_proper_filename(
             file, kind, utils.get_extension(web), possible_names=possible_names
@@ -1078,8 +1078,8 @@ class DownloadMethods:
 
         try:
             async with aiohttp.ClientSession() as session:
-                # TODO Use progress_callback; get content length from response
-                # https://github.com/telegramdesktop/tdesktop/blob/c7e773dd9aeba94e2be48c032edc9a78bb50234e/Telegram/SourceFiles/ui/images.cpp#L1318-L1319
+                                                                              
+                                                                                                                                                          
                 async with session.get(web.url) as response:
                     while True:
                         chunk = await response.content.read(128 * 1024)
@@ -1111,25 +1111,25 @@ class DownloadMethods:
             file = str(file.absolute())
 
         if file is not None and not isinstance(file, str):
-            # Probably a stream-like object, we cannot set a filename here
+                                                                          
             return file
 
         if file is None:
             file = ""
         elif os.path.isfile(file):
-            # Make no modifications to valid existing paths
+                                                           
             return file
 
         if os.path.isdir(file) or not file:
             try:
                 isreserved = getattr(
                     os.path, "isreserved", lambda _: False
-                )  # Python 3.13 and above
+                )                         
                 name = (
                     None
                     if possible_names is None
                     else next(
-                        x  # basename to prevent path traversal (#4713)
+                        x                                              
                         for x in map(os.path.basename, filter(None, possible_names))
                         if not isreserved(x)
                     )
@@ -1167,4 +1167,4 @@ class DownloadMethods:
                 return result
             i += 1
 
-    # endregion
+               

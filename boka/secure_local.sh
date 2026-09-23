@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# Boka — OS-level hardening (layer 2).
-# runs the userbot as an unprivileged user inside a strict systemd sandbox
-# whose only reachable network destinations are Telegram ranges (per-process,
-# cgroup-level, enforced by systemd IPAddressAllow) + optional global egress
-# firewall (--strict-firewall, blocks everything except Telegram/DNS).
-#
-# Usage (must be root):
-#   ./secure_local.sh /path/to/Boka-code   [--strict-firewall]
-#
-# NOTES
-#   * Python venv is created at /var/lib/boka/venv (owned by user "boka").
-#   * Code is installed READ-ONLY at /opt/boka (chown root:a-w).
-#   * Bot data lives in /var/lib/boka ("--data-root"), writable only by boka.
-#   * If migrating an existing installation, copy its *.session files to
-#     /var/lib/boka/sessions/ before starting the service.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 set -euo pipefail
 
@@ -29,7 +29,7 @@ SERVICE=/etc/systemd/system/boka.service
 
 TG_NETS=(91.108.4.0/22 91.108.8.0/21 91.108.16.0/22 91.108.56.0/22 \
          149.154.160.0/20 185.76.151.0/24 2001:b28::/32)
-# allow local resolver(s) for DNS so Telethon can resolve DCs
+
 DNS_IPS=(127.0.0.53 127.0.0.1 8.8.8.8 1.1.1.1)
 
 if [[ $EUID -ne 0 ]]; then
@@ -44,18 +44,18 @@ for bin in nft systemctl; do
     }
 done
 
-# ---- 1. dedicated unprivileged account -----------------------------------
+
 if ! id "$BOKA_USER" >/dev/null 2>&1; then
     useradd --system --no-create-home --home-dir "$BOKA_DATA" \
         --shell /usr/sbin/nologin "$BOKA_USER"
 fi
 
-# ---- 2. data + log dirs ----------------------------------------------------
+
 mkdir -p "$BOKA_DATA/sessions" "$BOKA_LOG"
 chown -R "$BOKA_USER:$BOKA_USER" "$BOKA_DATA" "$BOKA_LOG"
 chmod 0700 "$BOKA_DATA"
 
-# ---- 3. install code read-only ---------------------------------------------
+
 rm -rf "$BOKA_INSTALL"
 mkdir -p "$BOKA_INSTALL"
 cp -a "$SRC_DIR"/. "$BOKA_INSTALL"/
@@ -64,17 +64,17 @@ chmod -R a-w "$BOKA_INSTALL"
 rm -f "$BOKA_INSTALL/.requirements_hash"
 find "$BOKA_INSTALL" -name __pycache__ -type d -prune -exec rm -rf {} + 2>/dev/null || true
 
-# ---- 4. python venv (writable, owned by boka) --------------------------------
+
 if [[ ! -x "$BOKA_DATA/venv/bin/python" ]]; then
     python3 -m venv "$BOKA_DATA/venv"
 fi
 chown -R "$BOKA_USER:$BOKA_USER" "$BOKA_DATA/venv"
-# shellcheck disable=SC2016
+
 sudo -u "$BOKA_USER" -- \
     "$BOKA_DATA/venv/bin/pip" install --disable-pip-version-check --no-warn-script-location \
     -r "$BOKA_INSTALL/requirements.txt" >/dev/null
 
-# ---- 5. hardened systemd unit ------------------------------------------------
+
 TG_ALLOW="$(printf '%s\n' "${TG_NETS[@]}" | tr '\n' ' ')"
 FW_ALLOW="127.0.0.1 ::1 $TG_ALLOW"
 
@@ -118,7 +118,7 @@ SystemCallArchitectures=native
 SystemCallFilter=@system-service
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
 
-# per-process network egress firewall: ONLY Telegram + loopback + resolver
+
 IPAddressDeny=any
 IPAddressAllow=$FW_ALLOW
 
@@ -129,7 +129,7 @@ EOF
 systemctl daemon-reload
 systemctl enable boka.service >/dev/null
 
-# ---- 6. optional global egress firewall --------------------------------------
+
 if [[ $STRICT_FIREWALL -eq 1 ]]; then
     nft list table inet boka >/dev/null 2>&1 && nft delete table inet boka || true
     DNS_RULES=""

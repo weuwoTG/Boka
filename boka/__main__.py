@@ -1,16 +1,16 @@
 """Entry point. Checks for user and starts main script"""
 
-# ©️ Dan Gazizullin, 2021-2023
-# This file is a part of Hikka Userbot
-# 🌐 https://github.com/hikariatama/Hikka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                              
+                                      
+                                        
+                                                                            
+                                              
 
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import getpass
 import hashlib
@@ -98,8 +98,8 @@ def get_file_hash(filename):
 
 
 def deps():
-    # Hardened: automatic pip (re)installation is disabled in this build.
-    # Dependencies are considered frozen; nothing is downloaded or upgraded.
+                                                                         
+                                                                            
     print(
         "🛡 Hardened build: automatic dependency installation is disabled. "
         "Your installed dependencies are used as-is."
@@ -143,7 +143,7 @@ else:
         pass
     else:
         try:
-            import boka_tl  # noqa: F811
+            import boka_tl              
 
             if tuple(map(int, boka_tl.__version__.split("."))) < (1, 7, 2):
                 raise ImportError
@@ -178,7 +178,7 @@ else:
             prev_hash = f.read().strip()
 
     if prev_hash != get_file_hash("requirements.txt"):
-        # Hardened: requirements.txt changes never trigger reinstallation.
+                                                                          
         print(
             "\U0001f504 Detected changes in requirements.txt, but automatic "
             "dependency reinstallation is disabled in this build."

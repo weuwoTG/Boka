@@ -27009,7 +27009,7 @@ class MessageActionSecureValuesSentMe(TLObject):
     CONSTRUCTOR_ID = 0x1b287353
     SUBCLASS_OF_ID = 0x8680d126
 
-    # noinspection PyShadowingBuiltins
+                                      
     def __init__(self, values: List['TypeSecureValue'], credentials: 'TypeSecureCredentialsEncrypted'):
         """
         Constructor for MessageAction: Instance of either MessageActionEmpty, MessageActionChatCreate, MessageActionChatEditTitle, MessageActionChatEditPhoto, MessageActionChatDeletePhoto, MessageActionChatAddUser, MessageActionChatDeleteUser, MessageActionChatJoinedByLink, MessageActionChannelCreate, MessageActionChatMigrateTo, MessageActionChannelMigrateFrom, MessageActionPinMessage, MessageActionHistoryClear, MessageActionGameScore, MessageActionPaymentSentMe, MessageActionPaymentSent, MessageActionPhoneCall, MessageActionScreenshotTaken, MessageActionCustomAction, MessageActionBotAllowed, MessageActionSecureValuesSentMe, MessageActionSecureValuesSent, MessageActionContactSignUp, MessageActionGeoProximityReached, MessageActionGroupCall, MessageActionInviteToGroupCall, MessageActionSetMessagesTTL, MessageActionGroupCallScheduled, MessageActionSetChatTheme, MessageActionChatJoinedByRequest, MessageActionWebViewDataSentMe, MessageActionWebViewDataSent, MessageActionGiftPremium, MessageActionTopicCreate, MessageActionTopicEdit, MessageActionSuggestProfilePhoto, MessageActionRequestedPeer, MessageActionSetChatWallPaper, MessageActionGiftCode, MessageActionGiveawayLaunch, MessageActionGiveawayResults, MessageActionBoostApply, MessageActionRequestedPeerSentMe, MessageActionPaymentRefunded, MessageActionGiftStars, MessageActionPrizeStars, MessageActionStarGift, MessageActionStarGiftUnique, MessageActionPaidMessagesRefunded, MessageActionPaidMessagesPrice, MessageActionConferenceCall, MessageActionTodoCompletions, MessageActionTodoAppendTasks, MessageActionSuggestedPostApproval, MessageActionSuggestedPostSuccess, MessageActionSuggestedPostRefund, MessageActionGiftTon, MessageActionSuggestBirthday, MessageActionStarGiftPurchaseOffer, MessageActionStarGiftPurchaseOfferDeclined, MessageActionNewCreatorPending, MessageActionChangeCreator, MessageActionNoForwardsToggle, MessageActionNoForwardsRequest, MessageActionPollAppendAnswer, MessageActionPollDeleteAnswer, MessageActionManagedBotCreated, MessageActionChangeCommunity.
@@ -32092,7 +32092,7 @@ class PageBlockCollage(TLObject):
     CONSTRUCTOR_ID = 0x65a0fa4d
     SUBCLASS_OF_ID = 0x1aca5644
 
-    # noinspection PyShadowingBuiltins
+                                      
     def __init__(self, items: List['TypePageBlock'], caption: 'TypePageCaption'):
         """
         Constructor for PageBlock: Instance of either PageBlockUnsupported, PageBlockTitle, PageBlockSubtitle, PageBlockAuthorDate, PageBlockHeader, PageBlockSubheader, PageBlockParagraph, PageBlockPreformatted, PageBlockFooter, PageBlockDivider, PageBlockAnchor, PageBlockList, PageBlockBlockquote, PageBlockPullquote, PageBlockPhoto, PageBlockVideo, PageBlockCover, PageBlockEmbed, PageBlockEmbedPost, PageBlockCollage, PageBlockSlideshow, PageBlockChannel, PageBlockAudio, PageBlockKicker, PageBlockTable, PageBlockOrderedList, PageBlockDetails, PageBlockRelatedArticles, PageBlockMap, PageBlockHeading1, PageBlockHeading2, PageBlockHeading3, PageBlockHeading4, PageBlockHeading5, PageBlockHeading6, PageBlockMath, PageBlockThinking, InputPageBlockMap, PageBlockBlockquoteBlocks.
@@ -32645,7 +32645,7 @@ class PageBlockList(TLObject):
     CONSTRUCTOR_ID = 0xe4e88011
     SUBCLASS_OF_ID = 0x1aca5644
 
-    # noinspection PyShadowingBuiltins
+                                      
     def __init__(self, items: List['TypePageListItem']):
         """
         Constructor for PageBlock: Instance of either PageBlockUnsupported, PageBlockTitle, PageBlockSubtitle, PageBlockAuthorDate, PageBlockHeader, PageBlockSubheader, PageBlockParagraph, PageBlockPreformatted, PageBlockFooter, PageBlockDivider, PageBlockAnchor, PageBlockList, PageBlockBlockquote, PageBlockPullquote, PageBlockPhoto, PageBlockVideo, PageBlockCover, PageBlockEmbed, PageBlockEmbedPost, PageBlockCollage, PageBlockSlideshow, PageBlockChannel, PageBlockAudio, PageBlockKicker, PageBlockTable, PageBlockOrderedList, PageBlockDetails, PageBlockRelatedArticles, PageBlockMap, PageBlockHeading1, PageBlockHeading2, PageBlockHeading3, PageBlockHeading4, PageBlockHeading5, PageBlockHeading6, PageBlockMath, PageBlockThinking, InputPageBlockMap, PageBlockBlockquoteBlocks.
@@ -32760,7 +32760,7 @@ class PageBlockOrderedList(TLObject):
     CONSTRUCTOR_ID = 0x1fd6f6c1
     SUBCLASS_OF_ID = 0x1aca5644
 
-    # noinspection PyShadowingBuiltins
+                                      
     def __init__(self, items: List['TypePageListOrderedItem'], reversed: Optional[bool]=None, start: Optional[int]=None, type: Optional[str]=None):
         """
         Constructor for PageBlock: Instance of either PageBlockUnsupported, PageBlockTitle, PageBlockSubtitle, PageBlockAuthorDate, PageBlockHeader, PageBlockSubheader, PageBlockParagraph, PageBlockPreformatted, PageBlockFooter, PageBlockDivider, PageBlockAnchor, PageBlockList, PageBlockBlockquote, PageBlockPullquote, PageBlockPhoto, PageBlockVideo, PageBlockCover, PageBlockEmbed, PageBlockEmbedPost, PageBlockCollage, PageBlockSlideshow, PageBlockChannel, PageBlockAudio, PageBlockKicker, PageBlockTable, PageBlockOrderedList, PageBlockDetails, PageBlockRelatedArticles, PageBlockMap, PageBlockHeading1, PageBlockHeading2, PageBlockHeading3, PageBlockHeading4, PageBlockHeading5, PageBlockHeading6, PageBlockMath, PageBlockThinking, InputPageBlockMap, PageBlockBlockquoteBlocks.
@@ -33014,7 +33014,7 @@ class PageBlockSlideshow(TLObject):
     CONSTRUCTOR_ID = 0x31f9590
     SUBCLASS_OF_ID = 0x1aca5644
 
-    # noinspection PyShadowingBuiltins
+                                      
     def __init__(self, items: List['TypePageBlock'], caption: 'TypePageCaption'):
         """
         Constructor for PageBlock: Instance of either PageBlockUnsupported, PageBlockTitle, PageBlockSubtitle, PageBlockAuthorDate, PageBlockHeader, PageBlockSubheader, PageBlockParagraph, PageBlockPreformatted, PageBlockFooter, PageBlockDivider, PageBlockAnchor, PageBlockList, PageBlockBlockquote, PageBlockPullquote, PageBlockPhoto, PageBlockVideo, PageBlockCover, PageBlockEmbed, PageBlockEmbedPost, PageBlockCollage, PageBlockSlideshow, PageBlockChannel, PageBlockAudio, PageBlockKicker, PageBlockTable, PageBlockOrderedList, PageBlockDetails, PageBlockRelatedArticles, PageBlockMap, PageBlockHeading1, PageBlockHeading2, PageBlockHeading3, PageBlockHeading4, PageBlockHeading5, PageBlockHeading6, PageBlockMath, PageBlockThinking, InputPageBlockMap, PageBlockBlockquoteBlocks.
@@ -52740,7 +52740,7 @@ class UpdateShort(TLObject):
     CONSTRUCTOR_ID = 0x78d4dec1
     SUBCLASS_OF_ID = 0x8af52aac
 
-    # noinspection PyShadowingBuiltins
+                                      
     def __init__(self, update: 'TypeUpdate', date: Optional[datetime]):
         """
         Constructor for Updates: Instance of either UpdatesTooLong, UpdateShortMessage, UpdateShortChatMessage, UpdateShort, UpdatesCombined, Updates, UpdateShortSentMessage.

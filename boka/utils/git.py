@@ -1,8 +1,8 @@
-# ©️ Codrago, 2024-2030
-# This file is a part of Boka Userbot
-# 🌐 https://github.com/weuwoTG/Boka
-# You can redistribute it and/or modify it under the terms of the GNU AGPLv3
-# 🔑 https://www.gnu.org/licenses/agpl-3.0.html
+                       
+                                     
+                                   
+                                                                            
+                                              
 
 import logging
 import os
@@ -22,7 +22,7 @@ def _is_no_git() -> bool:
     return os.environ.get("BOKA_NO_GIT") == "1"
 
 
-# GeekTG Compatibility
+                      
 def get_git_info() -> tuple[str, str]:
     """
     Get git info
