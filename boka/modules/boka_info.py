@@ -19,7 +19,7 @@ from boka_tl.errors import WebpageMediaEmptyError
 from boka_tl.types import InputMediaWebPage
 from boka_tl.tl.types import Message
 from boka_tl.utils import get_display_name
-from .. import loader, utils, version
+from .. import loader, main, utils, version
 import platform as lib_platform
 import getpass
 
@@ -51,7 +51,7 @@ class BokaInfoMod(loader.Module):
             ),
             loader.ConfigValue(
                 "banner_url",
-                os.path.join(utils.get_base_dir(), "assets", "boka.png"),
+                os.path.join(main.BASE_DIR, "assets", "boka.png"),
                 lambda: self.strings["_cfg_banner"],
                 validator=loader.validators.RandomLink(),
             ),

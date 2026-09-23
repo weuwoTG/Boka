@@ -25,7 +25,7 @@ from pathlib import Path
 
 from boka_tl.tl.types import Message
 
-from .. import loader, utils
+from .. import loader, main, utils
 from ..inline.types import BotInlineCall
 
 logger = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class BokaBackupMod(loader.Module):
         if not self.get("period"):
             await self.inline.bot.send_photo(
                 self.tg_id,
-                photo=os.path.join(utils.get_base_dir(), "assets", "boka.png"),
+                photo=os.path.join(main.BASE_DIR, "assets", "boka.png"),
                 caption=self.strings["period"],
                 reply_markup=self.inline.generate_markup(
                     utils.chunks(

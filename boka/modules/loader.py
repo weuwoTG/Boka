@@ -195,14 +195,7 @@ class LoaderMod(loader.Module):
         return repo
 
     async def _check_pass(self, message: Message | InlineCall) -> bool:
-        if self.lookup("LoaderRestrictor").get("passed", False):
-            return False
-
-        await utils.answer(
-            message,
-            self.strings["verify_required"].format(self.inline.bot_username),
-        )
-        return True
+        return False
 
     @loader.command(alias="dlm")
     async def dlmod(self, message: Message, force_pm: bool = False):
@@ -508,7 +501,7 @@ class LoaderMod(loader.Module):
                 "💫 <b>Joined <a"
                 f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>'
             ),
-            photo=os.path.join(utils.get_base_dir(), "assets", "boka.png"),
+            photo=os.path.join(main.BASE_DIR, "assets", "boka.png"),
         )
 
     async def install_requirements(self, requirements: list):

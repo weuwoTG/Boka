@@ -184,7 +184,7 @@ class BaseTranslator:
                 data.get("en", {}),
             )
 
-        return data.get("en", {})
+        return data.get("ru") or data.get("en", {})
 
 
 class Translator(BaseTranslator):
@@ -195,8 +195,8 @@ class Translator(BaseTranslator):
         self.raw_data = {}
 
     async def init(self) -> bool:
-        self._data = self._get_pack_content(PACKS / "en.yml")
-        self.raw_data["en"] = self._data.copy()
+        self._data = self._get_pack_content(PACKS / "ru.yml")
+        self.raw_data["ru"] = self._data.copy()
         any_ = False
         if lang := self.db.get(__name__, "lang", False):
             for language in map(normalize_language_token, lang.split()):
@@ -277,10 +277,10 @@ class Strings:
                                 self._translator.db.get(
                                     __name__,
                                     "lang",
-                                    "en",
+                                    "ru",
                                 ).split(" ")
                                 if self._translator is not None
-                                else ["en"]
+                                else ["ru"]
                             )
                             for lang in (
                                 list(iter_language_codes(original_lang))
