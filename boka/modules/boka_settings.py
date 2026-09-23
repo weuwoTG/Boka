@@ -465,27 +465,6 @@ class BokaSettingsMod(loader.Module):
                 ),
             ],
             [
-                (
-                    {
-                        "text": self.strings["suggest_subscribe"],
-                        "callback": self.inline__setting,
-                        "args": (
-                            "suggest_subscribe",
-                            False,
-                        ),
-                    }
-                    if self._db.get(main.__name__, "suggest_subscribe", True)
-                    else {
-                        "text": self.strings["do_not_suggest_subscribe"],
-                        "callback": self.inline__setting,
-                        "args": (
-                            "suggest_subscribe",
-                            True,
-                        ),
-                    }
-                ),
-            ],
-            [
                 {
                     "text": self.strings["btn_restart"],
                     "callback": self.inline__restart,

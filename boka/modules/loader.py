@@ -1083,38 +1083,6 @@ class LoaderMod(loader.Module):
             )
 
         if developer:
-            if developer.startswith("@") and developer not in self.get(
-                "do_not_subscribe", []
-            ):
-                if (
-                    developer_entity
-                    and getattr(developer_entity, "left", True)
-                    and self._db.get(main.__name__, "suggest_subscribe", True)
-                ):
-                    subscribe = self.strings["suggest_subscribe"].format(
-                        f"@{utils.escape_html(developer_entity.username)}"
-                    )
-                    subscribe_markup = [
-                        {
-                            "text": self.strings["subscribe"],
-                            "callback": self._inline__subscribe,
-                            "args": (
-                                developer_entity.id,
-                                functools.partial(loaded_msg, use_subscribe=False),
-                                True,
-                            ),
-                        },
-                        {
-                            "text": self.strings["no_subscribe"],
-                            "callback": self._inline__subscribe,
-                            "args": (
-                                developer,
-                                functools.partial(loaded_msg, use_subscribe=False),
-                                False,
-                            ),
-                        },
-                    ]
-
             developer = self.strings["developer"].format(utils.escape_html(developer))
         else:
             developer = ""
@@ -1192,23 +1160,6 @@ class LoaderMod(loader.Module):
             await message.reply(loaded_msg(False))
 
         return True
-
-    async def _inline__subscribe(
-        self,
-        call: InlineCall,
-        entity: int,
-        msg: typing.Callable[[], str],
-        subscribe: bool,
-    ):
-        if not subscribe:
-            self.set("do_not_subscribe", self.get("do_not_subscribe", []) + [entity])
-            await utils.answer(call, msg())
-            await call.answer(self.strings["not_subscribed"])
-            return
-
-        await self._client(JoinChannelRequest(entity))
-        await utils.answer(call, msg())
-        await call.answer(self.strings["subscribed"])
 
     @loader.command(alias="ulm")
     async def unloadmod(self, message: Message):
