@@ -20,11 +20,13 @@ import functools
 import importlib
 import inspect
 import io
+import json
 import logging
 import os
 import re
 import shutil
 import sys
+import textwrap
 import time
 import typing
 import uuid
@@ -331,11 +333,20 @@ class LoaderMod(loader.Module):
         logger.debug("Loading modules: %s", todo)
         return todo
 
-    async def _get_repo(self, repo: str) -> str:
-                                                                         
+    async def _get_repo(self, repo: str) -> list[str]:
         repo = repo.strip("/")
-        logger.debug("Remote repo fetch blocked (hardened build): %s", repo)
-        return []
+        try:
+            response = await self._storage.fetch(f"{repo}/modules.json")
+            loaded_repo = json.loads(response)
+        except json.JSONDecodeError:
+            loaded_repo = textwrap.dedent(response).splitlines()
+        except (requests.exceptions.RequestException, OSError, ValueError):
+            return []
+
+        if loaded_repo and not loaded_repo[0].startswith("http"):
+            return [f"{repo}/{mod.strip()}.py" for mod in loaded_repo]
+
+        return loaded_repo
 
     async def get_repo_list(
         self,
@@ -374,16 +385,6 @@ class LoaderMod(loader.Module):
         force_pm: bool = False,
     ) -> int:
         try:
-                                                                        
-                                                                                 
-            if "://" in module_name or urlparse(module_name).netloc:
-                logger.warning("Network module install blocked: %s", module_name)
-                if message is not None:
-                    await utils.answer(
-                        message, "🛡 <b>Установка модулей из сети отключена.</b>"
-                    )
-                return MODULE_LOADING_FAILED
-
             blob_link = False
             module_name = module_name.strip()
             if urlparse(module_name).netloc:
@@ -1385,8 +1386,20 @@ class LoaderMod(loader.Module):
 
     @loader.command()
     async def addrepo(self, message: Message):
-                                                           
-        await utils.answer(message, "🛡 <b>Добавление репозиториев отключено.</b>")
+        if not (args := utils.get_args_raw(message)) or not utils.check_url(args):
+            await utils.answer(message, self.strings["no_repo"])
+            return
+
+        if args.endswith("/"):
+            args = args[:-1]
+
+        if args in self.config["ADDITIONAL_REPOS"]:
+            await utils.answer(message, self.strings["repo_exists"])
+            return
+
+        self.config["ADDITIONAL_REPOS"] += [args]
+
+        await utils.answer(message, self.strings["repo_added"].format(args))
 
     @loader.command()
     async def delrepo(self, message: Message):

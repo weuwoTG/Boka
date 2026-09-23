@@ -17,6 +17,7 @@ import contextlib
 import hashlib
 import logging
 import os
+from base64 import b64encode
 
 import requests
 
@@ -115,10 +116,14 @@ class RemoteStorage:
         self._client = client
 
     async def preload(self, urls: list[str]):
-        """Preloads modules from remote storage."""
-                                                                 
-        logger.debug("Network module preloading is disabled (hardened build).")
-        return
+        """Preloads modules from the remote storage."""
+        for url in urls:
+            url, repo, module_name = self._parse_url(url)
+            try:
+                module_code = await self.fetch(url)
+                self._local_storage.save(repo, module_name, module_code)
+            except (requests.exceptions.RequestException, AttributeError):
+                logger.exception("Failed to download module %s.", url)
 
     @staticmethod
     def _parse_url(url: str) -> tuple[str, str, str]:
@@ -152,12 +157,37 @@ class RemoteStorage:
         :return: Module source code.
         """
         url, repo, module_name = self._parse_url(url)
-                                                                          
-                                                         
-        if module := self._local_storage.fetch(repo, module_name):
-            logger.debug("Module source loaded from local storage.")
-            return module
 
-        raise requests.exceptions.InvalidURL(
-            "Remote module fetching is disabled (hardened build)"
-        )
+        try:
+            if module := self._local_storage.fetch(repo, module_name):
+                logger.debug("Module source loaded from local storage.")
+                return module
+        except Exception:
+            logger.debug("Local storage read failed, will try remote.", exc_info=True)
+
+        headers = {}
+        if auth:
+            headers["Authorization"] = f"Basic {b64encode(auth.encode()).decode()}"
+
+        try:
+            response = await utils.run_sync(
+                requests.get,
+                url,
+                headers=headers or None,
+                timeout=15,
+            )
+            response.raise_for_status()
+            module_code = response.text
+        except Exception:
+            logger.warning(
+                "Failed to download module from %s, falling back to local storage.",
+                url,
+            )
+            if module := self._local_storage.fetch(repo, module_name):
+                return module
+            raise requests.exceptions.InvalidURL(
+                "Module cannot be found in local storage and remote fetch failed."
+            )
+
+        self._local_storage.save(repo, module_name, module_code)
+        return module_code
