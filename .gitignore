@@ -139,7 +139,7 @@ boka/loaded_modules
 loaded_modules
 boka/debug_modules
 boka*.session*
-sessions
+/sessions/
 database-*.json
 *.swp
 .setup_complete
