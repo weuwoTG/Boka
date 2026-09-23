@@ -182,6 +182,10 @@ class ScamDetectionError(Exception):
     def __init__(self, error_message: str):
         self._error = error_message
 
+
+class ImageProcessFailedError(Exception):
+    """Error to raise when a media processing operation fails"""
+
     def __str__(self) -> str:
         return self._error
 

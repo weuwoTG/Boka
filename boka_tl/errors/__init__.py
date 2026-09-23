@@ -16,6 +16,7 @@ from .common import (
     AlreadyInConversationError,
     BadMessageError,
     MultiError,
+    ImageProcessFailedError,
 )
 
                                                              

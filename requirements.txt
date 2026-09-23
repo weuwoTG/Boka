@@ -17,5 +17,6 @@ ruamel.yaml==0.17.21
 bs4==0.0.2
 orjson
 Pillow
+pytz
 
 # Python 3.10+

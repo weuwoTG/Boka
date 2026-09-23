@@ -175,6 +175,8 @@ def patched_import(name: str, *args, **kwargs):
         match name:
             case s if s.startswith("telethon"):
                 return native_import("boka_tl" + name[8:], *args, **kwargs)
+            case s if s.startswith("herokutl"):
+                return native_import("boka_tl" + name[8:], *args, **kwargs)
             case s if s.startswith("hikkatl"):
                 return native_import("boka_tl" + name[7:], *args, **kwargs)
             case s if s.startswith("hikkalls"):
