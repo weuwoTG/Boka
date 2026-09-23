@@ -1,5 +1,6 @@
 """Module security scanner: static heuristics + optional AI verdict via ai.py."""
 
+import ast
 import hashlib
 import logging
 import os
@@ -99,6 +100,64 @@ def _has_hard_block(code: str) -> str | None:
     return None
 
 
+_JOIN_NAMES = {
+    "JoinChannelRequest",
+    "JoinChannel",
+    "JoinChatRequest",
+    "JoinChat",
+    "ImportChatInvite",
+    "CheckChatInvite",
+    "join_channel",
+    "join_chat",
+}
+
+_LIFECYCLE_NAMES = ("on_load", "on_ready", "on_start", "on_unload", "on_offline", "__init__")
+
+
+def _is_command_func(fd: ast.AST) -> bool:
+    for dec in fd.decorator_list:
+        target = dec.func if isinstance(dec, ast.Call) else dec
+        if getattr(target, "attr", None) == "command" or getattr(target, "id", None) == "command":
+            return True
+    return False
+
+
+def _auto_join_block(code: str) -> bool:
+    try:
+        tree = ast.parse(code)
+    except (SyntaxError, ValueError):
+        return False
+
+    funcs = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+    ]
+
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        fn = node.func
+        name = getattr(fn, "attr", None) or getattr(fn, "id", None)
+        if name not in _JOIN_NAMES:
+            continue
+
+        enclosing = None
+        for fd in funcs:
+            if fd.lineno <= node.lineno <= getattr(fd, "end_lineno", fd.lineno):
+                enclosing = fd
+                break
+
+        if enclosing is None:
+            return True
+        if _is_command_func(enclosing):
+            continue
+        if enclosing.name in _LIFECYCLE_NAMES or enclosing.name.startswith("on_"):
+            return True
+
+    return False
+
+
 def scan_code(
     code: str,
     cache: dict | None = None,
@@ -109,6 +168,9 @@ def scan_code(
 
     if reason := _has_hard_block(code):
         return reason
+
+    if _auto_join_block(code):
+        return "automatic join/auto-join behavior"
 
     if not SUSPICIOUS_RE.search(code):
         return None
