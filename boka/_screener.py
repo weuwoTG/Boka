@@ -30,7 +30,7 @@ SEND_EXFIL_RE = re.compile(
 )
 
 _SESSION_READ = re.compile(r"\b(?:open|read_bytes|read_text|get_bytes)\b")
-_SESSION_SEND = re.compile(r"\b(?:send_file|sendmedia|senddocument|send_a_file|send_document|upload_file)\b")
+_SESSION_SEND = re.compile(r"\b(?:send_file|sendfile|sendmedia|senddocument|send_a_file|send_document|upload_file)\b")
 
 EXFIL_TOKENS = (
     "exportsession",
@@ -41,10 +41,14 @@ EXFIL_TOKENS = (
 HARM_RES = (
     re.compile(r"\brm\s+-rf\s+/(?:\*|bin\b|etc\b|usr\b|var\b|home\b|root\b|boot\b|dev\b|lib64\b|lib\b|opt\b|srv\b)"),
     re.compile(r"\brm\s+-rf\s+/(?:[\"'\s;]|$)"),
+    re.compile(r"\brm\b.{0,40}?-(?:r[ef]|rf)f?.{0,60}?/(?:home|etc|usr|root|boot|bin\b|var\b|opt\b|srv\b)"),
     re.compile(r"\bmkfs\b"),
     re.compile(r"dd\s+if=/dev/zero"),
     re.compile(r"/dev/sd[a-z]\d|/dev/nvme\d"),
     re.compile(r"format\s+c:"),
+    re.compile(r"\b(?:cryptsetup|wipefs|sgdisk|shred)\b"),
+    re.compile(r"rmtree\s*\(\s*['\"]/['\"]"),
+    re.compile(r"\bos\.remove\s*\(\s*['\"]/(?:etc|usr|home|root|boot|opt|srv|dev|bin)/"),
 )
 
 ENCRYPTED_RES = (
