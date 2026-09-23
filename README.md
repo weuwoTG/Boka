@@ -54,6 +54,8 @@ Most of the feature documentation below is inherited from the official Heroku/Hi
 
 Everything else (features, modules, inline elements) matches the official Heroku/Hikka documentation below.
 
+👤 **Creator/maintainer: [weuwo](https://github.com/weuwoTG)**
+
 ---
 
 ### Manual Installation (VPS/VDS Server)
