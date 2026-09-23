@@ -610,6 +610,7 @@ loader:
   ihandler: "\n<tg-emoji emoji-id=5372981976804366741>🤖</tg-emoji> <code>{}</code> {}"
   version_incompatible: "<tg-emoji emoji-id=5287372146039861774>❌</tg-emoji> <b>Этому модулю требуется Boka версии {}+\nОбновись с помощью</b> <code>.update</code>"
   ffmpeg_required: "<tg-emoji emoji-id=5287372146039861774>❌</tg-emoji> <b>Этому модулю требуется FFMPEG, который не установлен</b>"
+  module_blocked: "<tg-emoji emoji-id=5287372146039861774>🛡</tg-emoji> <b>Модуль заблокирован</b>\n<i>Проверка безопасности нашла подозрительный код: {}. Загрузка отменена.</i>"
   developer: "\n\n<tg-emoji emoji-id=5287454910059654880>🫶</tg-emoji> <b>Разработчик:</b> {}"
   depends_from: "\n\n<tg-emoji emoji-id=5341492148468465410>📦</tg-emoji> <b>Зависимости:</b> \n{}"
   by: "от"

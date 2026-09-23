@@ -41,6 +41,7 @@ from boka_tl.tl.types import Channel, InputMediaWebPage
 
 from .. import loader, main, utils
 from .._local_storage import RemoteStorage
+from .._screener import scan_code
 from ..inline.types import InlineCall
 from ..types import CoreOverwriteError, CoreUnloadError
 
@@ -556,6 +557,16 @@ class LoaderMod(loader.Module):
             )
             if isinstance(message, Message):
                 await utils.answer(message, self.strings["inline_init_failed"])
+            return False
+
+        cache = self.get("__scanned__", {})
+        block_reason = scan_code(doc, cache, lambda c: self.set("__scanned__", c))
+        if block_reason:
+            logger.error("Module %s blocked: %s", module_label, block_reason)
+            if isinstance(message, Message):
+                await utils.answer(
+                    message, self.strings["module_blocked"].format(block_reason)
+                )
             return False
 
         if re.search(r"# ?scope: ?boka_min", doc):

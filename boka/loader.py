@@ -34,6 +34,7 @@ from uuid import uuid4
 from boka_tl.tl.tlobject import TLObject
 
 from . import main, security, utils, validators
+from ._screener import scan_code
 from .database import Database
 from .inline.core import BotUpdateType, InlineManager
 from .translations import Strings, Translator
@@ -712,6 +713,19 @@ class Modules:
             if hasattr(spec.loader, "data") and spec.loader.data
             else None
         )
+
+        if origin != "<core>":
+            cache = self._db.get(main.__name__, "__scanned__", {})
+            block_reason = scan_code(
+                source_data if source_data else "",
+                cache,
+                lambda c: self._db.set(main.__name__, "__scanned__", c),
+            )
+            if block_reason:
+                logger.warning(
+                    "Module %s blocked on restore: %s", module_name, block_reason
+                )
+                raise RuntimeError(f"{module_name}: {block_reason}")
 
         async def _exec_module():
             while True:

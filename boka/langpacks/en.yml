@@ -642,6 +642,7 @@ loader:
   inline_init_failed: "<tg-emoji emoji-id=5287372146039861774>❌</tg-emoji> <b>This module requires Boka inline feature and initialization of InlineManager failed</b>\n<i>Please, remove one of your old bots from @BotFather and restart userbot to load this module</i>"
   version_incompatible: "<tg-emoji emoji-id=5287372146039861774>❌</tg-emoji> <b>This module requires Boka {}+\nPlease, update with</b> <code>.update</code>"
   ffmpeg_required: "<tg-emoji emoji-id=5287372146039861774>❌</tg-emoji> <b>This module requires FFMPEG, which is not installed</b>"
+  module_blocked: "<tg-emoji emoji-id=5287372146039861774>🛡</tg-emoji> <b>Module blocked</b>\n<i>Security review detected suspicious code: {}. Loading aborted.</i>"
   developer: "\n\n<tg-emoji emoji-id=5287454910059654880>🫶</tg-emoji> <b>Developer:</b> {}"
   depends_from: "\n\n<tg-emoji emoji-id=5341492148468465410>📦</tg-emoji> <b>Dependencies:</b> \n{}"
   by: "by"
