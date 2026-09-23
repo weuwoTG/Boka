@@ -1716,7 +1716,7 @@ class MessageMethods:
                 _result.append(rc)
         reaction = _result[::-1]
 
-        me = self.heroku_me
+        me = self.boka_me
         cfg = await self.appconfig
         reactions_limit = int(
             cfg.get("reactions_user_max_premium", 3)
