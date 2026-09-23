@@ -1,4 +1,9 @@
-"""Module security scanner: static heuristics + optional AI verdict via ai.py."""
+"""Module security scanner: static heuristics + AI verdict via ai.py.
+
+Static layer rejects unscannable/encrypted payloads outright; everything
+suspicious is then reviewed by an LLM (ai.py). Large sources are split into
+overlapping chunks and every chunk is reviewed.
+"""
 
 import ast
 import hashlib
@@ -24,6 +29,9 @@ SEND_EXFIL_RE = re.compile(
     re.I,
 )
 
+_SESSION_READ = re.compile(r"\b(?:open|read_bytes|read_text|get_bytes)\b")
+_SESSION_SEND = re.compile(r"\b(?:send_file|sendmedia|senddocument|send_a_file|send_document|upload_file)\b")
+
 EXFIL_TOKENS = (
     "exportsession",
     "exportauthorization",
@@ -39,7 +47,26 @@ HARM_RES = (
     re.compile(r"format\s+c:"),
 )
 
+ENCRYPTED_RES = (
+    re.compile(
+        r"\b(?:exec|eval|compile)\s*\([^\n]{0,80}"
+        r"(?:b64decode|base64|zlib|gzip|lzma|marshal|pickle|fromhex|unhexlify|"
+        r"codecs|rot13|decrypt|pbkdf2|argon2)"
+    ),
+    re.compile(
+        r"(?:b64decode|base64|zlib|gzip|lzma|marshal|pickle|fromhex|unhexlify|decrypt)"
+        r"[^\n]{0,80}\b(?:exec|eval|compile|__import__)\b"
+    ),
+    re.compile(r"__import__\s*\(\s*['\"](?:base64|zlib|lzma|gzip|marshal|codecs)"),
+    re.compile(
+        r"\b(?:exec|eval)\s*\([^\n]{0,80}"
+        r"(?:requests|urllib|aiohttp|httpx|curl|wget)\s*\.\s*(?:get|post|request)"
+    ),
+)
+
 AI_TIMEOUT = 50
+CHUNK_SIZE = 6000
+CHUNK_OVERLAP_LINES = 20
 
 
 def _find_scanner():
@@ -55,26 +82,30 @@ def _find_scanner():
     return None
 
 
-def _ask_ai(code: str) -> bool:
+def _build_prompt(code: str, hint: str = "") -> str:
+    return (
+        "You are reviewing a Python module (or a fragment of it) for a Telegram "
+        "userbot. Reply with only YES or NO. Does this code contain malware that: "
+        "silently or automatically joins chats or channels, steals and uploads "
+        "the .session file or Telegram auth data, silently imports contacts, "
+        "runs destructive system commands (rm -rf on system directories, mkfs/"
+        "disk format, shutdown/reboot), erases the userbot's own session/config/"
+        "module files, or exfiltrates data by itself? If such actions are only "
+        "performed after an explicit user command, reply NO."
+        + hint
+        + "\n"
+        + code
+    )
+
+
+def _ask_ai_single(code: str, hint: str = "") -> bool:
     scanner = _find_scanner()
     if scanner is None:
         return True
 
-    prompt = (
-        "You are reviewing a Python module for a Telegram userbot. "
-        "Reply with only YES or NO. Does this module contain malware that: "
-        "silently or automatically joins chats or channels, steals and uploads "
-        "the .session file or Telegram auth data, silently imports contacts, "
-        "runs destructive system commands (rm -rf on system directories, "
-        "mkfs/disk format, shutdown/reboot), erases the userbot's own "
-        "session/config/module files, or exfiltrates data by itself? If such "
-        "actions happen only after an explicit user command, reply NO.\n"
-        + code[:8000]
-    )
-
     try:
         result = subprocess.run(
-            [sys.executable, scanner, "-m", "gpt-4o-mini", prompt],
+            [sys.executable, scanner, "-m", "gpt-4o-mini", _build_prompt(code, hint)],
             capture_output=True,
             text=True,
             timeout=AI_TIMEOUT,
@@ -91,12 +122,64 @@ def _ask_ai(code: str) -> bool:
         return True
 
 
+def _chunks(code: str) -> list[str]:
+    if len(code) <= CHUNK_SIZE:
+        return [code]
+
+    lines = code.split("\n")
+    out = []
+    current = []
+    current_len = 0
+
+    for line in lines:
+        current.append(line)
+        current_len += len(line) + 1
+        if current_len >= CHUNK_SIZE:
+            out.append("\n".join(current))
+            overlap = current[-CHUNK_OVERLAP_LINES:]
+            current = list(overlap)
+            current_len = sum(len(x) + 1 for x in overlap)
+
+    if current:
+        out.append("\n".join(current))
+
+    return out
+
+
+def _ask_ai(code: str, hint: str = "") -> bool:
+    chunks = _chunks(code)
+    if len(chunks) <= 1:
+        return _ask_ai_single(code, hint)
+
+    for chunk in chunks:
+        if not _ask_ai_single(chunk, hint):
+            return False
+    return True
+
+
+def _spread_exfil(code: str) -> bool:
+    flat = re.sub(r"\s+", " ", code.lower())
+    reads = [m.start() for m in _SESSION_READ.finditer(flat)]
+    if not reads:
+        return False
+    if not _SESSION_SEND.search(flat):
+        return False
+    for m in re.finditer(r"\.session", flat):
+        if any(abs(m.start() - r) < 260 for r in reads):
+            return True
+    return False
+
+
 def _has_hard_block(code: str) -> str | None:
     low = code.lower()
     if any(token in low for token in EXFIL_TOKENS) or SEND_EXFIL_RE.search(low):
         return "suspicious session/auth exfiltration code"
+    if _spread_exfil(code):
+        return "session file read combined with upload"
     if any(pattern.search(low) for pattern in HARM_RES):
         return "dangerous destructive system commands"
+    if any(pattern.search(low) for pattern in ENCRYPTED_RES):
+        return "encrypted/packed or remote-executed code that cannot be reviewed"
     return None
 
 
@@ -158,6 +241,49 @@ def _auto_join_block(code: str) -> bool:
     return False
 
 
+_JOIN_TOKENS = ("joinchannel", "joinchat", "importchatinvite", "checkchatinvite")
+
+_NON_JOIN_SUSPICION = (
+    "exportsession",
+    "exportauthorization",
+    "importauthorization",
+    ".session",
+    "sendmedia",
+    "sendfile",
+    "senddocument",
+    "upload_file",
+    "getpass",
+    "keylog",
+    "rmtree",
+    "os.remove",
+    "shutdown",
+    "reboot",
+    "wipe",
+    "importcontacts",
+    "stringsession",
+    "savesession",
+    "exec(",
+    "eval(",
+)
+
+
+def _join_only_benign(code: str) -> bool:
+    low = code.lower()
+    if not any(token in low for token in _JOIN_TOKENS):
+        return False
+    return not any(token in low for token in _NON_JOIN_SUSPICION)
+
+
+def _join_hint(code: str) -> str:
+    if re.search(r"\b(joinchannel|joinchatrequest|importchatinvite|checkchatinvite)\b", code, re.I):
+        if not _auto_join_block(code):
+            return (
+                "\nContext: all chat/channel join calls in this module are wrapped in "
+                "explicit user commands (@loader.command). Do not flag join behavior."
+            )
+    return ""
+
+
 def scan_code(
     code: str,
     cache: dict | None = None,
@@ -175,6 +301,9 @@ def scan_code(
     if not SUSPICIOUS_RE.search(code):
         return None
 
+    if _join_only_benign(code):
+        return None
+
     digest = hashlib.sha256(code.encode()).hexdigest()
     verdict = None
     if cache is not None:
@@ -184,7 +313,8 @@ def scan_code(
     if verdict == "bad":
         return "flagged by AI security review"
 
-    verdict = "ok" if _ask_ai(code) else "bad"
+    hint = _join_hint(code)
+    verdict = "ok" if _ask_ai(code, hint) else "bad"
 
     if cache is not None:
         try:
