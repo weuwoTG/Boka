@@ -51,7 +51,7 @@ class BokaInfoMod(loader.Module):
             ),
             loader.ConfigValue(
                 "banner_url",
-                os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "assets", "boka.png")),
+                os.path.join(utils.get_base_dir(), "assets", "boka.png"),
                 lambda: self.strings["_cfg_banner"],
                 validator=loader.validators.RandomLink(),
             ),

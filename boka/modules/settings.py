@@ -116,7 +116,7 @@ class CoreMod(loader.Module):
                 f"{boka_tl.__version__} #{boka_tl.tl.alltlobjects.LAYER}",
             )
             + (branch_text),
-            file=os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "assets", "boka.png")),
+            file=os.path.join(utils.get_base_dir(), "assets", "boka.png"),
             reply_to=getattr(message, "reply_to_msg_id", None),
         )
 
@@ -650,13 +650,13 @@ class CoreMod(loader.Module):
                 self.strings["choose_installation"],
                 message,
                 reply_markup=self._markup(),
-                photo=os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "assets", "boka.png")),
+                photo=os.path.join(utils.get_base_dir(), "assets", "boka.png"),
             )
         ):
 
             await self.client.send_file(
                 message.peer_id,
-                os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "assets", "boka.png")),
+                os.path.join(utils.get_base_dir(), "assets", "boka.png"),
                 caption=self.strings["vds_install"],
                 reply_to=getattr(message, "reply_to_msg_id", None),
             )

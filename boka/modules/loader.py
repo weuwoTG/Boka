@@ -508,7 +508,7 @@ class LoaderMod(loader.Module):
                 "💫 <b>Joined <a"
                 f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>'
             ),
-            photo=os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "assets", "boka.png")),
+            photo=os.path.join(utils.get_base_dir(), "assets", "boka.png"),
         )
 
     async def install_requirements(self, requirements: list):
