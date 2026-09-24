@@ -11,6 +11,7 @@
                                               
 
 import asyncio
+import contextlib
 import getpass
 import inspect
 import logging
@@ -342,12 +343,12 @@ class TestMod(loader.Module):
         except (ValueError, TypeError):
             count = 1
 
+        with contextlib.suppress(Exception):
+            await message.delete()
+
         for i in range(count):
             start = time.perf_counter_ns()
-            try:
-                await message.edit("<b>Pinging...</b>")
-            except MessageNotModifiedError:
-                pass
+            msg = await message.respond("<b>Pinging...</b>")
             ping = round((time.perf_counter_ns() - start) / 10**6, 3)
             data = {
                 "ping": ping,
@@ -366,7 +367,7 @@ class TestMod(loader.Module):
                 logger.exception("Missing placeholder in custom_message")
                 placeholders_msg = "<tg-emoji emoji-id=5210952531676504517>🚫</tg-emoji>"
             try:
-                await message.edit(placeholders_msg)
+                await msg.edit(placeholders_msg)
             except MessageNotModifiedError:
                 pass
             if i != count - 1:

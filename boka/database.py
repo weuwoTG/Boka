@@ -158,7 +158,7 @@ class Database(dict):
                 description="🪐 Content related to Boka will be here",
                 silent=True,
                 invite_bot=True,
-                avatar=os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "assets", "boka.png")),
+                avatar=os.path.join(main.BASE_DIR, "assets", "boka.png"),
                 forum=True,
                 hide_general=True,
                 _folder="boka",

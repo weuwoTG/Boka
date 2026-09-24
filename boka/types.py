@@ -41,7 +41,7 @@ from boka_tl.tl.types import (
     UserFull,
 )
 
-from . import version
+from . import main, version
 from ._reference_finder import replace_all_refs
 from .inline.types import (
     BotInlineCall,
@@ -344,7 +344,7 @@ class Module:
                 "✖️ <b>Declined joining <a"
                 f' href="https://t.me/{channel.username}">{utils.escape_html(channel.title)}</a></b>'
             ),
-            photo=os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "assets", "boka.png")),
+            photo=os.path.join(main.BASE_DIR, "assets", "boka.png"),
         )
 
     async def request_join(
@@ -408,7 +408,7 @@ class Module:
 
         await self.inline.bot.send_photo(
             self.tg_id,
-            os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "assets", "boka.png")),
+            os.path.join(main.BASE_DIR, "assets", "boka.png"),
             caption=(
                 self._client.loader.lookup("translations")
                 .strings("requested_join")

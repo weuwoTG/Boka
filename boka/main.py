@@ -1042,7 +1042,7 @@ class Boka:
 
                 await client.boka_inline.bot.send_photo(
                     log_chat_id,
-                    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "assets", "boka.png")),
+                    os.path.join(BASE_DIR, "assets", "boka.png"),
                     caption=(
                         "{} <b>{} started!</b>\n\n<tg-emoji emoji-id=5231065262228250587>⚙</tg-emoji> <b>GitHub commit SHA: <a"
                         ' href="https://github.com/weuwoTG/Boka/commit/{}">{}</a></b>\n<tg-emoji emoji-id=5873225338984599714>🔎</tg-emoji>'
