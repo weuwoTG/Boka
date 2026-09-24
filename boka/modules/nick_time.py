@@ -22,8 +22,8 @@ class NickTimeMod(loader.Module):
             ),
             loader.ConfigValue(
                 "format",
-                "%H:%M",
-                lambda: "Формат времени (strftime), напр. %H:%M или %H:%M:%S",
+                "%H:%M:%S",
+                lambda: "Формат времени (strftime), напр. %H:%M:%S или %H:%M",
                 validator=loader.validators.String(),
             ),
             loader.ConfigValue(
@@ -34,7 +34,7 @@ class NickTimeMod(loader.Module):
             ),
         )
 
-    @loader.loop(interval=60, autostart=False)
+    @loader.loop(interval=3, autostart=False)
     async def _nick_loop(self):
         await self._tick()
 
