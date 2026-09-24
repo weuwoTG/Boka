@@ -10,6 +10,7 @@
                                                                             
                                               
 
+import asyncio
 import getpass
 import inspect
 import logging
@@ -340,21 +341,13 @@ class TestMod(loader.Module):
             count = min(max(count, 1), 10)
         except (ValueError, TypeError):
             count = 1
-        banner = str(self.config["banner_url"])
-
-        if self.config["banner_url"] and self.config["quote_media"] is True:
-            banner = InputMediaWebPage(str(self.config["banner_url"]), optional=True)
-
-        elif not self.config["banner_url"]:
-            banner = None
 
         for i in range(count):
             start = time.perf_counter_ns()
-            msg = await message.respond(
-                "<b>Pinging...</b>",
-                file=banner if i == 0 else None,
-                invert_media=self.config["invert_media"] if i == 0 else False,
-            )
+            try:
+                await message.edit("<b>Pinging...</b>")
+            except MessageNotModifiedError:
+                pass
             ping = round((time.perf_counter_ns() - start) / 10**6, 3)
             data = {
                 "ping": ping,
@@ -373,9 +366,11 @@ class TestMod(loader.Module):
                 logger.exception("Missing placeholder in custom_message")
                 placeholders_msg = "<tg-emoji emoji-id=5210952531676504517>🚫</tg-emoji>"
             try:
-                await msg.edit(placeholders_msg)
+                await message.edit(placeholders_msg)
             except MessageNotModifiedError:
                 pass
+            if i != count - 1:
+                await asyncio.sleep(0.2)
 
     async def client_ready(self):
         self._content_channel_id = await utils.wait_for_content_channel(self._db)
