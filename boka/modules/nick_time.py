@@ -34,7 +34,7 @@ class NickTimeMod(loader.Module):
             ),
         )
 
-    @loader.loop(interval=3, autostart=False)
+    @loader.loop(interval=5, autostart=False)
     async def _nick_loop(self):
         await self._tick()
 
