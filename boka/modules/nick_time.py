@@ -22,8 +22,8 @@ class NickTimeMod(loader.Module):
             ),
             loader.ConfigValue(
                 "format",
-                "%H:%M:%S",
-                lambda: "Формат времени (strftime), напр. %H:%M:%S или %H:%M",
+                "%H:%M",
+                lambda: "Формат времени (strftime), напр. %H:%M",
                 validator=loader.validators.String(),
             ),
             loader.ConfigValue(
